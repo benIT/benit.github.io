@@ -3,7 +3,7 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/categories/Sculpin.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-03-29T08:02:26+00:00</updated>
+    <updated>2017-03-29T09:36:28+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -45,6 +45,32 @@ As this site, it can be hosted on GITHUB pages.</p>
 </ul>
 
 <h2 id="deploy-on-github">Deploy on github</h2>
+
+<h3 id="about-github-pages">About github pages</h3>
+
+<p>You can host html generaed  at 3 different locations :</p>
+
+<ul>
+<li>on <code>master</code> branch </li>
+<li>or <code>master</code> branch in <code>docs</code> folder</li>
+<li><p>on <code>gh-pages</code> branch</p>
+
+<p><strong>But for your personal pages, you can only host in repo named <code>benit.github.io</code> on the <code>master</code> branch. 
+This means, that we need 2 repos : one for source control and another one for hosting our github pages.</strong>
+Thus, I create the following repos : <code>github-blog.git</code> and <code>benit.github.io</code></p></li>
+</ul>
+
+<h3 id="how-to-publish-the-content-to-the-repo-that-hosts-your-github-pages-%3F">How to publish the content to the repo that hosts your github pages ?</h3>
+
+<p>I edit <a href="https://github.com/benIT/github-blog/blob/master/publish.sh">the shell script named <code>publish.sh</code></a>.
+ The script is in charge of:</p>
+
+<ul>
+<li>generating the html</li>
+<li>rsyncing the <code>output_prod</code> folder with the <code>benit.github.io</code>. </li>
+<li>commiting </li>
+<li>pushing</li>
+</ul>
 ]]></content>
         </entry>
     </feed>
