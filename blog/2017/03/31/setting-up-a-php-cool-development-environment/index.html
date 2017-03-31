@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Categories &mdash; benIT &mdash; </title>
+        <title>Setting up a cool php development environment &mdash; benIT &mdash; </title>
         <meta charset="utf-8">
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <meta name="robots" content="noindex, follow">
-                <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+            <meta name="robots" content="index, follow">
+        <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="/css/style.css" rel="stylesheet" type="text/css" />
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -68,13 +68,108 @@
         <div class="mainContent container">
             <div class="row-fluid">
                 <div class="span8">
-                    <h2>Categories</h2>
+                        <article>
+        <header>
+            <h2>Setting up a cool php development environment <small>post</small></h2>
+        </header>
+        <div>
+            <p>In this post, I list the components of my stack environment.</p>
 
-<div>
-<a href="/blog/categories/php">php</a>
-<a href="/blog/categories/Moodle">Moodle</a>
-<a href="/blog/categories/Sculpin">Sculpin</a>
-</div>                </div>
+<h2 id="make-use-of-a-cool-virtualisation-solution">Make use of a cool virtualisation solution</h2>
+
+<p>I choose Vagrant. Take the time to create cool provisioning scripts. In case of problem, you will be able to set up quickly your env!
+VERSION your provisioning script</p>
+
+<h2 id="reproduce-the-exact-same-stack-than-the-prod-env">Reproduce the exact same stack than the prod env</h2>
+
+<ul>
+<li>OS</li>
+<li>php version</li>
+<li>php.ini conf: /etc/php5/apache2/php.ini &amp; /etc/php5/cli/php.ini</li>
+<li>apache version</li>
+<li>apache VHOST</li>
+<li>db version</li>
+<li>system permission</li>
+</ul>
+
+<h2 id="turn-on-debug-mode-and-error-printing">Turn on debug mode and error printing</h2>
+
+<p>In php.ini files:</p>
+
+<pre><code>    error_reporting = E_ALL ^ E_NOTICE ^ E_WARNING
+    error_reporting = E_ALL ^ E_NOTICE ^ E_WARNING
+    sudo service apache2 restart
+</code></pre>
+
+<h2 id="make-use-of-a-cool-source-control">Make use of a cool source control</h2>
+
+<p>I use gitlab: git+wiki+tracker</p>
+
+<h2 id="make-use-of-a-cool-php-ide">Make use of a cool PHP IDE</h2>
+
+<p>I make use PHPSTORM because of:
+ - debugger integration
+ - completion
+ - external tools integration
+ - framework integration
+ - database integration
+ - live templates
+ - source control integration</p>
+
+<h2 id="set-up-a-cool-debugger">Set up a cool debugger</h2>
+
+<p>I use XDEBUG embed in vagrant VM with PHPSTORM on host machine which is very very very nice.</p>
+
+<ul>
+<li><p><a href="https://confluence.jetbrains.com/display/PhpStorm/Working+with+Advanced+Vagrant+features+in+PhpStorm">ressource to set up vagrant with phpstorm</a></p></li>
+<li><p><a href="https://www.jetbrains.com/phpstorm/marklets/">bookmarle generator</a></p></li>
+</ul>
+
+<p>On the guest machine :</p>
+
+<pre><code>    sudo apt-get install -y php-pear php5-dev
+    sudo pecl install xdebug
+</code></pre>
+
+<p>php.ini file:</p>
+
+<pre><code>    [xdebug]
+    zend_extension=/usr/lib/php5/20131226/xdebug.so
+    xdebug.remote_enable=1
+    xdebug.remote_host=10.0.2.2
+    xdebug.remote_port=9000
+</code></pre>
+
+<h2 id="set-up-a-mailer">Set up a mailer</h2>
+
+<p>Setting up <code>sendMail</code> is quiet complicated whereas setting up <code>ssmtp</code> is easy.</p>
+
+<p><a href="http://www.tuto-linux.com/tutoriel/ssmtp-installation-et-configuration/">Follow that tutorial to install ssmtp.</a></p>
+
+<p>Do not forget to <a href="https://myaccount.google.com/lesssecureapps?pli=1">edit google lesssecureappsoption</a></p>
+
+<h2 id="set-up-a-cool-build-tool">Set up a cool build tool</h2>
+
+<p>I use <a href="https://www.phing.info/">Phing</a> to build and deploy.</p>
+
+        </div>
+                    <p class="categories">
+            Categories:
+                        <a href="/blog/categories/php">php</a>                        </p>
+                            <p class="tags">
+            Tags:
+                        <a href="/blog/tags/development">development</a>                        </p>
+        
+                    <nav class="article">
+                <ul>
+                                                                <li>Previous: <a class="previous" href="/blog/2017/03/29/consumming-a-moodle-webservice" title="Consuming a Moodle webservice"><span class="title">Consuming a Moodle webservice</span></a></li>
+                                    </ul>
+            </nav>
+            </article>
+
+
+
+                </div>
                 <!--<div class="span4 sidebar">-->
                     <!--<div class="well">-->
                         <!--<h4>benIT</h4>-->

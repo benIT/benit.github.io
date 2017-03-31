@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title><![CDATA[benIT]]></title>
+    <link href="/blog/categories/php.xml" rel="self"/>
+    <link href="/"/>
+    <updated>2017-03-31T13:07:19+00:00</updated>
+    <id>/</id>
+        <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Setting up a cool php development environment]]></title>
+            <link href="/blog/2017/03/31/setting-up-a-php-cool-development-environment"/>
+            <updated>2017-03-31T00:00:00+00:00</updated>
+            <id>/blog/2017/03/31/setting-up-a-php-cool-development-environment</id>
+            <content type="html"><![CDATA[<p>In this post, I list the components of my stack environment.</p>
+
+<h2 id="make-use-of-a-cool-virtualisation-solution">Make use of a cool virtualisation solution</h2>
+
+<p>I choose Vagrant. Take the time to create cool provisioning scripts. In case of problem, you will be able to set up quickly your env!
+VERSION your provisioning script</p>
+
+<h2 id="reproduce-the-exact-same-stack-than-the-prod-env">Reproduce the exact same stack than the prod env</h2>
+
+<ul>
+<li>OS</li>
+<li>php version</li>
+<li>php.ini conf: /etc/php5/apache2/php.ini &amp; /etc/php5/cli/php.ini</li>
+<li>apache version</li>
+<li>apache VHOST</li>
+<li>db version</li>
+<li>system permission</li>
+</ul>
+
+<h2 id="turn-on-debug-mode-and-error-printing">Turn on debug mode and error printing</h2>
+
+<p>In php.ini files:</p>
+
+<pre><code>    error_reporting = E_ALL ^ E_NOTICE ^ E_WARNING
+    error_reporting = E_ALL ^ E_NOTICE ^ E_WARNING
+    sudo service apache2 restart
+</code></pre>
+
+<h2 id="make-use-of-a-cool-source-control">Make use of a cool source control</h2>
+
+<p>I use gitlab: git+wiki+tracker</p>
+
+<h2 id="make-use-of-a-cool-php-ide">Make use of a cool PHP IDE</h2>
+
+<p>I make use PHPSTORM because of:
+ - debugger integration
+ - completion
+ - external tools integration
+ - framework integration
+ - database integration
+ - live templates
+ - source control integration</p>
+
+<h2 id="set-up-a-cool-debugger">Set up a cool debugger</h2>
+
+<p>I use XDEBUG embed in vagrant VM with PHPSTORM on host machine which is very very very nice.</p>
+
+<ul>
+<li><p><a href="https://confluence.jetbrains.com/display/PhpStorm/Working+with+Advanced+Vagrant+features+in+PhpStorm">ressource to set up vagrant with phpstorm</a></p></li>
+<li><p><a href="https://www.jetbrains.com/phpstorm/marklets/">bookmarle generator</a></p></li>
+</ul>
+
+<p>On the guest machine :</p>
+
+<pre><code>    sudo apt-get install -y php-pear php5-dev
+    sudo pecl install xdebug
+</code></pre>
+
+<p>php.ini file:</p>
+
+<pre><code>    [xdebug]
+    zend_extension=/usr/lib/php5/20131226/xdebug.so
+    xdebug.remote_enable=1
+    xdebug.remote_host=10.0.2.2
+    xdebug.remote_port=9000
+</code></pre>
+
+<h2 id="set-up-a-mailer">Set up a mailer</h2>
+
+<p>Setting up <code>sendMail</code> is quiet complicated whereas setting up <code>ssmtp</code> is easy.</p>
+
+<p><a href="http://www.tuto-linux.com/tutoriel/ssmtp-installation-et-configuration/">Follow that tutorial to install ssmtp.</a></p>
+
+<p>Do not forget to <a href="https://myaccount.google.com/lesssecureapps?pli=1">edit google lesssecureappsoption</a></p>
+
+<h2 id="set-up-a-cool-build-tool">Set up a cool build tool</h2>
+
+<p>I use <a href="https://www.phing.info/">Phing</a> to build and deploy.</p>
+]]></content>
+        </entry>
+    </feed>
