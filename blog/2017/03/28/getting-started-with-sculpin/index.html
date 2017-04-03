@@ -110,7 +110,7 @@ As this site, it can be hosted on GITHUB pages.</p>
 
 <h3 id="about-github-pages">About github pages</h3>
 
-<p>You can host html generaed  at 3 different locations :</p>
+<p>You can host html generated  at 3 different locations :</p>
 
 <ul>
 <li>on <code>master</code> branch </li>
@@ -129,10 +129,15 @@ Thus, I create the following repos : <code>github-blog.git</code> and <code>beni
 
 <ul>
 <li>generating the html</li>
-<li>rsyncing the <code>output_prod</code> folder with the <code>benit.github.io</code>. </li>
-<li>commiting </li>
-<li>pushing</li>
+<li>rsyncing the <code>output_prod</code> folder of the source control repo with the <code>benit.github.io</code>repo. </li>
+<li>commiting on the 2 repos with the same commit message</li>
+<li>pushing on the 2 repo</li>
 </ul>
+
+<p>Usage:</p>
+
+<pre><code>./publish.sh "edit post about Setting up a cool php development environment"
+</code></pre>
 
         </div>
                     <p class="categories">
