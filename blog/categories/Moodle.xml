@@ -3,9 +3,42 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/categories/Moodle.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-04-03T15:28:21+00:00</updated>
+    <updated>2017-04-11T14:19:33+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Filter functionality in Moodle Configurable Reports]]></title>
+            <link href="/blog/2017/04/11/moodle-configurable-reports-filters"/>
+            <updated>2017-04-11T00:00:00+00:00</updated>
+            <id>/blog/2017/04/11/moodle-configurable-reports-filters</id>
+            <content type="html"><![CDATA[<p>This post describes the filter functionality in Moodle Configurable Reports.</p>
+
+<h2 id="create-the-sql-query">Create the sql query</h2>
+
+<pre><code>    SELECT *
+    from prefix_course
+    WHERE
+    1=1
+    %%FILTER_COURSES:prefix_course.id%%
+    %%FILTER_SEARCHTEXT:prefix_course.fullname:~%%
+</code></pre>
+
+<h2 id="add-filter-fields">Add filter fields</h2>
+
+<p>Available filters are located in: <code>components/filters/</code> of Configurable Reports.</p>
+
+<p>In the <code>filters</code> tab:</p>
+
+<ul>
+<li><p>add <code>Courses</code> that will refer to <code>%%FILTER_COURSES:prefix_course.id%%</code></p></li>
+<li><p>add <code>Search text</code> that will refer to <code>%%FILTER_SEARCHTEXT:prefix_course.fullname:~%%</code></p></li>
+</ul>
+
+<h2 id="result">Result</h2>
+
+<p>In the <code>view report</code> tab, you will get the 2 filters!</p>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Consuming a Moodle webservice]]></title>
             <link href="/blog/2017/03/29/consumming-a-moodle-webservice"/>

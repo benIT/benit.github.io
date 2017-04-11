@@ -3,7 +3,7 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/tags/development.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-04-03T15:28:21+00:00</updated>
+    <updated>2017-04-11T14:19:33+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -103,6 +103,8 @@
 sudo mv phing-latest.phar /usr/local/lib/phing.phar
 chmod +x /usr/local/lib/phing.phar
 sudo ln -s /usr/local/lib/phing.phar /usr/local/bin/phing
+
+pear install VersionControl_Git-alpha
 </code></pre>
 
 <h2 id="things-that-must-be-under-source-control">Things that must be under source control</h2>
