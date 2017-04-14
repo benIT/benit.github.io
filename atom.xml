@@ -3,7 +3,7 @@
     <title><![CDATA[benIT]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-04-11T14:19:33+00:00</updated>
+    <updated>2017-04-14T07:04:26+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -33,6 +33,39 @@
 <li><p>add <code>Courses</code> that will refer to <code>%%FILTER_COURSES:prefix_course.id%%</code></p></li>
 <li><p>add <code>Search text</code> that will refer to <code>%%FILTER_SEARCHTEXT:prefix_course.fullname:~%%</code></p></li>
 </ul>
+
+<h3 id="available-variables">Available variables</h3>
+
+<pre><code>%%CATEGORYID%%
+%%COURSEID%%
+%%CURRENTUSER%%
+%%DEBUG%%
+%%FILTER_VAR%%
+%%STARTTIME%%’,’%%ENDTIME%%
+%%USERID%%
+%%WWWROOT%%
+</code></pre>
+
+<h3 id="available-filters">Available filters</h3>
+
+<pre><code>%%FILTER_CATEGORIES:
+%%FILTER_COURSEMODULEID:
+%%FILTER_COURSEMODULEFIELDS:
+%%FILTER_COURSEMODULE:
+%%FILTER_COURSES:
+%%FILTER_COURSEENROLLEDSTUDENTS:
+%%FILTER_USERS:
+%%FILTER_ROLE:
+%%FILTER_SEARCHTEXT:
+%%FILTER_SEMESTER:
+%%FILTER_STARTTIME:
+%%FILTER_ENDTIME:
+%%FILTER_SUBCATEGORIES:
+%%FILTER_COURSEUSER:
+%%FILTER_SYSTEMUSER:
+%%FILTER_YEARHEBREW:
+%%FILTER_YEARNUMERIC:
+</code></pre>
 
 <h2 id="result">Result</h2>
 
