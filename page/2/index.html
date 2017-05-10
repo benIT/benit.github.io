@@ -70,6 +70,100 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2017/03/29/consumming-a-moodle-webservice">Consuming a Moodle webservice</a></h2>
+        </header>
+        <div>
+            <p>This post describes how to consume a Moodle core webservice.</p>
+
+<h2 id="set-up-moodle">Set up Moodle</h2>
+
+<h3 id="enable-rest-protocol">Enable REST protocol</h3>
+
+<p>In <code>Dashboard / ► Site administration / ► Plugins / ► Web services / ► Manage protocols</code></p>
+
+<ul>
+<li>enable REST protocol.</li>
+<li>enable <code>Web services documentation</code> too.</li>
+</ul>
+
+<h3 id="create-a-custom-webservice">Create a custom webservice</h3>
+
+<p>In <code>Dashboard / ► Site administration / ► Plugins / ► Web services / ► External services</code></p>
+
+<ul>
+<li>add a custom services named <code>test ws</code> for example</li>
+</ul>
+
+<h3 id="create-a-custom-user-for-webservice">Create a custom user for webservice</h3>
+
+<p>In <code>Dashboard / ► Site administration / ► Users / ► Accounts / ► Add a new user</code></p>
+
+<ul>
+<li>create a <code>wsuser</code> user.</li>
+</ul>
+
+<h3 id="create-a-custom-role-for-webservice">Create a custom role for webservice</h3>
+
+<p>In <code>Dashboard / ► Site administration / ► Users / ► Permissions / ► Define roles</code></p>
+
+<ul>
+<li>create a <code>ws_user_role</code>.</li>
+<li>allow at least <code>Create a web service token</code> </li>
+</ul>
+
+<h3 id="assign-role-to-user">Assign role to user</h3>
+
+<p><code>Dashboard / ► Site administration / ► Users / ► Permissions / ► Assign system roles</code></p>
+
+<h2 id="test">Test</h2>
+
+<h3 id="get-a-cool-rest-client">Get a cool REST client</h3>
+
+<p>Getting a user friendly REST client is important, <a href="https://www.getpostman.com/">POSTMAN is pretty cool</a>.</p>
+
+<h3 id="get-a-token">Get a token</h3>
+
+<p>Make a GET request to get a token.</p>
+
+<p>For instance:<code>https://192.168.33.10/login/token.php?service=test_ws&amp;username=wsuser&amp;password=Wsuser123456-</code>. You should get:</p>
+
+<pre><code>        {
+          "token": "19f315a127eef1f7f381da40fefd7b75"
+        }
+</code></pre>
+
+<h3 id="consuming-a-moodle-core-webservice">Consuming a Moodle core webservice</h3>
+
+<p>Now we get a token! So let's consume the <code>core_course_get_courses</code> WS. Results in JSON with <code>moodlewsrestformat=json</code>.</p>
+
+<p>Make a POST request on <code>https://192.168.33.10/webservice/rest/server.php?wstoken=19f315a127eef1f7f381da40fefd7b75&amp;wsfunction=core_course_get_courses&amp;options[ids][0]=1&amp;moodlewsrestformat=json</code>. You should get :</p>
+
+<pre><code>        [
+          {
+            "id": 1,
+            "shortname": "test",
+            "categoryid": 0,
+            "fullname": "Site de test",
+            "summary": "",
+            "summaryformat": 1,
+            "format": "site",
+            "startdate": 0,
+            "numsections": 1
+          }
+        ]
+</code></pre>
+
+<h3 id="api-documentation">API DOCUMENTATION</h3>
+
+<p>This can be found at <code>Dashboard / ► Site administration / ► Plugins / ► Web services / ► API Documentation</code></p>
+
+        </div>
+                    <p class="tags">
+            Tags:
+                        <a href="/blog/tags/webservices">webservices</a>                        </p>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2017/03/28/getting-started-with-sculpin">Getting started with Sculpin</a></h2>
         </header>
         <div>
