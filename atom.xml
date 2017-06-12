@@ -3,9 +3,54 @@
     <title><![CDATA[benIT]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-06-12T09:10:38+00:00</updated>
+    <updated>2017-06-12T15:13:53+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Connect to raspberry pi from linux host using a simple ethernet cable]]></title>
+            <link href="/blog/2017/06/15/connect-to-raspberry-over-ethernet"/>
+            <updated>2017-06-15T00:00:00+00:00</updated>
+            <id>/blog/2017/06/15/connect-to-raspberry-over-ethernet</id>
+            <content type="html"><![CDATA[<h2 id="on-debian-host-machine">On debian host machine</h2>
+
+<ul>
+<li><p>run <code>gnome-nettool</code> and share the connection:
+<img src="/images/wired.png" alt="network conf" /></p></li>
+<li><p>Mount the raspberry pi SD card, and edit the <code>cmdline.txt</code> file adding:</p>
+
+<p>ip=169.254.6.100</p></li>
+<li><p><em>The pi and the debian PC must on the same subnetwork ie: <code>169.254.6.XXX</code></em></p></li>
+<li><p>Check the connectivity:</p>
+
+<pre><code>ping 169.254.6.100
+</code></pre></li>
+</ul>
+
+<h2 id="on-raspberry-pi-machine">On raspberry pi machine</h2>
+
+<p>-insert SD card and boot pi</p>
+
+<ul>
+<li><p>enable ssh:</p>
+
+<pre><code>sudo raspi-config 
+</code></pre></li>
+<li><p><code>Interfacing Options</code> then <code>SSH</code></p></li>
+</ul>
+
+<h2 id="ssh-it-%21">SSH IT !</h2>
+
+<p>From the debian pc:</p>
+
+<pre><code>ssh pi@169.254.6.100
+
+
+nc-automount in sudo nextcloudpi-config
+
+format usb-drive as ext4 `msdos` partition table if necessary using gparted
+</code></pre>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Setting up a debian dev machine]]></title>
             <link href="/blog/2017/06/13/setting-up-a-debian-dev-machine"/>
@@ -621,78 +666,6 @@ pear install VersionControl_Git-alpha
 <h3 id="api-documentation">API DOCUMENTATION</h3>
 
 <p>This can be found at <code>Dashboard / ► Site administration / ► Plugins / ► Web services / ► API Documentation</code></p>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[Getting started with Sculpin]]></title>
-            <link href="/blog/2017/03/28/getting-started-with-sculpin"/>
-            <updated>2017-03-28T00:00:00+00:00</updated>
-            <id>/blog/2017/03/28/getting-started-with-sculpin</id>
-            <content type="html"><![CDATA[<h2 id="download%2C-install-and-configure">Download, install and configure</h2>
-
-<p><a href="https://sculpin.io/">Sculpin</a> is a static site generator written in PHP. It converts Markdown files, Twig templates and standard HTML into a static HTML site that can be easily deployed.
-As this site, it can be hosted on GITHUB pages.</p>
-
-<ul>
-<li>fork the <a href="https://github.com/sculpin/sculpin-blog-skeleton">sculpin-blog-skeleton repo</a></li>
-<li><p>clone the repo and install Sculpin dependencies:</p>
-
-<pre><code> git clone git@github.com:benIT/github-blog.git         
- cd github-blog
- composer install
-</code></pre></li>
-<li><p>edit blog settings in app/config/sculpin_site.yml</p></li>
-<li><p>run a local webserver on port 8000 to see your edits</p>
-
-<pre><code> php vendor/bin/sculpin generate --watch --server
-</code></pre></li>
-<li><p>add content in <code>/source/_posts</code> folder</p></li>
-</ul>
-
-<h2 id="create-content">Create content</h2>
-
-<ul>
-<li>edit your post content</li>
-<li>check result at localhost:8000</li>
-<li><p>when result is enough good, generate site using :</p>
-
-<pre><code>php vendor/bin/sculpin generate --env=prod
-</code></pre></li>
-<li><p>Your site html content should be available at <code>output_prod</code>, it's the content of that folder that must be hosted on your github page</p></li>
-</ul>
-
-<h2 id="deploy-on-github">Deploy on github</h2>
-
-<h3 id="about-github-pages">About github pages</h3>
-
-<p>You can host html generated  at 3 different locations :</p>
-
-<ul>
-<li>on <code>master</code> branch </li>
-<li>or <code>master</code> branch in <code>docs</code> folder</li>
-<li><p>on <code>gh-pages</code> branch</p>
-
-<p><strong>But for your personal pages, you can only host in repo named <code>benit.github.io</code> on the <code>master</code> branch. 
-This means, that we need 2 repos : one for source control and another one for hosting our github pages.</strong>
-Thus, I create the following repos : <code>github-blog.git</code> and <code>benit.github.io</code></p></li>
-</ul>
-
-<h3 id="how-to-publish-the-content-to-the-repo-that-hosts-your-github-pages-%3F">How to publish the content to the repo that hosts your github pages ?</h3>
-
-<p>I edit <a href="https://github.com/benIT/github-blog/blob/master/publish.sh">the shell script named <code>publish.sh</code></a>.
- The script is in charge of:</p>
-
-<ul>
-<li>generating the html</li>
-<li>rsyncing the <code>output_prod</code> folder of the source control repo with the <code>benit.github.io</code>repo. </li>
-<li>commiting on the 2 repos with the same commit message</li>
-<li>pushing on the 2 repo</li>
-</ul>
-
-<p>Usage:</p>
-
-<pre><code>./publish.sh "edit post about Setting up a cool php development environment"
-</code></pre>
 ]]></content>
         </entry>
     </feed>

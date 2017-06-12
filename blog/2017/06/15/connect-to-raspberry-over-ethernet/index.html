@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Category Archive "linux" &mdash; benIT &mdash; </title>
+        <title>Connect to raspberry pi from linux host using a simple ethernet cable &mdash; benIT &mdash; </title>
         <meta charset="utf-8">
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="alternate" type="application/atom+xml" href="/blog/categories/linux.xml" title="benIT 'linux' category feed" />
-    <meta name="robots" content="noindex, follow">
+            <meta name="robots" content="index, follow">
         <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="/css/style.css" rel="stylesheet" type="text/css" />
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -70,26 +69,67 @@
         <div class="mainContent container">
             <div class="row-fluid">
                 <div class="span8">
-                    <h2>"linux"</h2>
-        <h3>June 2017</h3>
-<article>
-  <div><a href="/blog/2017/06/15/connect-to-raspberry-over-ethernet">Connect to raspberry pi from linux host using a simple ethernet cable</a></div>
-</article>
-<article>
-  <div><a href="/blog/2017/06/13/setting-up-a-debian-dev-machine">Setting up a debian dev machine</a></div>
-</article>
-<article>
-  <div><a href="/blog/2017/06/12/setting-up-git-with-multiple-accounts">Setting up git with multiple accounts</a></div>
-</article>
-<article>
-  <div><a href="/blog/2017/06/12/install-vagrant">Installing Vagrant</a></div>
-</article>
-<article>
-  <div><a href="/blog/2017/06/12/create-a-debian-iso-live-usb-drive">Create a debian live usb drive</a></div>
-</article>
+                        <article>
+        <header>
+            <h2>Connect to raspberry pi from linux host using a simple ethernet cable <small>post</small></h2>
+        </header>
+        <div>
+            <h2 id="on-debian-host-machine">On debian host machine</h2>
 
-<div>
-</div>
+<ul>
+<li><p>run <code>gnome-nettool</code> and share the connection:
+<img src="/images/wired.png" alt="network conf" /></p></li>
+<li><p>Mount the raspberry pi SD card, and edit the <code>cmdline.txt</code> file adding:</p>
+
+<p>ip=169.254.6.100</p></li>
+<li><p><em>The pi and the debian PC must on the same subnetwork ie: <code>169.254.6.XXX</code></em></p></li>
+<li><p>Check the connectivity:</p>
+
+<pre><code>ping 169.254.6.100
+</code></pre></li>
+</ul>
+
+<h2 id="on-raspberry-pi-machine">On raspberry pi machine</h2>
+
+<p>-insert SD card and boot pi</p>
+
+<ul>
+<li><p>enable ssh:</p>
+
+<pre><code>sudo raspi-config 
+</code></pre></li>
+<li><p><code>Interfacing Options</code> then <code>SSH</code></p></li>
+</ul>
+
+<h2 id="ssh-it-%21">SSH IT !</h2>
+
+<p>From the debian pc:</p>
+
+<pre><code>ssh pi@169.254.6.100
+
+
+nc-automount in sudo nextcloudpi-config
+
+format usb-drive as ext4 `msdos` partition table if necessary using gparted
+</code></pre>
+
+        </div>
+                    <p class="categories">
+            Categories:
+                        <a href="/blog/categories/system">system</a>,                         <a href="/blog/categories/linux">linux</a>                        </p>
+                            <p class="tags">
+            Tags:
+                        <a href="/blog/tags/debian">debian</a>,                         <a href="/blog/tags/raspberry">raspberry</a>                        </p>
+        
+                    <nav class="article">
+                <ul>
+                                                                <li>Previous: <a class="previous" href="/blog/2017/06/13/setting-up-a-debian-dev-machine" title="Setting up a debian dev machine"><span class="title">Setting up a debian dev machine</span></a></li>
+                                    </ul>
+            </nav>
+            </article>
+
+
+
                 </div>
                 <!--<div class="span4 sidebar">-->
                     <!--<div class="well">-->

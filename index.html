@@ -71,6 +71,55 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2017/06/15/connect-to-raspberry-over-ethernet">Connect to raspberry pi from linux host using a simple ethernet cable</a></h2>
+        </header>
+        <div>
+            <h2 id="on-debian-host-machine">On debian host machine</h2>
+
+<ul>
+<li><p>run <code>gnome-nettool</code> and share the connection:
+<img src="/images/wired.png" alt="network conf" /></p></li>
+<li><p>Mount the raspberry pi SD card, and edit the <code>cmdline.txt</code> file adding:</p>
+
+<p>ip=169.254.6.100</p></li>
+<li><p><em>The pi and the debian PC must on the same subnetwork ie: <code>169.254.6.XXX</code></em></p></li>
+<li><p>Check the connectivity:</p>
+
+<pre><code>ping 169.254.6.100
+</code></pre></li>
+</ul>
+
+<h2 id="on-raspberry-pi-machine">On raspberry pi machine</h2>
+
+<p>-insert SD card and boot pi</p>
+
+<ul>
+<li><p>enable ssh:</p>
+
+<pre><code>sudo raspi-config 
+</code></pre></li>
+<li><p><code>Interfacing Options</code> then <code>SSH</code></p></li>
+</ul>
+
+<h2 id="ssh-it-%21">SSH IT !</h2>
+
+<p>From the debian pc:</p>
+
+<pre><code>ssh pi@169.254.6.100
+
+
+nc-automount in sudo nextcloudpi-config
+
+format usb-drive as ext4 `msdos` partition table if necessary using gparted
+</code></pre>
+
+        </div>
+                    <p class="tags">
+            Tags:
+                        <a href="/blog/tags/debian">debian</a>,                         <a href="/blog/tags/raspberry">raspberry</a>                        </p>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2017/06/13/setting-up-a-debian-dev-machine">Setting up a debian dev machine</a></h2>
         </header>
         <div>
@@ -192,32 +241,6 @@ Host bitbucket.org
  PreferredAuthentications publickey
  IdentityFile ~/.ssh/id_rsa_bitbucket
 </code></pre>
-
-        </div>
-                    <p class="tags">
-            Tags:
-                        <a href="/blog/tags/debian">debian</a>                        </p>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2017/06/12/install-vagrant">Installing Vagrant</a></h2>
-        </header>
-        <div>
-            <h2 id="install-virtual-box">Install virtual box</h2>
-
-<pre><code>sudo apt-get install virtualbox
-</code></pre>
-
-<h2 id="install-vagrant">Install vagrant</h2>
-
-<ul>
-<li><p>Download <a href="https://www.vagrantup.com/downloads.html">Vagrant deb package</a>:</p>
-
-<pre><code>cd /tmp/mozilla_ben0
-dpkg -i vagrant_1.9.5_x86_64.deb
-</code></pre></li>
-<li><p>Clone your vagrant repo and install it!</p></li>
-</ul>
 
         </div>
                     <p class="tags">

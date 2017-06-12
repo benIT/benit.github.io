@@ -3,9 +3,54 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/tags/debian.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-06-12T09:10:38+00:00</updated>
+    <updated>2017-06-12T15:13:53+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Connect to raspberry pi from linux host using a simple ethernet cable]]></title>
+            <link href="/blog/2017/06/15/connect-to-raspberry-over-ethernet"/>
+            <updated>2017-06-15T00:00:00+00:00</updated>
+            <id>/blog/2017/06/15/connect-to-raspberry-over-ethernet</id>
+            <content type="html"><![CDATA[<h2 id="on-debian-host-machine">On debian host machine</h2>
+
+<ul>
+<li><p>run <code>gnome-nettool</code> and share the connection:
+<img src="/images/wired.png" alt="network conf" /></p></li>
+<li><p>Mount the raspberry pi SD card, and edit the <code>cmdline.txt</code> file adding:</p>
+
+<p>ip=169.254.6.100</p></li>
+<li><p><em>The pi and the debian PC must on the same subnetwork ie: <code>169.254.6.XXX</code></em></p></li>
+<li><p>Check the connectivity:</p>
+
+<pre><code>ping 169.254.6.100
+</code></pre></li>
+</ul>
+
+<h2 id="on-raspberry-pi-machine">On raspberry pi machine</h2>
+
+<p>-insert SD card and boot pi</p>
+
+<ul>
+<li><p>enable ssh:</p>
+
+<pre><code>sudo raspi-config 
+</code></pre></li>
+<li><p><code>Interfacing Options</code> then <code>SSH</code></p></li>
+</ul>
+
+<h2 id="ssh-it-%21">SSH IT !</h2>
+
+<p>From the debian pc:</p>
+
+<pre><code>ssh pi@169.254.6.100
+
+
+nc-automount in sudo nextcloudpi-config
+
+format usb-drive as ext4 `msdos` partition table if necessary using gparted
+</code></pre>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Setting up a debian dev machine]]></title>
             <link href="/blog/2017/06/13/setting-up-a-debian-dev-machine"/>
