@@ -85,14 +85,15 @@
 <ul>
 <li>install gparted: <code>sudo apt-get install gparted</code></li>
 <li>identify your usb drive with: <code>fdisk -l</code></li>
-<li>format it as <code>ntfs</code>(so the drive can be used with windows too)</li>
-<li>flag it as 'boot'</li>
+<li>format it as <code>ntfs</code>(so the drive can be used with windows too) or for linux exclusive usage as <code>ext4</code></li>
+<li>flag it as <code>boot</code></li>
 <li>unmount the key</li>
+<li><a href="http://elinux.org/RPi_Adding_USB_Drives">here is a great resource</a> about partition and flashdrive</li>
 </ul>
 
 <h2 id="burn-it-to-a-usb-flash-drive">Burn it to a usb flash drive</h2>
 
-<p>Copy iso file to key using <code>dd</code></p>
+<p>Copy iso file to key using <code>dd</code> (~5 minutes ):</p>
 
 <pre><code>sudo dd bs=4M if=debian-live-8.8.0-amd64-gnome-desktop.iso of=/dev/sdb
 </code></pre>
@@ -104,6 +105,8 @@
 </ul>
 
 <h2 id="set-up-sources.list">Set up sources.list</h2>
+
+<p><strong>The following rows does not deal with a debian flash live install but are important when you install debian whithout internet.</strong></p>
 
 <p>After install from live usb whitout internet, edit as follow <code>/etc/apt/sources.list</code>
     # deb cdrom:[Debian GNU/Linux 8 <em>Jessie</em> - Official Snapshot amd64 LIVE/INSTALL Binary 20170506-15:01]/ jessie main</p>
@@ -136,7 +139,7 @@ deb http://security.debian.org/ jessie/updates main contrib non-free
 
 <h2 id="sudoerfile">sudoerfile</h2>
 
-<p>Add the existing 'ben' user to the 'sudo' group:</p>
+<p>Add the existing <code>ben</code> user to the <code>sudo</code> group:</p>
 
 <pre><code>su
 adduser ben sudo
