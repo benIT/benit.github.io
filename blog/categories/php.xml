@@ -3,7 +3,7 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/categories/php.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-06-13T14:00:53+00:00</updated>
+    <updated>2017-06-15T06:50:33+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -67,25 +67,7 @@
 
 <p>I use XDEBUG embed in vagrant VM with PHPSTORM on host machine which is very very very nice.</p>
 
-<ul>
-<li><p><a href="https://confluence.jetbrains.com/display/PhpStorm/Working+with+Advanced+Vagrant+features+in+PhpStorm">ressource to set up vagrant with phpstorm</a></p></li>
-<li><p><a href="https://www.jetbrains.com/phpstorm/marklets/">bookmarle generator</a></p></li>
-</ul>
-
-<p>On the guest machine :</p>
-
-<pre><code>    sudo apt-get install -y php-pear php5-dev
-    sudo pecl install xdebug
-</code></pre>
-
-<p>php.ini file:</p>
-
-<pre><code>    [xdebug]
-    zend_extension=/usr/lib/php5/20131226/xdebug.so
-    xdebug.remote_enable=1
-    xdebug.remote_host=10.0.2.2
-    xdebug.remote_port=9000
-</code></pre>
+<p><a href="/blog/2017/06/15/setup-xdebug-phpstorm-vagrant">Look at this article</a> to setup xdebug/vagrant/phpstorm.</p>
 
 <h2 id="set-up-a-mailer">Set up a mailer</h2>
 

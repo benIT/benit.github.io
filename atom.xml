@@ -3,14 +3,65 @@
     <title><![CDATA[benIT]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-06-13T14:00:53+00:00</updated>
+    <updated>2017-06-15T06:50:33+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
-            <title type="html"><![CDATA[Install a nextcloud box with NextCloudPi]]></title>
-            <link href="/blog/2017/06/15/install-a-nextcloudbox"/>
+            <title type="html"><![CDATA[Configure xdebug with phpstorm with a vagrant box]]></title>
+            <link href="/blog/2017/06/15/setup-xdebug-phpstorm-vagrant"/>
             <updated>2017-06-15T00:00:00+00:00</updated>
-            <id>/blog/2017/06/15/install-a-nextcloudbox</id>
+            <id>/blog/2017/06/15/setup-xdebug-phpstorm-vagrant</id>
+            <content type="html"><![CDATA[<p>After loosing a few hours reconfiguring xdebug, phpstorm and vagrant, I found this <a href="https://www.theodo.fr/blog/2016/08/configure-xdebug-phpstorm-vagrant/">great ressource</a>. Here are my notes about it:</p>
+
+<p><em>phpstorm is installed on the hostmachine and the app is running in a vagrant box.</em></p>
+
+<h2 id="vagrant-guest-machine-setup">Vagrant guest machine setup</h2>
+
+<pre><code>sudo apt-get install php5-xdebug
+</code></pre>
+
+<p>Edit <code>/etc/php5/mods-available/xdebug.ini</code> :</p>
+
+<pre><code>xdebug.remote_enable=true
+xdebug.remote_connect_back=true
+xdebug.idekey=MY_AWESOME_KEY
+</code></pre>
+
+<h2 id="phpstorm-setup">Phpstorm setup</h2>
+
+<h3 id="setup-%27php-remote-debug%27-configuration">Setup 'php remote debug' configuration</h3>
+
+<p><img src="/images/xdebug/storm-xdebug-vagrant-1-remote-debug-conf.png" alt="screenshot" /></p>
+
+<h3 id="setup-%27server%27-configuration">Setup 'server' configuration</h3>
+
+<p><img src="/images/xdebug/storm-xdebug-vagrant-2-server-conf.png" alt="screenshot" /></p>
+
+<h2 id="browser-plugin">Browser plugin</h2>
+
+<ul>
+<li>install a browser <a href="https://addons.mozilla.org/en-US/firefox/addon/the-easiest-xdebug/">plugin such as this one</a></li>
+<li>configure the ide key, here: <code>MY_AWESOME_KEY</code></li>
+<li>it is also possible to use <a href="https://www.jetbrains.com/phpstorm/marklets/">bookmarklets</a> </li>
+</ul>
+
+<h2 id="enjoy%21">Enjoy!</h2>
+
+<ul>
+<li>Puts breakpoints </li>
+<li>Enable cookie using web browser extension or bookmarklet
+<img src="/images/xdebug/storm-xdebug-vagrant-3-breakpoints.png" alt="screenshot" /></li>
+<li>Click on the bug icon called 'debug mode'</li>
+<li>You can now enjoy the debugger (inspect variables, control the execution flow)
+<img src="/images/xdebug/storm-xdebug-vagrant-4-debugger-running.png" alt="screenshot" /></li>
+</ul>
+]]></content>
+        </entry>
+            <entry>
+            <title type="html"><![CDATA[Install a nextcloud box with NextCloudPi]]></title>
+            <link href="/blog/2017/06/14/install-a-nextcloudbox"/>
+            <updated>2017-06-14T00:00:00+00:00</updated>
+            <id>/blog/2017/06/14/install-a-nextcloudbox</id>
             <content type="html"><![CDATA[<p>Here is exposed steps to setup a nextcloud box on RPI <a href="https://ownyourbits.com/2017/02/13/nextcloud-ready-raspberry-pi-image/">consuming the nextCloudPi image</a> . enjoy ;)</p>
 
 <h2 id="nextcloudbox-setup">Nextcloudbox setup</h2>
@@ -112,9 +163,9 @@
         </entry>
             <entry>
             <title type="html"><![CDATA[Connect to raspberry pi from linux host using a simple ethernet cable]]></title>
-            <link href="/blog/2017/06/15/connect-to-raspberry-over-ethernet"/>
-            <updated>2017-06-15T00:00:00+00:00</updated>
-            <id>/blog/2017/06/15/connect-to-raspberry-over-ethernet</id>
+            <link href="/blog/2017/06/14/connect-to-raspberry-over-ethernet"/>
+            <updated>2017-06-14T00:00:00+00:00</updated>
+            <id>/blog/2017/06/14/connect-to-raspberry-over-ethernet</id>
             <content type="html"><![CDATA[<h2 id="on-debian-host-machine">On debian host machine</h2>
 
 <ul>
@@ -609,119 +660,6 @@ In my case, I didn't care about exposing webservices so I choose to <a href="htt
 <h2 id="result">Result</h2>
 
 <p>In the <code>view report</code> tab, you will get the 2 filters!</p>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[Setting up a cool php development environment]]></title>
-            <link href="/blog/2017/03/31/setting-up-a-php-cool-development-environment"/>
-            <updated>2017-03-31T00:00:00+00:00</updated>
-            <id>/blog/2017/03/31/setting-up-a-php-cool-development-environment</id>
-            <content type="html"><![CDATA[<p>In this post, I list the components of my dev environment. This list can be useful when initializing a new project or starting a new job.</p>
-
-<h2 id="make-use-of-a-cool-virtualisation-solution">Make use of a cool virtualisation solution</h2>
-
-<p>I choose <a href="https://www.vagrantup.com/">Vagrant</a>. Take the time to create cool provisioning scripts. In case of problem, you will be able to set up quickly your env!
-<strong>VERSION your provisioning scripts!</strong></p>
-
-<h2 id="reproduce-the-exact-same-stack-than-the-prod-env">Reproduce the exact same stack than the prod env</h2>
-
-<ul>
-<li>OS</li>
-<li>php version</li>
-<li>php.ini conf: /etc/php5/apache2/php.ini &amp; /etc/php5/cli/php.ini</li>
-<li>apache version</li>
-<li>apache VHOST</li>
-<li>db version</li>
-<li>system permission</li>
-</ul>
-
-<p><strong>Keep one VM/project do not host several projects under the same VM. If you need a laboratory VM, create a dedicated one!</strong></p>
-
-<h2 id="turn-on-debug-mode-and-error-printing">Turn on debug mode and error printing</h2>
-
-<p>Edit in php.ini files:</p>
-
-<pre><code>    error_reporting = E_ALL ^ E_NOTICE ^ E_WARNING
-    display_errors = on        
-</code></pre>
-
-<p>Restart apache:</p>
-
-<pre><code>    sudo service apache2 restart
-</code></pre>
-
-<h2 id="make-use-of-a-cool-source-control">Make use of a cool source control</h2>
-
-<p>I use gitlab: git+wiki+tracker. When you commit, do not forget to make link between commit and ticket reference.</p>
-
-<h2 id="make-use-of-a-cool-php-ide">Make use of a cool PHP IDE</h2>
-
-<p>I use <a href="https://www.jetbrains.com/phpstorm/">PHPSTORM</a> because of:</p>
-
-<ul>
-<li>debugger integration</li>
-<li>completion</li>
-<li>external tools integration</li>
-<li>framework integration</li>
-<li>database integration</li>
-<li>live templates</li>
-<li>source control integration</li>
-</ul>
-
-<h2 id="set-up-a-cool-debugger">Set up a cool debugger</h2>
-
-<p>I use XDEBUG embed in vagrant VM with PHPSTORM on host machine which is very very very nice.</p>
-
-<ul>
-<li><p><a href="https://confluence.jetbrains.com/display/PhpStorm/Working+with+Advanced+Vagrant+features+in+PhpStorm">ressource to set up vagrant with phpstorm</a></p></li>
-<li><p><a href="https://www.jetbrains.com/phpstorm/marklets/">bookmarle generator</a></p></li>
-</ul>
-
-<p>On the guest machine :</p>
-
-<pre><code>    sudo apt-get install -y php-pear php5-dev
-    sudo pecl install xdebug
-</code></pre>
-
-<p>php.ini file:</p>
-
-<pre><code>    [xdebug]
-    zend_extension=/usr/lib/php5/20131226/xdebug.so
-    xdebug.remote_enable=1
-    xdebug.remote_host=10.0.2.2
-    xdebug.remote_port=9000
-</code></pre>
-
-<h2 id="set-up-a-mailer">Set up a mailer</h2>
-
-<p>Setting up <code>sendMail</code> is quiet complicated whereas setting up <code>ssmtp</code> is easy.</p>
-
-<p><a href="http://www.tuto-linux.com/tutoriel/ssmtp-installation-et-configuration/">Follow that tutorial to install ssmtp.</a></p>
-
-<p>Do not forget to <a href="https://myaccount.google.com/lesssecureapps?pli=1">edit google lesssecureappsoption</a></p>
-
-<h2 id="set-up-a-cool-build-tool">Set up a cool build tool</h2>
-
-<p>I use <a href="https://www.phing.info/">Phing</a> to build and deploy.</p>
-
-<pre><code>wget -q http://www.phing.info/get/phing-latest.phar
-sudo mv phing-latest.phar /usr/local/lib/phing.phar
-chmod +x /usr/local/lib/phing.phar
-sudo ln -s /usr/local/lib/phing.phar /usr/local/bin/phing
-
-pear install VersionControl_Git-alpha
-</code></pre>
-
-<h2 id="things-that-must-be-under-source-control">Things that must be under source control</h2>
-
-<ul>
-<li>Provisioning script</li>
-<li>Source code</li>
-<li>Build job</li>
-<li><em>VM configuration (alias, conf file) can also be versioned.</em>  </li>
-</ul>
-
-<p><strong>With that you should be able to automate deployment and rebuild solution from scratch!</strong></p>
 ]]></content>
         </entry>
     </feed>

@@ -2,19 +2,25 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc></loc>
-    <lastmod>2017-06-13</lastmod>
+    <lastmod>2017-06-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
     <url>
-    <loc>/blog/2017/06/15/install-a-nextcloudbox</loc>
+    <loc>/blog/2017/06/15/setup-xdebug-phpstorm-vagrant</loc>
     <lastmod>2017-06-15T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
-    <loc>/blog/2017/06/15/connect-to-raspberry-over-ethernet</loc>
-    <lastmod>2017-06-15T00:00:00+00:00</lastmod>
+    <loc>/blog/2017/06/14/install-a-nextcloudbox</loc>
+    <lastmod>2017-06-14T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+    <url>
+    <loc>/blog/2017/06/14/connect-to-raspberry-over-ethernet</loc>
+    <lastmod>2017-06-14T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>

@@ -3,14 +3,14 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/tags/debian.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-06-13T14:00:53+00:00</updated>
+    <updated>2017-06-15T06:50:33+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
             <title type="html"><![CDATA[Install a nextcloud box with NextCloudPi]]></title>
-            <link href="/blog/2017/06/15/install-a-nextcloudbox"/>
-            <updated>2017-06-15T00:00:00+00:00</updated>
-            <id>/blog/2017/06/15/install-a-nextcloudbox</id>
+            <link href="/blog/2017/06/14/install-a-nextcloudbox"/>
+            <updated>2017-06-14T00:00:00+00:00</updated>
+            <id>/blog/2017/06/14/install-a-nextcloudbox</id>
             <content type="html"><![CDATA[<p>Here is exposed steps to setup a nextcloud box on RPI <a href="https://ownyourbits.com/2017/02/13/nextcloud-ready-raspberry-pi-image/">consuming the nextCloudPi image</a> . enjoy ;)</p>
 
 <h2 id="nextcloudbox-setup">Nextcloudbox setup</h2>
@@ -112,9 +112,9 @@
         </entry>
             <entry>
             <title type="html"><![CDATA[Connect to raspberry pi from linux host using a simple ethernet cable]]></title>
-            <link href="/blog/2017/06/15/connect-to-raspberry-over-ethernet"/>
-            <updated>2017-06-15T00:00:00+00:00</updated>
-            <id>/blog/2017/06/15/connect-to-raspberry-over-ethernet</id>
+            <link href="/blog/2017/06/14/connect-to-raspberry-over-ethernet"/>
+            <updated>2017-06-14T00:00:00+00:00</updated>
+            <id>/blog/2017/06/14/connect-to-raspberry-over-ethernet</id>
             <content type="html"><![CDATA[<h2 id="on-debian-host-machine">On debian host machine</h2>
 
 <ul>

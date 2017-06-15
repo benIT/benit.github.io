@@ -71,6 +71,87 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2017/06/12/create-a-debian-iso-live-usb-drive">Create a debian live usb drive</a></h2>
+        </header>
+        <div>
+            <h2 id="download-a-debian-8-iso">Download a debian 8 iso</h2>
+
+<ul>
+<li>Download a debian iso from <a href="https://cdimage.debian.org/debian-cd/current-live/amd64/iso-hybrid/">debian official site</a></li>
+</ul>
+
+<h2 id="format-your-usb-key-and-flag-it-as-bootable">Format your usb key and flag it as bootable</h2>
+
+<ul>
+<li>install gparted: <code>sudo apt-get install gparted</code></li>
+<li>identify your usb drive with: <code>fdisk -l</code></li>
+<li>format it as <code>ntfs</code>(so the drive can be used with windows too) or for linux exclusive usage as <code>ext4</code></li>
+<li>flag it as <code>boot</code></li>
+<li>unmount the key</li>
+<li><a href="http://elinux.org/RPi_Adding_USB_Drives">here is a great resource</a> about partition and flashdrive</li>
+</ul>
+
+<h2 id="burn-it-to-a-usb-flash-drive">Burn it to a usb flash drive</h2>
+
+<p>Copy iso file to key using <code>dd</code> (~5 minutes ):</p>
+
+<pre><code>sudo dd bs=4M if=debian-live-8.8.0-amd64-gnome-desktop.iso of=/dev/sdb
+</code></pre>
+
+<ul>
+<li>eject the key</li>
+<li>restart PC anc check from BIOS that PC will boot from usb devices at first</li>
+<li>install debian</li>
+</ul>
+
+<h2 id="set-up-sources.list">Set up sources.list</h2>
+
+<p><strong>The following rows does not deal with a debian flash live install but are important when you install debian whithout internet.</strong></p>
+
+<p>After install from live usb whitout internet, edit as follow <code>/etc/apt/sources.list</code>
+    # deb cdrom:[Debian GNU/Linux 8 <em>Jessie</em> - Official Snapshot amd64 LIVE/INSTALL Binary 20170506-15:01]/ jessie main</p>
+
+<pre><code>#deb cdrom:[Debian GNU/Linux 8 _Jessie_ - Official Snapshot amd64 LIVE/INSTALL Binary 20170506-15:01]/ jessie main
+
+# Line commented out by installer because it failed to verify:
+#deb http://security.debian.org/ jessie/updates main
+# Line commented out by installer because it failed to verify:
+#deb-src http://security.debian.org/ jessie/updates main
+
+deb http://ftp.fr.debian.org/debian/ jessie main contrib non-free
+deb http://security.debian.org/ jessie/updates main contrib non-free
+</code></pre>
+
+<p>Update the package index:</p>
+
+<pre><code>apt-get update
+</code></pre>
+
+<p>And upgrade packages:</p>
+
+<pre><code>apt-get upgrade
+</code></pre>
+
+<p>Let's check everything is ok by installing a common packages:</p>
+
+<pre><code>apt-get install -y vim git
+</code></pre>
+
+<h2 id="sudoerfile">sudoerfile</h2>
+
+<p>Add the existing <code>ben</code> user to the <code>sudo</code> group:</p>
+
+<pre><code>su
+adduser ben sudo
+</code></pre>
+
+        </div>
+                    <p class="tags">
+            Tags:
+                        <a href="/blog/tags/debian">debian</a>                        </p>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2017/05/29/getting-started-with-npm">Getting started with npm</a></h2>
         </header>
         <div>
@@ -207,76 +288,6 @@ In my case, I didn't care about exposing webservices so I choose to <a href="htt
                     <p class="tags">
             Tags:
                         <a href="/blog/tags/Moodle">Moodle</a>,                         <a href="/blog/tags/angularjs">angularjs</a>                        </p>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2017/04/11/moodle-configurable-reports-filters">Filter functionality in Moodle Configurable Reports</a></h2>
-        </header>
-        <div>
-            <p>This post describes the filter functionality in Moodle Configurable Reports.</p>
-
-<h2 id="create-the-sql-query">Create the sql query</h2>
-
-<pre><code>    SELECT *
-    from prefix_course
-    WHERE
-    1=1
-    %%FILTER_COURSES:prefix_course.id%%
-    %%FILTER_SEARCHTEXT:prefix_course.fullname:~%%
-</code></pre>
-
-<h2 id="add-filter-fields">Add filter fields</h2>
-
-<p>Available filters are located in: <code>components/filters/</code> of Configurable Reports.</p>
-
-<p>In the <code>filters</code> tab:</p>
-
-<ul>
-<li><p>add <code>Courses</code> that will refer to <code>%%FILTER_COURSES:prefix_course.id%%</code></p></li>
-<li><p>add <code>Search text</code> that will refer to <code>%%FILTER_SEARCHTEXT:prefix_course.fullname:~%%</code></p></li>
-</ul>
-
-<h3 id="available-variables">Available variables</h3>
-
-<pre><code>%%CATEGORYID%%
-%%COURSEID%%
-%%CURRENTUSER%%
-%%DEBUG%%
-%%FILTER_VAR%%
-%%STARTTIME%%’,’%%ENDTIME%%
-%%USERID%%
-%%WWWROOT%%
-</code></pre>
-
-<h3 id="available-filters">Available filters</h3>
-
-<pre><code>%%FILTER_CATEGORIES:
-%%FILTER_COURSEMODULEID:
-%%FILTER_COURSEMODULEFIELDS:
-%%FILTER_COURSEMODULE:
-%%FILTER_COURSES:
-%%FILTER_COURSEENROLLEDSTUDENTS:
-%%FILTER_USERS:
-%%FILTER_ROLE:
-%%FILTER_SEARCHTEXT:
-%%FILTER_SEMESTER:
-%%FILTER_STARTTIME:
-%%FILTER_ENDTIME:
-%%FILTER_SUBCATEGORIES:
-%%FILTER_COURSEUSER:
-%%FILTER_SYSTEMUSER:
-%%FILTER_YEARHEBREW:
-%%FILTER_YEARNUMERIC:
-</code></pre>
-
-<h2 id="result">Result</h2>
-
-<p>In the <code>view report</code> tab, you will get the 2 filters!</p>
-
-        </div>
-                    <p class="tags">
-            Tags:
-                        <a href="/blog/tags/Moodle">Moodle</a>                        </p>
             </article>
     <nav>
         <a href="/page/2">Newer Posts</a><br />
