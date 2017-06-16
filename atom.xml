@@ -3,7 +3,7 @@
     <title><![CDATA[benIT]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-06-15T11:50:17+00:00</updated>
+    <updated>2017-06-16T09:04:53+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -28,8 +28,8 @@
 <h2 id="let%27s-tar-db-and-filesystem">Let's tar db and filesystem</h2>
 
 <pre><code>    tar -cvzf moodle-to-import.tgz database-to-import.sql moodle moodledata/
-     exit
-     mv ~/vagrant/vagrant-moodle/shared/moodle-to-import.tgz ~/vagrant/vagrant-moodle-deploy/shared/
+    exit
+    mv ~/vagrant/vagrant-moodle/shared/moodle-to-import.tgz ~/vagrant/vagrant-moodle-deploy/shared/
 </code></pre>
 
 <h2 id="cleanup-the-target-machine">Cleanup the target machine</h2>
