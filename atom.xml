@@ -3,7 +3,7 @@
     <title><![CDATA[benIT]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-06-19T08:43:22+00:00</updated>
+    <updated>2017-06-19T08:50:08+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -208,17 +208,19 @@ You can now ssh the rpi machine:</p>
             <link href="/blog/2017/06/14/connect-to-raspberry-over-ethernet"/>
             <updated>2017-06-14T00:00:00+00:00</updated>
             <id>/blog/2017/06/14/connect-to-raspberry-over-ethernet</id>
-            <content type="html"><![CDATA[<h2 id="on-debian-host-machine">On debian host machine</h2>
+            <content type="html"><![CDATA[<p>This post describes how to connect a RPI to a linux station with a simple ethernet cable.</p>
+
+<h2 id="on-debian-host-machine">On debian host machine</h2>
 
 <ul>
 <li><p>run <code>gnome-nettool</code>, change the edit the wired connection and edit IPv4 settings.</p>
 
 <ul>
 <li><p>Change the <code>DHCP</code> default method 
-<img src="/images/wiredDHCP.png" alt="network conf" /></p>
+<img src="/images/rpi/ethernet-connection/wired-dhcp.png" alt="network conf" /></p>
 
-<p>to 'shared with other computer':
-<img src="/images/wiredShared.png" alt="network conf" /></p></li>
+<p>to <code>shared with other computer</code>:
+<img src="/images/rpi/ethernet-connection/wired-shared.png" alt="network conf" /></p></li>
 </ul></li>
 <li><p>power off the RPI</p>
 
@@ -283,8 +285,6 @@ SSH is enabled and the default password for the 'pi' user has not been changed.
 This is a security risk - please login as the 'pi' user and type 'passwd' to set a new password.
 pi@raspberrypi:~ $
 </code></pre>
-
-<h2 id="consuming-nextcloud">Consuming nextcloud</h2>
 ]]></content>
         </entry>
             <entry>
