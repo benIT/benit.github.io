@@ -3,7 +3,7 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/tags/security.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-07-05T07:28:23+00:00</updated>
+    <updated>2017-07-05T07:55:18+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -87,7 +87,11 @@ chmod g+rwx /media/western-digital-1-to/
 
 <h2 id="nextcloud-trusted-domains">Nextcloud trusted domains</h2>
 
-<p>Edit <code>trusted_domains</code> settings in <code>/var/www/nextcloud/config</code> if needed</p>
+<p>Edit <code>trusted_domains</code> settings in <code>/var/www/nextcloud/config</code> if needed.</p>
+
+<h2 id="enjoy">Enjoy</h2>
+
+<p>That was it! Nextcloud if now fully configured on your RPI, enjoy!</p>
 ]]></content>
         </entry>
             <entry>
