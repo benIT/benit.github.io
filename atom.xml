@@ -3,11 +3,11 @@
     <title><![CDATA[benIT]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-07-07T14:50:47+00:00</updated>
+    <updated>2017-07-07T14:55:44+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
-            <title type="html"><![CDATA[Open source software list]]></title>
+            <title type="html"><![CDATA[Cool open source software for home]]></title>
             <link href="/blog/2017/07/07/open-source-list"/>
             <updated>2017-07-07T00:00:00+00:00</updated>
             <id>/blog/2017/07/07/open-source-list</id>
@@ -36,7 +36,7 @@
 <li><a href="http://keepass.info/">keepass</a>: cannot live without that</li>
 </ul>
 
-<h2 id="internet">Internet</h2>
+<h2 id="web-browser">Web browser</h2>
 
 <ul>
 <li><a href="https://www.mozilla.org/fr/firefox">firefox</a>: a must have</li>
