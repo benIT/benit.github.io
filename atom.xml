@@ -3,9 +3,37 @@
     <title><![CDATA[benIT]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-07-07T14:55:44+00:00</updated>
+    <updated>2017-07-10T12:45:31+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Vagrant share ssh agent between host and guests]]></title>
+            <link href="/blog/2017/07/10/vagrant-share-ssh-agent"/>
+            <updated>2017-07-10T00:00:00+00:00</updated>
+            <id>/blog/2017/07/10/vagrant-share-ssh-agent</id>
+            <content type="html"><![CDATA[<h2 id="why%3F">Why?</h2>
+
+<p>In this way you can share from your host multiple ssh keys without copy/paste its on each VM. All ssh key are centralised and that's better when working with a lot of VM.</p>
+
+<h2 id="how-to%3F">How to?</h2>
+
+<h3 id="on-the-host-side">On the host side</h3>
+
+<p>In <code>~/.ssh/config</code>:</p>
+
+<pre><code>#share ssh agentwith VM
+Host *
+ ForwardAgent yes 
+</code></pre>
+
+<h3 id="on-the-guest-side">On the guest side</h3>
+
+<p>In <code>Vagrantfile</code>:</p>
+
+<pre><code>config.ssh.forward_agent = true
+</code></pre>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Cool open source software for home]]></title>
             <link href="/blog/2017/07/07/open-source-list"/>
@@ -626,28 +654,6 @@ Host bitbucket.org
  PreferredAuthentications publickey
  IdentityFile ~/.ssh/id_rsa_bitbucket
 </code></pre>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[Installing Vagrant]]></title>
-            <link href="/blog/2017/06/12/install-vagrant"/>
-            <updated>2017-06-12T00:00:00+00:00</updated>
-            <id>/blog/2017/06/12/install-vagrant</id>
-            <content type="html"><![CDATA[<h2 id="install-virtual-box">Install virtual box</h2>
-
-<pre><code>sudo apt-get install virtualbox
-</code></pre>
-
-<h2 id="install-vagrant">Install vagrant</h2>
-
-<ul>
-<li><p>Download <a href="https://www.vagrantup.com/downloads.html">Vagrant deb package</a>:</p>
-
-<pre><code>cd /tmp/mozilla_ben0
-dpkg -i vagrant_1.9.5_x86_64.deb
-</code></pre></li>
-<li><p>Clone your vagrant repo and install it!</p></li>
-</ul>
 ]]></content>
         </entry>
     </feed>
