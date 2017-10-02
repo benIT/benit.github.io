@@ -71,6 +71,93 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2017/07/07/open-source-list">Cool open source software for home</a></h2>
+        </header>
+        <div>
+            <p>I spent many years to find a full and cool stack of open source software for home. Here is my personal open source software list, that I really enjoy.</p>
+
+<h2 id="os">OS</h2>
+
+<p>After testing several linux (fedora, opensuse, debian, ubuntu ...), I think the easiest for home are debian based OS:</p>
+
+<ul>
+<li><a href="https://www.debian.org/index.fr.html">linux debian</a>: robust</li>
+<li><a href="https://www.linuxmint.com/">linux mint</a>: like ubuntu without the commercial taste</li>
+</ul>
+
+<h2 id="system">System</h2>
+
+<ul>
+<li><a href="http://gparted.org/">gparted</a>: partition made easy</li>
+<li><a href="http://clonezilla.org/">clonezilla</a>: restore your OS</li>
+</ul>
+
+<h2 id="privacy">Privacy</h2>
+
+<ul>
+<li><a href="https://www.veracrypt.fr/en/Home.html">veracrypt</a>: awesome. No more USB key or sensitive data without that </li>
+<li><a href="http://keepass.info/">keepass</a>: cannot live without that</li>
+</ul>
+
+<h2 id="web-browser">Web browser</h2>
+
+<ul>
+<li><a href="https://www.mozilla.org/fr/firefox">firefox</a>: a must have</li>
+<li><a href="https://www.chromium.org/Home">chromium</a>: powerfull</li>
+</ul>
+
+<h2 id="filesharing">Filesharing</h2>
+
+<ul>
+<li><a href="https://nextcloud.com/">nextcloud</a>: bye bye dropbox</li>
+<li>rsync: backup your data at a friend house</li>
+<li>ssh: connect to a friend house</li>
+</ul>
+
+<h2 id="gps">GPS</h2>
+
+<ul>
+<li><a href="https://sourceforge.net/projects/viking/?SetFreedomCookie">viking</a>: awesome for GPS tracking</li>
+</ul>
+
+<h2 id="office">Office</h2>
+
+<ul>
+<li><a href="https://fr.libreoffice.org/">libreoffice</a>: for documents, spreadsheets</li>
+<li><a href="https://www.mozilla.org/fr/thunderbird/">thunderbird</a>: for mailing and RSS</li>
+</ul>
+
+<h2 id="text-editor">Text editor</h2>
+
+<ul>
+<li><a href="http://www.vim.org/download.php">vim</a>: you must know that stuff</li>
+<li><a href="https://atom.io/">atom</a>: bye bye sublime text</li>
+</ul>
+
+<h2 id="image-editor">Image editor</h2>
+
+<ul>
+<li><a href="https://pinta-project.com/pintaproject/pinta/">pinta</a>: for simple editing</li>
+<li><a href="https://www.gimp.org/fr/">gimp</a>: for complex editing</li>
+</ul>
+
+<h2 id="multimedia">Multimedia</h2>
+
+<ul>
+<li><a href="https://www.videolan.org/vlc/index.fr.html">vlc</a>: this stuff reads and streams everything</li>
+</ul>
+
+<h2 id="website">Website</h2>
+
+<ul>
+<li><a href="https://fr.wordpress.com/">wordpress</a>: cool for associations website</li>
+<li><a href="https://sculpin.io/">sculpin</a>: cool for static content.</li>
+</ul>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2017/07/04/rpi-nexcloud">Installing Nextcloud on RPI device</a></h2>
         </header>
         <div>
@@ -210,58 +297,6 @@ This container has no password, it based on key system. The key has been generat
                     <p class="tags">
             Tags:
                         <a href="/blog/tags/privacy">privacy</a>,                         <a href="/blog/tags/security">security</a>                        </p>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2017/06/15/moodle-migration-procedure.">Moodle migration procedure</a></h2>
-        </header>
-        <div>
-            <p>In this post is described how to export you moodle app and import it on another environment.</p>
-
-<h2 id="export-from-the-source-database">Export from the source database</h2>
-
-<pre><code>     sudo -u postgres pg_dump moodle &gt; /vagrant/shared/dump/moodle-database-exported.sql
-</code></pre>
-
-<h2 id="migrate-database">Migrate database</h2>
-
-<p>Here I sustitute the string 'moodle-dev' by 'moodle-deploy' from 'moodle-database-exported.sql' and write it to 'database-to-import.sql':</p>
-
-<pre><code>     sed 's/moodle-dev/moodle-deploy/g' moodle-database-exported.sql &gt; database-to-import.sql
-</code></pre>
-
-<h2 id="let%27s-tar-db-and-filesystem">Let's tar db and filesystem</h2>
-
-<pre><code>    tar -cvzf moodle-to-import.tgz database-to-import.sql moodle moodledata/
-    exit
-    mv ~/vagrant/vagrant-moodle/shared/moodle-to-import.tgz ~/vagrant/vagrant-moodle-deploy/shared/
-</code></pre>
-
-<h2 id="cleanup-the-target-machine">Cleanup the target machine</h2>
-
-<p>Connect on the target machine. here target database is also named 'moodle':</p>
-
-<pre><code>     cd /vagrant/shared
-     rm -rf moodle moodledata/
-     sudo -u postgres psql -c "DROP DATABASE moodle"
-     sudo -u postgres psql -c "CREATE DATABASE moodle"
-</code></pre>
-
-<h2 id="import-db-and-filesystem-on-the-target-database">Import db and filesystem on the target database</h2>
-
-<pre><code>    sudo tar -xzf moodle-to-import.tgz
-    sudo -u postgres psql --set ON_ERROR_STOP=on moodle &lt; database-to-import.sql
-</code></pre>
-
-<h2 id="migrate-the-config.php-file">Migrate the config.php file</h2>
-
-<pre><code>    sed -i 's/moodle-dev/moodle-deploy/g' moodle/config.php
-</code></pre>
-
-        </div>
-                    <p class="tags">
-            Tags:
-                        <a href="/blog/tags/moodle">moodle</a>                        </p>
             </article>
     <nav>
         <a href="/.">Newer Posts</a><br />
