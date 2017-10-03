@@ -3,7 +3,7 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/categories/pgsql.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-10-02T09:38:48+00:00</updated>
+    <updated>2017-10-03T14:14:17+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -124,6 +124,32 @@
  public | video       | table | videoapp | 8192 bytes | 
  public | videos_tags | table | videoapp | 0 bytes    | 
 (4 rows)
+</code></pre>
+
+<h2 id="config-files">Config files</h2>
+
+<h2 id="determine-which-config-file-is-in-use">Determine which config file is in use</h2>
+
+<pre><code>SHOW config_file ;
+</code></pre>
+
+<h2 id="determine-which-hba-file-is-in-use">Determine which hba file is in use</h2>
+
+<pre><code>SHOW hba_file;
+</code></pre>
+
+<h2 id="connection">Connection</h2>
+
+<h3 id="remote-connection">Remote connection</h3>
+
+<p>In <code>postgresql.conf</code>:</p>
+
+<pre><code>listen_addresses = '*'
+</code></pre>
+
+<p>In <code>pg_hba.conf</code>:</p>
+
+<pre><code>host  all  all 0.0.0.0/0 md5
 </code></pre>
 ]]></content>
         </entry>
