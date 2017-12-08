@@ -3,13 +3,13 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/tags/dev.xml" rel="self"/>
     <link href="/"/>
-    <updated>2017-11-13T08:23:41+00:00</updated>
+    <updated>2017-12-08T09:46:41+01:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
             <title type="html"><![CDATA[Getting started with npm]]></title>
             <link href="/blog/2017/05/29/getting-started-with-npm"/>
-            <updated>2017-05-29T00:00:00+00:00</updated>
+            <updated>2017-05-29T00:00:00+02:00</updated>
             <id>/blog/2017/05/29/getting-started-with-npm</id>
             <content type="html"><![CDATA[<h2 id="npm-global-configuration-file">npm global configuration file</h2>
 
