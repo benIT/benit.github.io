@@ -76,6 +76,8 @@
         <div>
             <h2 id="memcached-server-side">Memcached server side</h2>
 
+<p>This server has private @IP : 192.168.33.14</p>
+
 <h3 id="install-memcached%3A">Install memcached:</h3>
 
 <pre><code>sudo apt-get install memcached
@@ -96,6 +98,8 @@
 </code></pre>
 
 <h2 id="web-server-side">Web server side</h2>
+
+<p>This server has private @IP : 192.168.33.11</p>
 
 <h3 id="install-php-extension">Install PHP extension</h3>
 
@@ -153,6 +157,7 @@ print_r($_COOKIE);
 
 <pre><code>$mem = new Memcached();
 $mem-&gt;addServer("192.168.33.14", 11211);
+$result = $mem-&gt;get("blah");
 if ($result) {
     echo $result;
 } else {
@@ -161,7 +166,7 @@ if ($result) {
 }   
 </code></pre>
 
-<p>## Sources</p>
+<h2 id="sources">Sources</h2>
 
 <ul>
 <li>https://www.digitalocean.com/community/tutorials/how-to-share-php-sessions-on-multiple-memcached-servers-on-ubuntu-14-04</li>
