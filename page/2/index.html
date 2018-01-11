@@ -71,6 +71,46 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2017/11/09/moodle-activate-debug-using-sql">Moodle 3.X: activate debug whithout GUI</a></h2>
+        </header>
+        <div>
+            <p>If you need to activate debug but you cannot access moodle admin page, this article is for you:</p>
+
+<h2 id="step-1%3A-note-original-settings">Step 1: note original settings</h2>
+
+<pre><code>SELECT name, value
+FROM mdl_config
+where name ='debug' or name ='debugdisplay'
+;
+</code></pre>
+
+<p>for instance :</p>
+
+<pre><code>debug   0
+debugdisplay    0
+</code></pre>
+
+<h2 id="step-2-%3A-setup-debug-config-in-db">Step 2 : setup debug config in db</h2>
+
+<pre><code>UPDATE mdl_config SET VALUE = 32767 WHERE name = 'debug';
+UPDATE mdl_config SET VALUE = 1 WHERE name = 'debugdisplay';
+</code></pre>
+
+<h2 id="step-3%3A-clear-cache-from-cli">Step 3: clear cache from CLI</h2>
+
+<pre><code>php  moodle/admin/cli/purge_caches.php
+</code></pre>
+
+<h2 id="step-4%3A-restore-original-settings">Step 4: restore original settings</h2>
+
+<pre><code>UPDATE mdl_config SET VALUE = 0 WHERE name = 'debug';
+UPDATE mdl_config SET VALUE = 0 WHERE name = 'debugdisplay';
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2017/11/06/ssh-key-authentication">SSH key authentication</a></h2>
         </header>
         <div>
@@ -178,154 +218,6 @@ cat /etc/apache2/.htpasswd
 
         </div>
             </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2017/09/28/postgresql-survival-sheet">PostgreSQL survival sheet</a></h2>
-        </header>
-        <div>
-            <p>In this post, the most common pgsql commands that I use are listed. This is not really interesting but I'm bored of asking google for it every week!</p>
-
-<h2 id="start-psql-command-line-utility">Start psql command line utility</h2>
-
-<p>Using the <code>postgres</code> superuser:</p>
-
-<pre><code>sudo -u postgres psql
-</code></pre>
-
-<h2 id="exit">Exit</h2>
-
-<pre><code>postgres=# \q
-</code></pre>
-
-<h2 id="list-databases">List databases</h2>
-
-<pre><code>postgres=# \l+
-</code></pre>
-
-<p>output:</p>
-
-<pre><code>                                                                    List of databases
-    Name    |  Owner   | Encoding |   Collate   |    Ctype    |   Access privileges   |  Size   | Tablespace |                Description                 
-------------+----------+----------+-------------+-------------+-----------------------+---------+------------+--------------------------------------------
- clipbucket | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 6532 kB | pg_default | 
- moodle     | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 6532 kB | pg_default | 
- postgres   | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 6532 kB | pg_default | default administrative connection database
- template0  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +| 6409 kB | pg_default | unmodifiable empty database
-            |          |          |             |             | postgres=CTc/postgres |         |            | 
- template1  | postgres | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/postgres          +| 6532 kB | pg_default | default template for new databases
-            |          |          |             |             | postgres=CTc/postgres |         |            | 
- testdb     | testdb   | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 6724 kB | pg_default | 
- videoapp   | videoapp | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 6724 kB | pg_default | 
-(7 rows)
-</code></pre>
-
-<h2 id="drop-database">Drop database</h2>
-
-<pre><code>postgres=# DROP DATABASE testdeploy;
-</code></pre>
-
-<p>output:</p>
-
-<pre><code>postgres=# DROP DATABASE
-</code></pre>
-
-<h2 id="list-users">List users</h2>
-
-<pre><code>postgres=# \du+
-</code></pre>
-
-<p>output :</p>
-
-<pre><code>                                   List of roles
-   Role name    |                   Attributes                   | Member of | Description 
-----------------+------------------------------------------------+-----------+-------------
- clipbucket     |                                                | {}        | 
- manuel         | Create DB                                      | {}        | 
- moodle         |                                                | {}        | 
- postgres       | Superuser, Create role, Create DB, Replication | {}        | 
- testdb         | Create DB                                      | {}        | 
- testdeploy     | Create DB                                      | {}        | 
- testdeploytest | Create DB                                      | {}        | 
- videoapp       | Create DB                                      | {}        | 
-</code></pre>
-
-<h2 id="drop-user">Drop user</h2>
-
-<pre><code>postgres=# DROP USER testdeploy;
-</code></pre>
-
-<p>output:</p>
-
-<pre><code>DROP ROLE
-</code></pre>
-
-<h2 id="create-user">Create user</h2>
-
-<pre><code>postgres=# CREATE USER videoapp WITH PASSWORD 'videoapp' CREATEDB ;
-</code></pre>
-
-<p>output:</p>
-
-<pre><code>CREATE ROLE
-</code></pre>
-
-<h2 id="list-db-tables">List DB tables</h2>
-
-<h3 id="switch-user">Switch user</h3>
-
-<pre><code>postgres=# \c videoapp
-</code></pre>
-
-<p>output:</p>
-
-<pre><code>You are now connected to database "videoapp" as user "postgres".
-</code></pre>
-
-<h3 id="list-tables">List tables</h3>
-
-<pre><code>videoapp=# \dt+
-</code></pre>
-
-<p>output:</p>
-
-<pre><code>                         List of relations
- Schema |    Name     | Type  |  Owner   |    Size    | Description 
---------+-------------+-------+----------+------------+-------------
- public | fos_user    | table | videoapp | 8192 bytes | 
- public | tag         | table | videoapp | 0 bytes    | 
- public | video       | table | videoapp | 8192 bytes | 
- public | videos_tags | table | videoapp | 0 bytes    | 
-(4 rows)
-</code></pre>
-
-<h2 id="config-files">Config files</h2>
-
-<h2 id="determine-which-config-file-is-in-use">Determine which config file is in use</h2>
-
-<pre><code>SHOW config_file ;
-</code></pre>
-
-<h2 id="determine-which-hba-file-is-in-use">Determine which hba file is in use</h2>
-
-<pre><code>SHOW hba_file;
-</code></pre>
-
-<h2 id="connection">Connection</h2>
-
-<h3 id="remote-connection">Remote connection</h3>
-
-<p>In <code>postgresql.conf</code>:</p>
-
-<pre><code>listen_addresses = '*'
-</code></pre>
-
-<p>In <code>pg_hba.conf</code>:</p>
-
-<pre><code>host  all  all 0.0.0.0/0 md5
-</code></pre>
-
-        </div>
-            </article>
     <nav>
         <a href="/.">Newer Posts</a><br />
         <a href="/page/3">Older Posts</a><br />
@@ -346,7 +238,7 @@ cat /etc/apache2/.htpasswd
             </div>
         </div>
         <footer class="container">
-            &copy; 2017 benIT
+            &copy; 2018 benIT
         </footer>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

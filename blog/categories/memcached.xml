@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title><![CDATA[benIT]]></title>
+    <link href="/blog/categories/memcached.xml" rel="self"/>
+    <link href="/"/>
+    <updated>2018-01-11T14:03:38+01:00</updated>
+    <id>/</id>
+        <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Setting up a memcached server with PHP7.X and a NGINX webserver]]></title>
+            <link href="/blog/2018/01/11/php7-nginx-memcached-session"/>
+            <updated>2018-01-11T00:00:00+01:00</updated>
+            <id>/blog/2018/01/11/php7-nginx-memcached-session</id>
+            <content type="html"><![CDATA[<h2 id="memcached-server-side">Memcached server side</h2>
+
+<h3 id="install-memcached%3A">Install memcached:</h3>
+
+<pre><code>sudo apt-get install memcached
+</code></pre>
+
+<p>In <code>/etc/memcached.conf</code>, set up memory to 256 Mo:</p>
+
+<pre><code>-m 256
+</code></pre>
+
+<p>In <code>/etc/memcached.conf</code>, set up listening private @IP of the server:</p>
+
+<pre><code># Specify which IP address to listen on. The default is to listen on all IP addresses
+# This parameter is one of the only security measures that memcached has, so make sure
+# it's listening on a firewalled interface.
+#-l 127.0.0.2
+-l 192.168.33.14
+</code></pre>
+
+<h2 id="web-server-side">Web server side</h2>
+
+<h3 id="install-php-extension">Install PHP extension</h3>
+
+<p>On the server that hosts nginx + php7.0:</p>
+
+<pre><code>sudo apt-get install -y php-memcached
+</code></pre>
+
+<h3 id="configure-php">Configure PHP</h3>
+
+<p>In <code>/etc/php/7.0/fpm/php.ini</code>:</p>
+
+<pre><code>[Session]
+; Handler used to store/retrieve data.
+; http://php.net/session.save-handler
+#session.save_handler = files
+session.save_handler = memcached
+session.save_path = 'tcp://192.162.33.14:11211'
+</code></pre>
+
+<h3 id="restart-services">Restart services</h3>
+
+<pre><code>sudo service php7.0-fpm restart &amp;&amp; sudo service nginx restart
+</code></pre>
+
+<h3 id="check-config">Check config</h3>
+
+<p>Create a phpinfo.php that calls <code>phpinfo()</code> and check memcached configuration.</p>
+
+<h3 id="checking">Checking</h3>
+
+<h3 id="checking-sessions-are-well-handled-by-memcached">Checking sessions are well handled by memcached</h3>
+
+<p>Let's write a simple script to check sessions:</p>
+
+<pre><code>session_start();
+if(!isset($_SESSION['visit']))
+{   
+    echo "This is the first time you're visiting this server\n";
+    $_SESSION['visit'] = 0;
+}   
+else
+        echo "Your number of visits: ".$_SESSION['visit'] . "\n";
+
+$_SESSION['visit']++;
+
+echo "Server IP: ".$_SERVER['SERVER_ADDR'] . "\n";
+echo "Client IP: ".$_SERVER['REMOTE_ADDR'] . "\n";
+print_r($_COOKIE);
+</code></pre>
+
+<h3 id="checking-memcached-key%2Fvalue-server">Checking memcached key/value server</h3>
+
+<p>Let's write a simple script to key/value access:</p>
+
+<pre><code>$mem = new Memcached();
+$mem-&gt;addServer("192.168.33.14", 11211);
+if ($result) {
+    echo $result;
+} else {
+    echo "No matching key found yet. Let's start adding that now!";
+    $mem-&gt;set("blah", "I am data!  I am held in memcached!") or die("Couldn't save anything to memcached...");
+}   
+</code></pre>
+]]></content>
+        </entry>
+    </feed>
