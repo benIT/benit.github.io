@@ -3,7 +3,7 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/categories/memcached.xml" rel="self"/>
     <link href="/"/>
-    <updated>2018-01-11T14:03:38+01:00</updated>
+    <updated>2018-01-11T14:08:18+01:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -97,6 +97,13 @@ if ($result) {
     $mem-&gt;set("blah", "I am data!  I am held in memcached!") or die("Couldn't save anything to memcached...");
 }   
 </code></pre>
+
+<p>## Sources</p>
+
+<ul>
+<li>https://www.digitalocean.com/community/tutorials/how-to-share-php-sessions-on-multiple-memcached-servers-on-ubuntu-14-04</li>
+<li>http://www.servermom.org/install-use-memcached-nginx-php-7-ubuntu-16-04/3670/</li>
+</ul>
 ]]></content>
         </entry>
     </feed>
