@@ -3,7 +3,7 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/categories/memcached.xml" rel="self"/>
     <link href="/"/>
-    <updated>2018-01-11T16:12:54+01:00</updated>
+    <updated>2018-01-11T16:21:24+01:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -120,7 +120,7 @@ if ($result) {
             <link href="/blog/2018/01/11/configure-moodle-session-handling-with-memcached"/>
             <updated>2018-01-11T00:00:00+01:00</updated>
             <id>/blog/2018/01/11/configure-moodle-session-handling-with-memcached</id>
-            <content type="html"><![CDATA[<p>This procedure has been tested on Moodle <a href="https://github.com/moodle/moodle/commit/7223cd2518ad3b37901b736d6b62e7badd4ecaa1">version 3.0.6+</a> with a dedicated memcached server which @IP:port is 192.168.33.14:11211</p>
+            <content type="html"><![CDATA[<p>This procedure has been tested on Moodle <a href="https://github.com/moodle/moodle/commit/7223cd2518ad3b37901b736d6b62e7badd4ecaa1">version 3.0.6+</a> with a dedicated memcached server which @IP:port is 192.168.33.14:11211.</p>
 
 <h2 id="set-up-a--memcached-server">Set up a  memcached server</h2>
 
