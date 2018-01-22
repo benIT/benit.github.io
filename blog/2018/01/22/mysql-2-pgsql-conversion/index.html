@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>SSH key authentication &mdash; benIT &mdash; open source &amp; technical notes</title>
+        <title>mySQL to postgreSQL schema conversion &mdash; benIT &mdash; open source &amp; technical notes</title>
         <meta charset="utf-8">
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -71,44 +71,77 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2>SSH key authentication <small>post</small></h2>
+            <h2>mySQL to postgreSQL schema conversion <small>post</small></h2>
         </header>
         <div>
-            <p>Access your server using ssh key authentication.</p>
+            <h2 id="purpose">Purpose</h2>
 
-<p>If you loose your time, typing password, this is for you:</p>
+<p>I was looking for a tool that convert a mysql db to a pgsql one.
+<a href="https://github.com/philipsoutham/py-mysql2pgsql">philipsoutham/py-mysql2pgsql</a> does the trick and saved my day!</p>
 
-<h2 id="generate-ssh-authentication-keys-on-the-client-side">Generate ssh authentication keys on the client side</h2>
+<h2 id="install">Install</h2>
 
-<pre><code>ssh-keygen -t rsa
+<pre><code>sudo apt-get install python-pip
+pip install py-mysql2pgsql
 </code></pre>
 
-<h2 id="create-a-.ssh-folder-on-the-server">Create a .ssh folder on the server</h2>
+<h2 id="configure">Configure</h2>
 
-<pre><code>ssh pi@192.168.1.84 mkdir -p .ssh
+<p>Edit configuration in <code>mysql2pgsql.yml</code></p>
+
+<pre><code># if a socket is specified we will use that
+# if tcp is chosen you can use compression
+mysql:
+ hostname: localhost
+ port: 3306
+ socket: /var/run/mysqld/mysqld.sock
+ #socket: /tmp/mysql.sock
+ username: emedia
+ password: emedia
+ database: emedia
+ compress: false
+destination:
+ # if file is given, output goes to file, else postgres
+ file: /vagrant/shared/migrationMysql2Pgsql.sql
+ postgres:
+  hostname: localhost
+  port: 5432
+  username: mysql2psql
+  password:
+  database: mysql2psql_test
+
+# if tables is given, only the listed tables will be converted.  leave empty to convert all tables.
+only_tables:
+- lti2_consumer
+- lti2_context
+- lti2_nonce
+- lti2_resource_link
+- lti2_share_key
+- lti2_tool_proxy
+- lti2_user_result
+# if exclude_tables is given, exclude the listed tables from the conversion.
+#exclude_tables:
+#- table3
+#- table4
+
+# if supress_data is true, only the schema definition will be exported/migrated, and not the data
+supress_data: true
+
+# if supress_ddl is true, only the data will be exported/imported, and not the schema
+supress_ddl: false
+
+# if force_truncate is true, forces a table truncate before table loading
+force_truncate: false
 </code></pre>
-
-<h2 id="grant-the-client-to-access-to-the-server-using-public-key">Grant the client to access to the server using public key</h2>
-
-<pre><code>cat .ssh/id_local.pub | ssh pi@192.168.1.84 'cat &gt;&gt; .ssh/authorized_keys'
-</code></pre>
-
-<h2 id="connect-to-server-without-password">Connect to server without password</h2>
-
-<pre><code>ssh pi@192.168.1.84
-</code></pre>
-
-<p>That's it, you can now access your server whithout typing your password!</p>
 
         </div>
                     <p class="categories">
             Categories:
-                        <a href="/blog/categories/ssh">ssh</a>                        </p>
+                        <a href="/blog/categories/mySQL">mySQL</a>,                         <a href="/blog/categories/pgSQL">pgSQL</a>                        </p>
                 
                     <nav class="article">
                 <ul>
-                                            <li>Next: <a class="next" href="/blog/2017/11/09/moodle-activate-debug-using-sql" title="Moodle 3.X: activate debug whithout GUI"><span class="title">Moodle 3.X: activate debug whithout GUI</span></a></li>
-                                                                <li>Previous: <a class="previous" href="/blog/2017/10/16/nginx-survival-sheet" title="Nginx survival sheet"><span class="title">Nginx survival sheet</span></a></li>
+                                                                <li>Previous: <a class="previous" href="/blog/2018/01/11/php7-nginx-memcached-session" title="Setting up a memcached server with PHP7.X and a NGINX webserver"><span class="title">Setting up a memcached server with PHP7.X and a NGINX webserver</span></a></li>
                                     </ul>
             </nav>
             </article>

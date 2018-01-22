@@ -71,6 +71,92 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2017/12/08/docker-basics">Docker basics</a></h2>
+        </header>
+        <div>
+            <h2 id="containers">Containers</h2>
+
+<p>A container is a way to create isolated env that can run code while sharing a single OS.</p>
+
+<h3 id="run-a-container">Run a container</h3>
+
+<pre><code>docker container run -p 9999:80 httpd:2.4
+</code></pre>
+
+<p>The <code>--detach</code> flag can be used to run the container in background:</p>
+
+<pre><code>docker container run --detach -p 9999:80 httpd:2.4
+</code></pre>
+
+<h3 id="list-containers">List containers</h3>
+
+<pre><code>docker container ls
+</code></pre>
+
+<h3 id="run-commands-on-container">Run commands on container</h3>
+
+<pre><code>docker container exec my_container_name du -mh
+</code></pre>
+
+<h3 id="attaching-a-shell-to-a-container">Attaching a Shell to a Container</h3>
+
+<p>To get a shell inside the container:</p>
+
+<pre><code>docker container exec -it my_container_name /bin/bash
+
+PATH=$PATH:/usr/games/
+export PATH
+</code></pre>
+
+<h2 id="dockerfiles">Dockerfiles</h2>
+
+<p>Dockerfile -> create an image -> to generate a container</p>
+
+<p>Inside a file named <code>Dockerfile</code>.</p>
+
+<h3 id="dockerfile-example">Dockerfile example</h3>
+
+<pre><code>FROM httpd:2.4
+EXPOSE 80
+RUN apt-get update &amp;&amp; apt-get install -y fortunes
+COPY page.html /var/www/html/
+LABEL maintainer="moby-dock@example.com"
+</code></pre>
+
+<h3 id="building-an-image-from-a-dockerfile">Building an Image From a Dockerfile</h3>
+
+<pre><code>docker image build --tag web-server:1.0 .
+</code></pre>
+
+<p>End the command with a single . so it knows to look for the Dockerfile in the same folder that the command is run in.</p>
+
+<pre><code>docker image ls
+
+
+docker container run -p 80:80 web-server:1.0
+</code></pre>
+
+<h2 id="volumes">Volumes</h2>
+
+<p>It is possible to copy files into a container but files will be lost when container stops.</p>
+
+<pre><code>docker container cp page.html my_container_name:/var/www/html/.
+</code></pre>
+
+<p>A better solution is to use volumes.
+Data volumes expose files on your host machine to the container.</p>
+
+<h3 id="creating-a-volume">Creating a Volume</h3>
+
+<pre><code>docker run -d -p 80:80 -v /my-files:/var/www/html web-server:1.1
+</code></pre>
+
+<p>Shared folder  between <code>/my-files</code> on host machine and the <code>html</code> folder in the container</p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2017/11/13/debian-fixing-error-after-partition-edition">Debian:  fixing error: &#039;A start job is running for dev-disk-...&#039;</a></h2>
         </header>
         <div>
@@ -166,39 +252,6 @@ UPDATE mdl_config SET VALUE = 1 WHERE name = 'debugdisplay';
 <pre><code>UPDATE mdl_config SET VALUE = 0 WHERE name = 'debug';
 UPDATE mdl_config SET VALUE = 0 WHERE name = 'debugdisplay';
 </code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2017/11/06/ssh-key-authentication">SSH key authentication</a></h2>
-        </header>
-        <div>
-            <p>Access your server using ssh key authentication.</p>
-
-<p>If you loose your time, typing password, this is for you:</p>
-
-<h2 id="generate-ssh-authentication-keys-on-the-client-side">Generate ssh authentication keys on the client side</h2>
-
-<pre><code>ssh-keygen -t rsa
-</code></pre>
-
-<h2 id="create-a-.ssh-folder-on-the-server">Create a .ssh folder on the server</h2>
-
-<pre><code>ssh pi@192.168.1.84 mkdir -p .ssh
-</code></pre>
-
-<h2 id="grant-the-client-to-access-to-the-server-using-public-key">Grant the client to access to the server using public key</h2>
-
-<pre><code>cat .ssh/id_local.pub | ssh pi@192.168.1.84 'cat &gt;&gt; .ssh/authorized_keys'
-</code></pre>
-
-<h2 id="connect-to-server-without-password">Connect to server without password</h2>
-
-<pre><code>ssh pi@192.168.1.84
-</code></pre>
-
-<p>That's it, you can now access your server whithout typing your password!</p>
 
         </div>
             </article>

@@ -2,9 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc></loc>
-    <lastmod>2018-01-11</lastmod>
+    <lastmod>2018-01-22</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
+  </url>
+    <url>
+    <loc>/blog/2018/01/22/mysql-2-pgsql-conversion</loc>
+    <lastmod>2018-01-22T00:00:00+01:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2018/01/11/php7-nginx-memcached-session</loc>
@@ -39,6 +45,12 @@
     <url>
     <loc>/blog/2017/11/06/ssh-key-authentication</loc>
     <lastmod>2017-11-06T00:00:00+01:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+    <url>
+    <loc>/blog/2017/10/16/nginx-survival-sheet</loc>
+    <lastmod>2017-10-16T00:00:00+02:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
