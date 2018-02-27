@@ -3,29 +3,35 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/categories/privacy.xml" rel="self"/>
     <link href="/"/>
-    <updated>2018-02-23T16:44:49+01:00</updated>
+    <updated>2018-02-27T10:00:40+01:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
-            <title type="html"><![CDATA[Install keepass and kee on inux]]></title>
+            <title type="html"><![CDATA[Install keepass and kee on linux]]></title>
             <link href="/blog/2018/02/23/keepass-kee-linux"/>
             <updated>2018-02-23T00:00:00+01:00</updated>
             <id>/blog/2018/02/23/keepass-kee-linux</id>
             <content type="html"><![CDATA[<h2 id="install-keepass2">install keepass2</h2>
 
-<pre><code>sudo apt-get install keepass2
+<pre><code>sudo add-apt-repository ppa:jtaylor/keepass
+sudo apt-get update &amp;&amp; sudo apt-get install keepass2
 </code></pre>
 
 <h2 id="install-firefox-addon-%27kee%27">install firefox addon 'kee'</h2>
 
-<p><a href="https://addons.mozilla.org/fr/firefox/addon/keefox/?src=search">download it here</a></p>
+<ul>
+<li><a href="https://addons.mozilla.org/fr/firefox/addon/keefox/?src=search">download it here</a></li>
+<li><a href="https://github.com/kee-org/KeeFox/wiki/en-|-Getting-started#linux">kee doc here</a> with linux keepass requirement.</li>
+</ul>
 
 <h2 id="download-keepassrpc.plgx-plugin">download KeePassRPC.plgx plugin</h2>
 
-<p>q
-    sudo mkdir /usr/lib/keepass2/plugins
-    sudo cp 'KeePassRPC.plgx' '/usr/lib/keepass2/plugins/'
-    sudo apt-get install mono-complete</p>
+<p><a href="https://github.com/kee-org/keepassrpc/releases">download KeePassRPC.plgx plugin</a></p>
+
+<pre><code>sudo mkdir /usr/lib/keepass2/plugins
+sudo cp 'KeePassRPC.plgx' '/usr/lib/keepass2/plugins/'
+sudo apt-get install mono-complete
+</code></pre>
 
 <h2 id="restart-keepass-and-firefox">Restart keepass and firefox</h2>
 
