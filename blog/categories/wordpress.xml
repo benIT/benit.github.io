@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title><![CDATA[benIT]]></title>
+    <link href="/blog/categories/wordpress.xml" rel="self"/>
+    <link href="/"/>
+    <updated>2018-04-27T15:07:24+02:00</updated>
+    <id>/</id>
+        <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Wordpress migration procedure]]></title>
+            <link href="/blog/2018/04/27/wordpress-migration-procedure"/>
+            <updated>2018-04-27T00:00:00+02:00</updated>
+            <id>/blog/2018/04/27/wordpress-migration-procedure</id>
+            <content type="html"><![CDATA[<h2 id="extract-source-site-filesystem">Extract source site filesystem</h2>
+
+<pre><code>tar -czf mySite.tgz /var/www/mySite
+</code></pre>
+
+<h2 id="extract-source-site-database">Extract source site database</h2>
+
+<pre><code>mysqldump -u mySite -p mySite &gt; mySite.sql
+</code></pre>
+
+<h2 id="transfert-source-fs-and-db-to-target-site">Transfert source fs and db to target site</h2>
+
+<ul>
+<li><p>Extract tar archive</p>
+
+<pre><code>tar -czf mySite.tgz
+</code></pre></li>
+<li><p>Import database</p></li>
+</ul>
+
+<h2 id="migrate-database">Migrate database</h2>
+
+<p>Wordpress stores url in database, some of them can be serialized so wa can't just replace them with a bash script.</p>
+
+<p>The best and easier way is to use this project <a href="https://github.com/interconnectit/Search-Replace-DB">interconnectit/Search-Replace-DB</a> :</p>
+
+<ul>
+<li>download it</li>
+<li>upload it to the wordpress root</li>
+<li>open a browser at the matching url</li>
+<li>fill the form to migrate your database</li>
+</ul>
+]]></content>
+        </entry>
+    </feed>
