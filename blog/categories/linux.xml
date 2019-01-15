@@ -3,13 +3,135 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/categories/linux.xml" rel="self"/>
     <link href="/"/>
-    <updated>2018-04-27T15:07:24+02:00</updated>
+    <updated>2019-01-15T13:09:01+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
+            <title type="html"><![CDATA[Docker 101: networking]]></title>
+            <link href="/blog/2019/01/14/docker-networking"/>
+            <updated>2019-01-14T00:00:00+00:00</updated>
+            <id>/blog/2019/01/14/docker-networking</id>
+            <content type="html"><![CDATA[<h1 id="docker-running-containers-inside-a-bridge-network">Docker running containers inside a bridge network</h1>
+
+<p>The purpose of this post is to isolate each tiers of our app into different containers.</p>
+
+<p>We will create a private network and run containers inside this private network.</p>
+
+<p><a href="https://docker-curriculum.com/#webapps-with-docker">This article is largely inspired by this great resource.</a></p>
+
+<h2 id="networking">Networking</h2>
+
+<h3 id="create-an-isolated-private-bridge-network">Create an isolated private bridge network</h3>
+
+<pre><code>docker network create web-net    
+</code></pre>
+
+<h3 id="inspect-the-private-network">Inspect the private network</h3>
+
+<pre><code>docker network inspect web-net
+</code></pre>
+
+<h3 id="run-a-container-inside-the-private-bridge-network-with-%60--net%60-option">Run a container inside the private bridge network with <code>--net</code> option</h3>
+
+<pre><code>docker run --name pgsql-web --rm  -d --net web-net postgres:latest
+docker run --name debian-web --rm -p 80:80 --net web-net -d benit/debian-web:latest
+</code></pre>
+
+<h3 id="inspect-the-private-network-to-get-ips-of-containers-of-the-private-network">Inspect the private network to get IPs of containers of the private network</h3>
+
+<pre><code>docker network inspect web-net
+</code></pre>
+
+<p>gives:</p>
+
+<pre><code> "Containers": {
+            "3729ccbb14e514fd6c8b571ed9c985c28293cb5bfdb10c6c233773f50d6ba763": {
+                "Name": "debian-web",
+                "EndpointID": "c370cab93cdd2ac9f30f568a1709b8c998d2ca36106d5423b484a20aadbff84f",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            },
+            "61bcf5cd9838c8c2e66beef73a04a2704a3be7e2085a5c6b4ad58bd78f12a138": {
+                "Name": "pgsql-web",
+                "EndpointID": "128f50ead4974a725c04551cb284fec2c733a48375a4819096b0b623ff2af4ac",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            }
+        },
+</code></pre>
+
+<h2 id="putting-it-all-together">Putting it all together</h2>
+
+<h3 id="let%27s-create-a-database">Let's create a database</h3>
+
+<pre><code>docker container exec pgsql-web psql -U postgres -c "create database webapp";
+docker container exec pgsql-web psql -U postgres -d webapp -c "CREATE TABLE account(user_id serial PRIMARY KEY,username VARCHAR (50) UNIQUE NOT NULL,created_on TIMESTAMP NOT NULL);" ;
+docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('foo','2019-01-01') ;" ;
+docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('bar','2019-01-02') ;" ;
+</code></pre>
+
+<h3 id="connect-database-container-from-webserver-container">Connect database container from webserver container</h3>
+
+<pre><code>docker container exec -it debian-web  psql -U postgres -h 172.18.0.2 -d webapp -c "select * from account;" ;
+</code></pre>
+
+<p>gives:</p>
+
+<pre><code> user_id | username |     created_on      
+---------+----------+---------------------
+       1 | foo      | 2019-01-01 00:00:00
+       2 | bar      | 2019-01-02 00:00:00
+(2 rows)
+</code></pre>
+
+<h2 id="docker-compose">Docker compose</h2>
+
+<p>Purpose: compose is a tool designed to create multi-containers app.</p>
+
+<h2 id="install">Install</h2>
+
+<pre><code>sudo apt install python-pip
+pip install docker-compose
+</code></pre>
+
+<h2 id="docker-compose.yml">docker-compose.yml</h2>
+
+<p>The magic happens in a file named <code>docker-compose.yml</code></p>
+
+<h2 id="run">Run</h2>
+
+<pre><code>docker-compose up -d
+</code></pre>
+
+<h2 id="stop">Stop</h2>
+
+<pre><code>docker-compose down -v
+</code></pre>
+
+<h1 id="development">Development</h1>
+
+<p>replace this section to get your changes from your host sync with your container :</p>
+
+<pre><code>image: benit/debian-web
+</code></pre>
+
+<p>by:</p>
+
+<pre><code>build:
+  context: .
+  args:
+    - http_proxy
+    - https_proxy
+    - no_proxy
+</code></pre>
+]]></content>
+        </entry>
+            <entry>
             <title type="html"><![CDATA[Debian:  fixing error: &#039;A start job is running for dev-disk-...&#039;]]></title>
             <link href="/blog/2017/11/13/debian-fixing-error-after-partition-edition"/>
-            <updated>2017-11-13T00:00:00+01:00</updated>
+            <updated>2017-11-13T00:00:00+00:00</updated>
             <id>/blog/2017/11/13/debian-fixing-error-after-partition-edition</id>
             <content type="html"><![CDATA[<h2 id="error-encountered">Error encountered</h2>
 
@@ -68,7 +190,7 @@ UUID=8d7d9300-7fd3-4a5a-bfd1-9bc61a20fabd none            swap    sw
             <entry>
             <title type="html"><![CDATA[Install a nextcloud box with NextCloudPi]]></title>
             <link href="/blog/2017/06/14/install-a-nextcloudbox"/>
-            <updated>2017-06-14T00:00:00+02:00</updated>
+            <updated>2017-06-14T00:00:00+00:00</updated>
             <id>/blog/2017/06/14/install-a-nextcloudbox</id>
             <content type="html"><![CDATA[<p>Here is exposed steps to setup a nextcloud box on RPI <a href="https://ownyourbits.com/2017/02/13/nextcloud-ready-raspberry-pi-image/">consuming the nextCloudPi image</a> . enjoy ;)</p>
 
@@ -166,7 +288,7 @@ You can now ssh the rpi machine:</p>
             <entry>
             <title type="html"><![CDATA[Connect to raspberry pi from linux host using a simple ethernet cable]]></title>
             <link href="/blog/2017/06/14/connect-to-raspberry-over-ethernet"/>
-            <updated>2017-06-14T00:00:00+02:00</updated>
+            <updated>2017-06-14T00:00:00+00:00</updated>
             <id>/blog/2017/06/14/connect-to-raspberry-over-ethernet</id>
             <content type="html"><![CDATA[<p>This post describes how to connect a RPI to a linux station with a simple ethernet cable.</p>
 
@@ -250,7 +372,7 @@ pi@raspberrypi:~ $
             <entry>
             <title type="html"><![CDATA[Setting up a debian dev machine]]></title>
             <link href="/blog/2017/06/13/setting-up-a-debian-dev-machine"/>
-            <updated>2017-06-13T00:00:00+02:00</updated>
+            <updated>2017-06-13T00:00:00+00:00</updated>
             <id>/blog/2017/06/13/setting-up-a-debian-dev-machine</id>
             <content type="html"><![CDATA[<p>Let's put all together to install a debian 8 machine from scratch:</p>
 
@@ -264,7 +386,7 @@ pi@raspberrypi:~ $
             <entry>
             <title type="html"><![CDATA[Setting up git with multiple accounts]]></title>
             <link href="/blog/2017/06/12/setting-up-git-with-multiple-accounts"/>
-            <updated>2017-06-12T00:00:00+02:00</updated>
+            <updated>2017-06-12T00:00:00+00:00</updated>
             <id>/blog/2017/06/12/setting-up-git-with-multiple-accounts</id>
             <content type="html"><![CDATA[<h2 id="git-install">git install</h2>
 
@@ -371,7 +493,7 @@ Host bitbucket.org
             <entry>
             <title type="html"><![CDATA[Installing Vagrant]]></title>
             <link href="/blog/2017/06/12/install-vagrant"/>
-            <updated>2017-06-12T00:00:00+02:00</updated>
+            <updated>2017-06-12T00:00:00+00:00</updated>
             <id>/blog/2017/06/12/install-vagrant</id>
             <content type="html"><![CDATA[<h2 id="install-virtual-box">Install virtual box</h2>
 
@@ -393,7 +515,7 @@ dpkg -i vagrant_1.9.5_x86_64.deb
             <entry>
             <title type="html"><![CDATA[Create a debian live usb drive]]></title>
             <link href="/blog/2017/06/12/create-a-debian-iso-live-usb-drive"/>
-            <updated>2017-06-12T00:00:00+02:00</updated>
+            <updated>2017-06-12T00:00:00+00:00</updated>
             <id>/blog/2017/06/12/create-a-debian-iso-live-usb-drive</id>
             <content type="html"><![CDATA[<h2 id="download-a-debian-8-iso">Download a debian 8 iso</h2>
 

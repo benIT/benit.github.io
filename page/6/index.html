@@ -71,6 +71,98 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2017/07/04/rpi-nexcloud">Installing Nextcloud on RPI device</a></h2>
+        </header>
+        <div>
+            <h2 id="install-raspbian">Install Raspbian</h2>
+
+<h3 id="install-os">Install OS</h3>
+
+<ul>
+<li><a href="https://www.raspberrypi.org/downloads/raspbian/">download Raspbian</a></li>
+<li><a href="/blog/2017/06/12/create-a-debian-iso-live-usb-drive">burn it to the RPI SD card</a></li>
+</ul>
+
+<h3 id="basic-configuration">Basic configuration</h3>
+
+<ul>
+<li>enable SSH: <code>sudo raspi-config</code> > <code>Interfacing Options</code> > <code>SSH</code></li>
+<li>change default password running : <code>passwd</code></li>
+<li>change keyboard layout if needed</li>
+</ul>
+
+<h2 id="install-nextcloud">Install Nextcloud</h2>
+
+<h3 id="nextcloud-stack">Nextcloud Stack</h3>
+
+<p>The following script will install the full stack. Run it as follow:</p>
+
+<pre><code>    chmod +x nextcloud.sh
+    ./nextcloud.sh
+</code></pre>
+
+<p>Provisioning script from github:</p>
+
+<script src="https://gist.github.com/benIT/1545b4ccf883d41be9b0cdd97e043c2f.js"></script>
+
+<h3 id="tuning">Tuning</h3>
+
+<p>Check settings here <code>https://nextcloud.local/index.php/settings/admin/</code>:</p>
+
+<h4 id="enable-php7.0-opcache">Enable PHP7.0 opcache</h4>
+
+<p>Add this in <code>/etc/php/7.0/apache2/php.ini</code>:</p>
+
+<pre><code>    opcache.enable=1
+    opcache.enable_cli=1
+    opcache.interned_strings_buffer=8
+    opcache.max_accelerated_files=10000
+    opcache.memory_consumption=128
+    opcache.save_comments=1
+    opcache.revalidate_freq=1
+</code></pre>
+
+<h4 id="php7.0-apcu">PHP7.0 apcu</h4>
+
+<pre><code>    sudo apt-get install php7.0-apcu -y
+</code></pre>
+
+<p>Check this file exists:</p>
+
+<pre><code>    cat  /etc/php/7.0/mods-available/apcu.ini
+</code></pre>
+
+<p>Finally, add this in <code>nextcloud/config/config.php</code>:</p>
+
+<pre><code>    'memcache.local' =&gt; '\OC\Memcache\APCu',
+</code></pre>
+
+<h2 id="usb-drive">USB drive</h2>
+
+<p>In this case, I have an usb external hard drive. I need to <a href="https://kwilson.io/blog/force-your-raspberry-pi-to-mount-an-external-usb-drive-every-time-it-starts-up/">fix it mount point</a> to be always the location in order to configure it in Nextcloud.</p>
+
+<p>Edit  <code>/etc/fstab</code>:</p>
+
+<pre><code>/DEV/SDA1       /MEDIA/WESTERN-DIGITAL-1-TO     EXT4    DEFAULTS        0       0
+sudo chown -R root:www-data /media/western-digital-1-to/
+chmod g+rwx /media/western-digital-1-to/
+</code></pre>
+
+<h2 id="nextcloud-trusted-domains">Nextcloud trusted domains</h2>
+
+<p>Edit <code>trusted_domains</code> settings in <code>/var/www/nextcloud/config</code> if needed.</p>
+
+<h2 id="enjoy">Enjoy</h2>
+
+<p>That was it! Nextcloud if now fully configured on your RPI, enjoy!</p>
+
+        </div>
+                    <p class="tags">
+            Tags:
+                        <a href="/blog/tags/privacy">privacy</a>,                         <a href="/blog/tags/security">security</a>                        </p>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2017/06/19/veracrypt-first-steps">First steps with Veracrypt</a></h2>
         </header>
         <div>
@@ -171,61 +263,6 @@ This container has no password, it based on key system. The key has been generat
             Tags:
                         <a href="/blog/tags/moodle">moodle</a>                        </p>
             </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2017/06/15/setup-xdebug-phpstorm-vagrant">Configure xdebug with phpstorm with a vagrant box</a></h2>
-        </header>
-        <div>
-            <p>After loosing a few hours reconfiguring xdebug, phpstorm and vagrant, I found this <a href="https://www.theodo.fr/blog/2016/08/configure-xdebug-phpstorm-vagrant/">great ressource</a>. Here are my notes about it:</p>
-
-<p><em>phpstorm is installed on the hostmachine and the app is running in a vagrant box.</em></p>
-
-<h2 id="vagrant-guest-machine-setup">Vagrant guest machine setup</h2>
-
-<pre><code>sudo apt-get install php5-xdebug
-</code></pre>
-
-<p>Edit <code>/etc/php5/mods-available/xdebug.ini</code> :</p>
-
-<pre><code>xdebug.remote_enable=true
-xdebug.remote_connect_back=true
-xdebug.idekey=MY_AWESOME_KEY
-</code></pre>
-
-<h2 id="phpstorm-setup">Phpstorm setup</h2>
-
-<h3 id="setup-%27php-remote-debug%27-configuration">Setup 'php remote debug' configuration</h3>
-
-<p><img src="/images/xdebug/storm-xdebug-vagrant-1-remote-debug-conf.png" alt="screenshot" /></p>
-
-<h3 id="setup-%27server%27-configuration">Setup 'server' configuration</h3>
-
-<p><img src="/images/xdebug/storm-xdebug-vagrant-2-server-conf.png" alt="screenshot" /></p>
-
-<h2 id="browser-plugin">Browser plugin</h2>
-
-<ul>
-<li>install a browser <a href="https://addons.mozilla.org/en-US/firefox/addon/the-easiest-xdebug/">plugin such as this one</a></li>
-<li>configure the ide key, here: <code>MY_AWESOME_KEY</code></li>
-<li>it is also possible to use <a href="https://www.jetbrains.com/phpstorm/marklets/">bookmarklets</a> </li>
-</ul>
-
-<h2 id="enjoy%21">Enjoy!</h2>
-
-<ul>
-<li>Puts breakpoints </li>
-<li>Enable cookie using web browser extension or bookmarklet
-<img src="/images/xdebug/storm-xdebug-vagrant-3-breakpoints.png" alt="screenshot" /></li>
-<li>Click on the bug icon called 'debug mode'</li>
-<li>You can now enjoy the debugger (inspect variables, control the execution flow)
-<img src="/images/xdebug/storm-xdebug-vagrant-4-debugger-running.png" alt="screenshot" /></li>
-</ul>
-
-        </div>
-                    <p class="tags">
-            Tags:
-                        <a href="/blog/tags/xdebug">xdebug</a>,                         <a href="/blog/tags/phpstorm">phpstorm</a>                        </p>
-            </article>
     <nav>
         <a href="/page/5">Newer Posts</a><br />
         <a href="/page/7">Older Posts</a><br />
@@ -246,7 +283,7 @@ xdebug.idekey=MY_AWESOME_KEY
             </div>
         </div>
         <footer class="container">
-            &copy; 2018 benIT
+            &copy; 2019 benIT
         </footer>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

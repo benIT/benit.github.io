@@ -3,13 +3,13 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/categories/wordpress.xml" rel="self"/>
     <link href="/"/>
-    <updated>2018-04-27T15:07:24+02:00</updated>
+    <updated>2019-01-15T13:09:01+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
             <title type="html"><![CDATA[Wordpress migration procedure]]></title>
             <link href="/blog/2018/04/27/wordpress-migration-procedure"/>
-            <updated>2018-04-27T00:00:00+02:00</updated>
+            <updated>2018-04-27T00:00:00+00:00</updated>
             <id>/blog/2018/04/27/wordpress-migration-procedure</id>
             <content type="html"><![CDATA[<h2 id="extract-source-site-filesystem">Extract source site filesystem</h2>
 

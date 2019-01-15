@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Docker 101: networking &mdash; benIT &mdash; open source &amp; technical notes</title>
+        <meta charset="utf-8">
+        <meta name="theme-color" content="#ffffff">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="robots" content="index, follow">
+        <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/style.css" rel="stylesheet" type="text/css" />
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+        <link rel="apple-touch-startup-image" href="/images/jackson/2048x2048.png">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="shortcut icon" sizes="76x76" href="/images/jackson/76x76.png">
+        <link rel="shortcut icon" sizes="120x120" href="/images/jackson/120x120.png">
+        <link rel="shortcut icon" sizes="128x128" href="/images/jackson/128x128.png">
+        <link rel="shortcut icon" sizes="152x152" href="/images/jackson/152x152.png">
+        <link rel="shortcut icon" sizes="196x196" href="/images/jackson/196x196.png">
+        <link rel="shortcut icon" sizes="512x512" href="/images/jackson/512x512.png">
+        <link rel="shortcut icon" sizes="1024x1024" href="/images/jackson/1024x1024.png">
+        <link rel="shortcut icon" sizes="2048x2048" href="/images/jackson/2048x2048.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="/images/jackson/76x76.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="/images/jackson/120x120.png">
+        <link rel="apple-touch-icon" sizes="128x128" href="/images/jackson/128x128.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="/images/jackson/152x152.png">
+        <link rel="apple-touch-icon" sizes="196x196" href="/images/jackson/196x196.png">
+        <link rel="apple-touch-icon" sizes="512x512" href="/images/jackson/512x512.png">
+        <link rel="apple-touch-icon" sizes="1024x1024" href="/images/jackson/1024x1024.png">
+        <link rel="apple-touch-icon" sizes="2048x2048" href="/images/jackson/2048x2048.png">
+
+        <link rel="stylesheet" href="/components/highlightjs/styles/github.css" />
+        <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="benIT activity feed" />
+        <style>
+        /** quick fix because bootstrap <pre> has a background-color. */
+        pre code { background-color: inherit; }
+        </style>
+                                    </head>
+    <a href="https://github.com/benIT/github-blog"><img style="z-index:1032;position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
+    <body>
+        <header>
+            <nav class="navbar navbar-inverse navbar-fixed-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/">benIT open source &amp; technical notes</a>
+                    </div>
+                    <div id="navbar" class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="https://github.com/benIT">Github</a></li>
+                            <li><a href="/blog">Posts Archive</a></li>
+                            <li><a href="/blog/categories">Categories</a></li>
+                            <li><a href="/blog/tags">Tags</a></li>
+                            <li><a href="/about">About</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="mainContent container">
+            <div class="row-fluid">
+                <div class="span8">
+                        <article>
+        <header>
+            <h2>Docker 101: networking <small>post</small></h2>
+        </header>
+        <div>
+            <h1 id="docker-running-containers-inside-a-bridge-network">Docker running containers inside a bridge network</h1>
+
+<p>The purpose of this post is to isolate each tiers of our app into different containers.</p>
+
+<p>We will create a private network and run containers inside this private network.</p>
+
+<p><a href="https://docker-curriculum.com/#webapps-with-docker">This article is largely inspired by this great resource.</a></p>
+
+<h2 id="networking">Networking</h2>
+
+<h3 id="create-an-isolated-private-bridge-network">Create an isolated private bridge network</h3>
+
+<pre><code>docker network create web-net    
+</code></pre>
+
+<h3 id="inspect-the-private-network">Inspect the private network</h3>
+
+<pre><code>docker network inspect web-net
+</code></pre>
+
+<h3 id="run-a-container-inside-the-private-bridge-network-with-%60--net%60-option">Run a container inside the private bridge network with <code>--net</code> option</h3>
+
+<pre><code>docker run --name pgsql-web --rm  -d --net web-net postgres:latest
+docker run --name debian-web --rm -p 80:80 --net web-net -d benit/debian-web:latest
+</code></pre>
+
+<h3 id="inspect-the-private-network-to-get-ips-of-containers-of-the-private-network">Inspect the private network to get IPs of containers of the private network</h3>
+
+<pre><code>docker network inspect web-net
+</code></pre>
+
+<p>gives:</p>
+
+<pre><code> "Containers": {
+            "3729ccbb14e514fd6c8b571ed9c985c28293cb5bfdb10c6c233773f50d6ba763": {
+                "Name": "debian-web",
+                "EndpointID": "c370cab93cdd2ac9f30f568a1709b8c998d2ca36106d5423b484a20aadbff84f",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            },
+            "61bcf5cd9838c8c2e66beef73a04a2704a3be7e2085a5c6b4ad58bd78f12a138": {
+                "Name": "pgsql-web",
+                "EndpointID": "128f50ead4974a725c04551cb284fec2c733a48375a4819096b0b623ff2af4ac",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            }
+        },
+</code></pre>
+
+<h2 id="putting-it-all-together">Putting it all together</h2>
+
+<h3 id="let%27s-create-a-database">Let's create a database</h3>
+
+<pre><code>docker container exec pgsql-web psql -U postgres -c "create database webapp";
+docker container exec pgsql-web psql -U postgres -d webapp -c "CREATE TABLE account(user_id serial PRIMARY KEY,username VARCHAR (50) UNIQUE NOT NULL,created_on TIMESTAMP NOT NULL);" ;
+docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('foo','2019-01-01') ;" ;
+docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('bar','2019-01-02') ;" ;
+</code></pre>
+
+<h3 id="connect-database-container-from-webserver-container">Connect database container from webserver container</h3>
+
+<pre><code>docker container exec -it debian-web  psql -U postgres -h 172.18.0.2 -d webapp -c "select * from account;" ;
+</code></pre>
+
+<p>gives:</p>
+
+<pre><code> user_id | username |     created_on      
+---------+----------+---------------------
+       1 | foo      | 2019-01-01 00:00:00
+       2 | bar      | 2019-01-02 00:00:00
+(2 rows)
+</code></pre>
+
+<h2 id="docker-compose">Docker compose</h2>
+
+<p>Purpose: compose is a tool designed to create multi-containers app.</p>
+
+<h2 id="install">Install</h2>
+
+<pre><code>sudo apt install python-pip
+pip install docker-compose
+</code></pre>
+
+<h2 id="docker-compose.yml">docker-compose.yml</h2>
+
+<p>The magic happens in a file named <code>docker-compose.yml</code></p>
+
+<h2 id="run">Run</h2>
+
+<pre><code>docker-compose up -d
+</code></pre>
+
+<h2 id="stop">Stop</h2>
+
+<pre><code>docker-compose down -v
+</code></pre>
+
+<h1 id="development">Development</h1>
+
+<p>replace this section to get your changes from your host sync with your container :</p>
+
+<pre><code>image: benit/debian-web
+</code></pre>
+
+<p>by:</p>
+
+<pre><code>build:
+  context: .
+  args:
+    - http_proxy
+    - https_proxy
+    - no_proxy
+</code></pre>
+
+        </div>
+                    <p class="categories">
+            Categories:
+                        <a href="/blog/categories/linux">linux</a>,                         <a href="/blog/categories/docker">docker</a>                        </p>
+                
+                    <nav class="article">
+                <ul>
+                                                                <li>Previous: <a class="previous" href="/blog/2018/04/27/wordpress-migration-procedure" title="Wordpress migration procedure"><span class="title">Wordpress migration procedure</span></a></li>
+                                    </ul>
+            </nav>
+            </article>
+
+
+
+                </div>
+                <!--<div class="span4 sidebar">-->
+                    <!--<div class="well">-->
+                        <!--<h4>benIT <small>open source &amp; technical notes</small></h4>-->
+                    <!--</div>-->
+                    <!--<div class="well sidebar-nav">-->
+                        <!--<h4>Links</h4>-->
+                        <!--<ul class="nav">-->
+                            <!--<li><a href="http://sculpin.io">sculpin.io</a></li>-->
+                            <!--<li><a href="http://twitter.com/getsculpin">@getsculpin</a></li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                <!--</div>-->
+            </div>
+        </div>
+        <footer class="container">
+            &copy; 2019 benIT
+        </footer>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="/components/jquery/jquery.min.js"><\/script>')</script>
+        <script src="/components/bootstrap/js/bootstrap.min.js"></script>
+                
+                <script src="/components/highlightjs/highlight.pack.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+
+                    </body>
+</html>

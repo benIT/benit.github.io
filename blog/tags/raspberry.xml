@@ -3,13 +3,13 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/tags/raspberry.xml" rel="self"/>
     <link href="/"/>
-    <updated>2018-04-27T15:07:24+02:00</updated>
+    <updated>2019-01-15T13:09:01+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
             <title type="html"><![CDATA[Install a nextcloud box with NextCloudPi]]></title>
             <link href="/blog/2017/06/14/install-a-nextcloudbox"/>
-            <updated>2017-06-14T00:00:00+02:00</updated>
+            <updated>2017-06-14T00:00:00+00:00</updated>
             <id>/blog/2017/06/14/install-a-nextcloudbox</id>
             <content type="html"><![CDATA[<p>Here is exposed steps to setup a nextcloud box on RPI <a href="https://ownyourbits.com/2017/02/13/nextcloud-ready-raspberry-pi-image/">consuming the nextCloudPi image</a> . enjoy ;)</p>
 
@@ -107,7 +107,7 @@ You can now ssh the rpi machine:</p>
             <entry>
             <title type="html"><![CDATA[Connect to raspberry pi from linux host using a simple ethernet cable]]></title>
             <link href="/blog/2017/06/14/connect-to-raspberry-over-ethernet"/>
-            <updated>2017-06-14T00:00:00+02:00</updated>
+            <updated>2017-06-14T00:00:00+00:00</updated>
             <id>/blog/2017/06/14/connect-to-raspberry-over-ethernet</id>
             <content type="html"><![CDATA[<p>This post describes how to connect a RPI to a linux station with a simple ethernet cable.</p>
 

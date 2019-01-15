@@ -3,13 +3,13 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/categories/veracrypt.xml" rel="self"/>
     <link href="/"/>
-    <updated>2018-04-27T15:07:24+02:00</updated>
+    <updated>2019-01-15T13:09:01+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
             <title type="html"><![CDATA[First steps with Veracrypt]]></title>
             <link href="/blog/2017/06/19/veracrypt-first-steps"/>
-            <updated>2017-06-19T00:00:00+02:00</updated>
+            <updated>2017-06-19T00:00:00+00:00</updated>
             <id>/blog/2017/06/19/veracrypt-first-steps</id>
             <content type="html"><![CDATA[<h2 id="why-vercrypt%3F">Why Vercrypt?</h2>
 

@@ -2,187 +2,193 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc></loc>
-    <lastmod>2018-04-27</lastmod>
+    <lastmod>2019-01-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
     <url>
+    <loc>/blog/2019/01/14/docker-networking</loc>
+    <lastmod>2019-01-14T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+    <url>
     <loc>/blog/2018/04/27/wordpress-migration-procedure</loc>
-    <lastmod>2018-04-27T00:00:00+02:00</lastmod>
+    <lastmod>2018-04-27T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2018/02/23/keepass-kee-linux</loc>
-    <lastmod>2018-02-23T00:00:00+01:00</lastmod>
+    <lastmod>2018-02-23T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2018/01/22/mysql-2-pgsql-conversion</loc>
-    <lastmod>2018-01-22T00:00:00+01:00</lastmod>
+    <lastmod>2018-01-22T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2018/01/11/php7-nginx-memcached-session</loc>
-    <lastmod>2018-01-11T00:00:00+01:00</lastmod>
+    <lastmod>2018-01-11T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2018/01/11/configure-moodle-session-handling-with-memcached</loc>
-    <lastmod>2018-01-11T00:00:00+01:00</lastmod>
+    <lastmod>2018-01-11T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/12/08/docker-basics</loc>
-    <lastmod>2017-12-08T00:00:00+01:00</lastmod>
+    <lastmod>2017-12-08T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/11/13/debian-fixing-error-after-partition-edition</loc>
-    <lastmod>2017-11-13T00:00:00+01:00</lastmod>
+    <lastmod>2017-11-13T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/11/09/moodle-activate-debug-using-sql</loc>
-    <lastmod>2017-11-09T00:00:00+01:00</lastmod>
+    <lastmod>2017-11-09T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/11/06/ssh-key-authentication</loc>
-    <lastmod>2017-11-06T00:00:00+01:00</lastmod>
+    <lastmod>2017-11-06T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/10/16/nginx-survival-sheet</loc>
-    <lastmod>2017-10-16T00:00:00+02:00</lastmod>
+    <lastmod>2017-10-16T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/10/02/apache2-survival-sheet</loc>
-    <lastmod>2017-10-02T00:00:00+02:00</lastmod>
+    <lastmod>2017-10-02T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/09/28/postgresql-survival-sheet</loc>
-    <lastmod>2017-09-28T00:00:00+02:00</lastmod>
+    <lastmod>2017-09-28T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/07/10/vagrant-share-ssh-agent</loc>
-    <lastmod>2017-07-10T00:00:00+02:00</lastmod>
+    <lastmod>2017-07-10T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/07/07/open-source-list</loc>
-    <lastmod>2017-07-07T00:00:00+02:00</lastmod>
+    <lastmod>2017-07-07T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/07/04/rpi-nexcloud</loc>
-    <lastmod>2017-07-04T00:00:00+02:00</lastmod>
+    <lastmod>2017-07-04T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/06/19/veracrypt-first-steps</loc>
-    <lastmod>2017-06-19T00:00:00+02:00</lastmod>
+    <lastmod>2017-06-19T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/06/15/moodle-migration-procedure.</loc>
-    <lastmod>2017-06-15T00:00:00+02:00</lastmod>
+    <lastmod>2017-06-15T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/06/15/setup-xdebug-phpstorm-vagrant</loc>
-    <lastmod>2017-06-15T00:00:00+02:00</lastmod>
+    <lastmod>2017-06-15T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/06/14/install-a-nextcloudbox</loc>
-    <lastmod>2017-06-14T00:00:00+02:00</lastmod>
+    <lastmod>2017-06-14T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/06/14/connect-to-raspberry-over-ethernet</loc>
-    <lastmod>2017-06-14T00:00:00+02:00</lastmod>
+    <lastmod>2017-06-14T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/06/13/setting-up-a-debian-dev-machine</loc>
-    <lastmod>2017-06-13T00:00:00+02:00</lastmod>
+    <lastmod>2017-06-13T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/06/12/setting-up-git-with-multiple-accounts</loc>
-    <lastmod>2017-06-12T00:00:00+02:00</lastmod>
+    <lastmod>2017-06-12T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/06/12/install-vagrant</loc>
-    <lastmod>2017-06-12T00:00:00+02:00</lastmod>
+    <lastmod>2017-06-12T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/06/12/create-a-debian-iso-live-usb-drive</loc>
-    <lastmod>2017-06-12T00:00:00+02:00</lastmod>
+    <lastmod>2017-06-12T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/05/29/getting-started-with-npm</loc>
-    <lastmod>2017-05-29T00:00:00+02:00</lastmod>
+    <lastmod>2017-05-29T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/04/18/setting-up-angular-in moodle-3</loc>
-    <lastmod>2017-04-18T00:00:00+02:00</lastmod>
+    <lastmod>2017-04-18T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/04/11/moodle-configurable-reports-filters</loc>
-    <lastmod>2017-04-11T00:00:00+02:00</lastmod>
+    <lastmod>2017-04-11T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/03/31/setting-up-a-php-cool-development-environment</loc>
-    <lastmod>2017-03-31T00:00:00+02:00</lastmod>
+    <lastmod>2017-03-31T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/03/29/consumming-a-moodle-webservice</loc>
-    <lastmod>2017-03-29T00:00:00+02:00</lastmod>
+    <lastmod>2017-03-29T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
     <loc>/blog/2017/03/28/getting-started-with-sculpin</loc>
-    <lastmod>2017-03-28T00:00:00+02:00</lastmod>
+    <lastmod>2017-03-28T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
