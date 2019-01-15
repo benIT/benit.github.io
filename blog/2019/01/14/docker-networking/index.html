@@ -149,47 +149,6 @@ docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO accou
 (2 rows)
 </code></pre>
 
-<h2 id="docker-compose">Docker compose</h2>
-
-<p>Purpose: compose is a tool designed to create multi-containers app.</p>
-
-<h2 id="install">Install</h2>
-
-<pre><code>sudo apt install python-pip
-pip install docker-compose
-</code></pre>
-
-<h2 id="docker-compose.yml">docker-compose.yml</h2>
-
-<p>The magic happens in a file named <code>docker-compose.yml</code></p>
-
-<h2 id="run">Run</h2>
-
-<pre><code>docker-compose up -d
-</code></pre>
-
-<h2 id="stop">Stop</h2>
-
-<pre><code>docker-compose down -v
-</code></pre>
-
-<h1 id="development">Development</h1>
-
-<p>replace this section to get your changes from your host sync with your container :</p>
-
-<pre><code>image: benit/debian-web
-</code></pre>
-
-<p>by:</p>
-
-<pre><code>build:
-  context: .
-  args:
-    - http_proxy
-    - https_proxy
-    - no_proxy
-</code></pre>
-
         </div>
                     <p class="categories">
             Categories:
