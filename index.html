@@ -153,6 +153,23 @@ docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO accou
             </article>
     <article>
         <header>
+            <h2><a href="/blog/2019/01/14/docker-dockerfile">Docker 101: Dockerfile</a></h2>
+        </header>
+        <div>
+            <h1 id="dockerfile">Dockerfile</h1>
+
+<p>A <code>Dockerfile</code> is a text document that contains all the commands a user could call on the command line to assemble an image.</p>
+
+<h2 id="example">Example</h2>
+
+<p>You will find <a href="https://github.com/benIT/debian-web">in this repo</a> a running <code>Dockerfile</code>  based on a debian image that runs an Apache webserver.</p>
+
+<p>You will find <a href="https://github.com/benIT/debian-web/blob/master/README.md">in this file</a> all the base commands to manage a <code>Dockerfile</code> .</p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2018/04/27/wordpress-migration-procedure">Wordpress migration procedure</a></h2>
         </header>
         <div>
@@ -188,39 +205,6 @@ docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO accou
 <li>open a browser at the matching url</li>
 <li>fill the form to migrate your database</li>
 </ul>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2018/02/23/keepass-kee-linux">Install keepass and kee on linux</a></h2>
-        </header>
-        <div>
-            <h2 id="install-keepass2">install keepass2</h2>
-
-<pre><code>sudo add-apt-repository ppa:jtaylor/keepass
-sudo apt-get update &amp;&amp; sudo apt-get install keepass2
-</code></pre>
-
-<h2 id="install-firefox-addon-%27kee%27">install firefox addon 'kee'</h2>
-
-<ul>
-<li><a href="https://addons.mozilla.org/fr/firefox/addon/keefox/?src=search">download it here</a></li>
-<li><a href="https://github.com/kee-org/KeeFox/wiki/en-|-Getting-started#linux">kee doc here</a> with linux keepass requirement.</li>
-</ul>
-
-<h2 id="download-keepassrpc.plgx-plugin">download KeePassRPC.plgx plugin</h2>
-
-<p><a href="https://github.com/kee-org/keepassrpc/releases">download KeePassRPC.plgx plugin</a></p>
-
-<pre><code>sudo mkdir /usr/lib/keepass2/plugins
-sudo cp 'KeePassRPC.plgx' '/usr/lib/keepass2/plugins/'
-sudo apt-get install mono-complete
-</code></pre>
-
-<h2 id="restart-keepass-and-firefox">Restart keepass and firefox</h2>
-
-<p>you should be prompt about kee to authorize keepass</p>
 
         </div>
             </article>
