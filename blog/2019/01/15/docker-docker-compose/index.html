@@ -98,22 +98,19 @@ pip install docker-compose
 <pre><code>docker-compose down -v
 </code></pre>
 
-<h1 id="development">Development</h1>
+<h2 id="networking">Networking</h2>
 
-<p>replace this section to get your changes from your host sync with your container :</p>
+<p><code>docker-compose</code> handles the creation a private network:</p>
 
-<pre><code>image: benit/debian-web
+<pre><code>Creating network "n-tiers_default" with the default driver
+Creating object-cache ... done
+Creating pgsql        ... done
+Creating web          ... done
 </code></pre>
 
-<p>by:</p>
+<h1 id="example">Example</h1>
 
-<pre><code>build:
-  context: .
-  args:
-    - http_proxy
-    - https_proxy
-    - no_proxy
-</code></pre>
+<p>Better than words, take a look at this <a href="https://github.com/benIT/docker-compose-n-tiers">repo that illustrates a classical n-tiers web app</a></p>
 
         </div>
                     <p class="categories">

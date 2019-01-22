@@ -3,9 +3,53 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/categories/docker.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-01-18T13:55:03+00:00</updated>
+    <updated>2019-01-22T17:24:45+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Docker 101: docker-compose]]></title>
+            <link href="/blog/2019/01/15/docker-docker-compose"/>
+            <updated>2019-01-15T00:00:00+00:00</updated>
+            <id>/blog/2019/01/15/docker-docker-compose</id>
+            <content type="html"><![CDATA[<h1 id="docker-compose">Docker compose</h1>
+
+<p>Purpose: compose is a tool designed to create multi-containers app.</p>
+
+<h2 id="install">Install</h2>
+
+<pre><code>sudo apt install python-pip
+pip install docker-compose
+</code></pre>
+
+<h2 id="docker-compose.yml">docker-compose.yml</h2>
+
+<p>The magic happens in a file named <code>docker-compose.yml</code></p>
+
+<h2 id="run">Run</h2>
+
+<pre><code>docker-compose up -d
+</code></pre>
+
+<h2 id="stop">Stop</h2>
+
+<pre><code>docker-compose down -v
+</code></pre>
+
+<h2 id="networking">Networking</h2>
+
+<p><code>docker-compose</code> handles the creation a private network:</p>
+
+<pre><code>Creating network "n-tiers_default" with the default driver
+Creating object-cache ... done
+Creating pgsql        ... done
+Creating web          ... done
+</code></pre>
+
+<h1 id="example">Example</h1>
+
+<p>Better than words, take a look at this <a href="https://github.com/benIT/docker-compose-n-tiers">repo that illustrates a classical n-tiers web app</a></p>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Docker 101: networking]]></title>
             <link href="/blog/2019/01/14/docker-networking"/>
@@ -104,7 +148,7 @@ docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO accou
 ]]></content>
         </entry>
             <entry>
-            <title type="html"><![CDATA[Docker basics]]></title>
+            <title type="html"><![CDATA[Docker 101:  basics]]></title>
             <link href="/blog/2017/12/08/docker-basics"/>
             <updated>2017-12-08T00:00:00+00:00</updated>
             <id>/blog/2017/12/08/docker-basics</id>

@@ -71,6 +71,117 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2017/06/12/setting-up-git-with-multiple-accounts">Setting up git with multiple accounts</a></h2>
+        </header>
+        <div>
+            <h2 id="git-install">git install</h2>
+
+<pre><code>sudo apt-get install git
+</code></pre>
+
+<h3 id="git-config">git config</h3>
+
+<pre><code>git config --global user.email benoit.works@gmail.com
+git config --global user.name ben
+cat .gitconfig 
+[user]
+    email = benoit.works@gmail.com
+    name = ben
+</code></pre>
+
+<h3 id="ssh-keys">ssh keys</h3>
+
+<h4 id="github-key">github key</h4>
+
+<pre><code>ben@debian:~$ ssh-keygen -t rsa -C "benoit.works@gmail.com"
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/ben/.ssh/id_rsa): /home/ben/.ssh/id_rsa_github
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /home/ben/.ssh/id_rsa_github.
+Your public key has been saved in /home/ben/.ssh/id_rsa_github.pub.
+The key fingerprint is:
+e0:ff:69:e3:fd:67:9b:97:7e:3b:d7:0c:5e:c8:98:94 benoit.works@gmail.com
+The key's randomart image is:
++---[RSA 2048]----+
+|                 |
+|                 |
+|      .      .   |
+|     . .    E    |
+|      . S  . + . |
+|       .    o + .|
+|        .    . +o|
+|         .oo  .oX|
+|         o+...oBB|
++-----------------+
+ben@debian:~$ ls -al .ssh/
+total 16
+drwx------  2 ben ben 4096 juin   7 10:01 .
+drwxr-xr-x 21 ben ben 4096 juin   7 10:00 ..
+-rw-------  1 ben ben 1675 juin   7 10:01 id_rsa_github
+-rw-r--r--  1 ben ben  404 juin   7 10:01 id_rsa_github.pub
+
+
+ben@debian:~$ ssh-add ~/.ssh/id_rsa_github
+Identity added: /home/ben/.ssh/id_rsa_github (rsa w/o comment)
+</code></pre>
+
+<p>Add the public key to your github account.</p>
+
+<h4 id="bitbucket-key">bitbucket key</h4>
+
+<pre><code>ben@debian ~ $ ssh-keygen -t rsa -C "benoit.works@gmail.com"
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/ben/.ssh/id_rsa): /home/ben/.ssh/id_rsa_bitbucket
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /home/ben/.ssh/id_rsa_bitbucket.
+Your public key has been saved in /home/ben/.ssh/id_rsa_bitbucket.pub.
+The key fingerprint is:
+04:75:ba:a3:71:a4:1e:3e:0a:31:f8:a1:b3:70:57:81 benoit.works@gmail.com
+The key's randomart image is:
++---[RSA 2048]----+
+|      ... .      |
+|     . . o       |
+|    E . +        |
+| .     = .       |
+|. +   = S        |
+| o + + = .       |
+|+ + . =          |
+|.+ o . .         |
+|.   .            |
++-----------------+
+
+ben@debian ~ $ ssh-add ~/.ssh/id_rsa_bitbucket
+Identity added: /home/ben/.ssh/id_rsa_bitbucket (rsa w/o comment)
+</code></pre>
+
+<p>Add the public key to your bitbucket account.</p>
+
+<h3 id="ssh-config-file">ssh config file</h3>
+
+<p>Edit <code>~/.ssh/config file</code></p>
+
+<pre><code># Default GitHub user
+Host github.com
+ HostName github.com
+ PreferredAuthentications publickey
+ IdentityFile ~/.ssh/id_rsa_github
+
+# bitbucket account
+Host bitbucket.org
+ HostName bitbucket.org
+ PreferredAuthentications publickey
+ IdentityFile ~/.ssh/id_rsa_bitbucket
+</code></pre>
+
+        </div>
+                    <p class="tags">
+            Tags:
+                        <a href="/blog/tags/debian">debian</a>                        </p>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2017/06/12/install-vagrant">Installing Vagrant</a></h2>
         </header>
         <div>
@@ -175,120 +286,6 @@ adduser ben sudo
                     <p class="tags">
             Tags:
                         <a href="/blog/tags/debian">debian</a>                        </p>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2017/05/29/getting-started-with-npm">Getting started with npm</a></h2>
-        </header>
-        <div>
-            <h2 id="npm-global-configuration-file">npm global configuration file</h2>
-
-<pre><code>    vim ~/.npmrc
-</code></pre>
-
-<h2 id="list-npm-globally-installed-modules">list npm globally installed modules</h2>
-
-<pre><code>    npm list -g
-</code></pre>
-
-<h2 id="install-modules-globally">Install modules globally</h2>
-
-<pre><code>sudo npm install -g my-module
-
-sudo npm install -g gulp-autoprefixer gulp-clean gulp-concat gulp-cssbeautify gulp-csscomb gulp-csso gulp-if gulp-jshint gulp-less gulp-load-plugins gulp-ng-annotate gulp-rename gulp-uglify minimist
-ls /usr/local/lib/node_modules
-</code></pre>
-
-<h2 id="install-modules-locally">Install modules locally</h2>
-
-<p>Modules will be installed in <code>node_modules</code> folder.</p>
-
-<h3 id="dev-modules-with---save-dev-option">dev modules with --save-dev option</h3>
-
-<pre><code>npm install --save-dev gulp-cssbeautify gulp-csscomb gulp-csso gulp-jshint gulp-less gulp-load-plugins gulp-rename
-</code></pre>
-
-<h3 id="non-dev-modules-with---save-option">non dev modules with --save option</h3>
-
-<pre><code>npm install angular-i18n --save
-</code></pre>
-
-<h2 id="link-our-project-modules-to-the-global-installed-node-modules">Link our project modules to the global installed node modules</h2>
-
-<pre><code>cd my-app
-npm link gulp-autoprefixer gulp-clean gulp-concat gulp-cssbeautify gulp-csscomb gulp-csso gulp-if gulp-jshint gulp-less gulp-load-plugins gulp-ng-annotate gulp-rename gulp-uglify minimist
-npm install 
-</code></pre>
-
-<h2 id="speed-up-npm">Speed up npm</h2>
-
-<p><code>npm install</code> can be very long, so let's try to speed up that!</p>
-
-<h3 id="disable-progress">Disable progress</h3>
-
-<pre><code>npm config set progress false
-</code></pre>
-
-<h3 id="setting-up-a-local-cache-server">Setting up a local cache server</h3>
-
-<p>Inspired from this <a href="http://willcodefor.beer/setup-your-own-npm-cache-server/">ressource</a>.</p>
-
-<h4 id="installing-npm-proxy-cache">Installing npm-proxy-cache</h4>
-
-<pre><code>sudo apt-get install -y nodejs npm
-npm config set prefix '~/.npm-packages'  
-export PATH="$PATH:$HOME/.npm-packages/bin"
-npm install -g forever npm-proxy-cache  
-ln -s /usr/bin/nodejs /usr/bin/node
-</code></pre>
-
-<h4 id="starting-the-cache-server">Starting the cache server</h4>
-
-<pre><code>sudo forever /usr/local/lib/node_modules/npm-proxy-cache/bin/npm-proxy-cache  -e -t 600000 -h localhost
-</code></pre>
-
-<p>You should see that the server is running on 8080 port:</p>
-
-<pre><code>[2017-05-29 13:13:11.725] [INFO] proxy - Listening on localhost:8080 [6172]
-</code></pre>
-
-<h4 id="configuring-npm-proxy-cache">Configuring npm-proxy-cache</h4>
-
-<pre><code>npm config set proxy http://localhost:8080/  
-npm config set https-proxy http://localhost:8080
-npm config set strict-ssl false  
-</code></pre>
-
-<h4 id="testing-the-cache-server">Testing the cache server</h4>
-
-<pre><code>cd my-app
-rm -rf node_modules
-npm install
-</code></pre>
-
-<h4 id="automating-server-boot">Automating server boot</h4>
-
-<p>todo</p>
-
-<h4 id="yeah%2C-it-works%21">Yeah, it works!</h4>
-
-<pre><code>[2017-05-29 13:13:11.725] [INFO] proxy - Listening on localhost:8080 [6172]
-[2017-05-29 13:18:55.662] [INFO] proxy - cache https://registry.npmjs.org/angular-route
-[2017-05-29 13:18:55.679] [INFO] proxy - cache https://registry.npmjs.org/angular-i18n
-[2017-05-29 13:18:55.702] [INFO] proxy - cache https://registry.npmjs.org/angularjs-datepicker
-[2017-05-29 13:18:55.703] [INFO] proxy - cache https://registry.npmjs.org/bootstrap
-[2017-05-29 13:18:55.711] [INFO] proxy - cache https://registry.npmjs.org/chart.js
-[2017-05-29 13:18:55.714] [INFO] proxy - cache https://registry.npmjs.org/jquery
-[2017-05-29 13:18:55.716] [INFO] proxy - cache https://registry.npmjs.org/isteven-angular-multiselect
-[2017-05-29 13:18:55.719] [INFO] proxy - cache https://registry.npmjs.org/gulp
-[2017-05-29 13:18:55.723] [INFO] proxy - cache https://registry.npmjs.org/gulp-autoprefixer
-...
-</code></pre>
-
-        </div>
-                    <p class="tags">
-            Tags:
-                        <a href="/blog/tags/dev">dev</a>                        </p>
             </article>
     <nav>
         <a href="/page/8">Newer Posts</a><br />
