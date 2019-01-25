@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title><![CDATA[benIT]]></title>
+    <link href="/blog/categories/fun.xml" rel="self"/>
+    <link href="/"/>
+    <updated>2019-01-25T14:14:11+00:00</updated>
+    <id>/</id>
+        <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[How to make a christmas garland with a nginx reverse proxy and 3 apache backends under docker?]]></title>
+            <link href="/blog/2019/01/25/docker-make-a-christmas-garland-with-nginx-apache"/>
+            <updated>2019-01-25T00:00:00+00:00</updated>
+            <id>/blog/2019/01/25/docker-make-a-christmas-garland-with-nginx-apache</id>
+            <content type="html"><![CDATA[<h1 id="purpose">Purpose</h1>
+
+<p>This posts deals with doing yourself a christmas garland!</p>
+
+<p>We will be using :</p>
+
+<ul>
+<li>nginx as a reverse proxy</li>
+<li>apache as a backend</li>
+<li>docker as a plateforme  </li>
+</ul>
+
+<h1 id="repository">Repository</h1>
+
+<p><a href="https://github.com/benIT/docker-nginx-reverse-proxy">You will find a demonstration repository here.</a></p>
+
+<h1 id="demo">Demo</h1>
+
+<p><a href="/video/docker-christmas-garland-demo.mp4">A video is available here.</a></p>
+
+<p>If it does not work, download it from github repo:</p>
+
+<pre><code>wget https://raw.githubusercontent.com/benIT/docker-nginx-reverse-proxy/master/demo.mp4
+vlc demo.mp4
+</code></pre>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Never forget that computing should always be fun!</p>
+]]></content>
+        </entry>
+    </feed>

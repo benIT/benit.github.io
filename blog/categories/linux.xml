@@ -3,9 +3,45 @@
     <title><![CDATA[benIT]]></title>
     <link href="/blog/categories/linux.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-01-22T17:24:45+00:00</updated>
+    <updated>2019-01-25T14:14:11+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[How to make a christmas garland with a nginx reverse proxy and 3 apache backends under docker?]]></title>
+            <link href="/blog/2019/01/25/docker-make-a-christmas-garland-with-nginx-apache"/>
+            <updated>2019-01-25T00:00:00+00:00</updated>
+            <id>/blog/2019/01/25/docker-make-a-christmas-garland-with-nginx-apache</id>
+            <content type="html"><![CDATA[<h1 id="purpose">Purpose</h1>
+
+<p>This posts deals with doing yourself a christmas garland!</p>
+
+<p>We will be using :</p>
+
+<ul>
+<li>nginx as a reverse proxy</li>
+<li>apache as a backend</li>
+<li>docker as a plateforme  </li>
+</ul>
+
+<h1 id="repository">Repository</h1>
+
+<p><a href="https://github.com/benIT/docker-nginx-reverse-proxy">You will find a demonstration repository here.</a></p>
+
+<h1 id="demo">Demo</h1>
+
+<p><a href="/video/docker-christmas-garland-demo.mp4">A video is available here.</a></p>
+
+<p>If it does not work, download it from github repo:</p>
+
+<pre><code>wget https://raw.githubusercontent.com/benIT/docker-nginx-reverse-proxy/master/demo.mp4
+vlc demo.mp4
+</code></pre>
+
+<h1 id="conclusion">Conclusion</h1>
+
+<p>Never forget that computing should always be fun!</p>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Docker 101: docker-compose]]></title>
             <link href="/blog/2019/01/15/docker-docker-compose"/>
@@ -592,28 +628,6 @@ Host bitbucket.org
  PreferredAuthentications publickey
  IdentityFile ~/.ssh/id_rsa_bitbucket
 </code></pre>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[Installing Vagrant]]></title>
-            <link href="/blog/2017/06/12/install-vagrant"/>
-            <updated>2017-06-12T00:00:00+00:00</updated>
-            <id>/blog/2017/06/12/install-vagrant</id>
-            <content type="html"><![CDATA[<h2 id="install-virtual-box">Install virtual box</h2>
-
-<pre><code>sudo apt-get install virtualbox
-</code></pre>
-
-<h2 id="install-vagrant">Install vagrant</h2>
-
-<ul>
-<li><p>Download <a href="https://www.vagrantup.com/downloads.html">Vagrant deb package</a>:</p>
-
-<pre><code>cd /tmp/mozilla_ben0
-dpkg -i vagrant_1.9.5_x86_64.deb
-</code></pre></li>
-<li><p>Clone your vagrant repo and install it!</p></li>
-</ul>
 ]]></content>
         </entry>
     </feed>
