@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>How to make a christmas garland with a nginx reverse proxy and 3 apache backends under docker? &mdash; benIT &mdash; open source &amp; technical notes</title>
+        <title>Linux logs &mdash; benIT &mdash; open source &amp; technical notes</title>
         <meta charset="utf-8">
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -71,48 +71,185 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2>How to make a christmas garland with a nginx reverse proxy and 3 apache backends under docker? <small>post</small></h2>
+            <h2>Linux logs <small>post</small></h2>
         </header>
         <div>
-            <h1 id="purpose">Purpose</h1>
+            <h2 id="purpose">Purpose</h2>
 
-<p>This posts deals with doing yourself a christmas garland!</p>
+<p>The aim of is post is to manipulate linux system logs.</p>
 
-<p>We will be using :</p>
+<p>Logging is an important part of IT system and must be understand.</p>
 
-<ul>
-<li>nginx as a reverse proxy</li>
-<li>apache as a backend</li>
-<li>docker as a plateforme  </li>
-</ul>
+<h2 id="test-program">Test program</h2>
 
-<h1 id="repository">Repository</h1>
+<p>The following program named <code>program.sh</code> is used to test log services:</p>
 
-<p><a href="https://github.com/benIT/docker-nginx-reverse-proxy">You will find a demonstration repository here.</a></p>
-
-<h1 id="demo">Demo</h1>
-
-<p><a href="/video/docker-christmas-garland-demo.mp4">A video is available here.</a></p>
-
-<p>If it does not work, download it from github repo:</p>
-
-<pre><code>wget https://raw.githubusercontent.com/benIT/docker-nginx-reverse-proxy/master/demo.mp4
-vlc demo.mp4
+<pre><code>echo I am $(whoami) and up from  $(uptime)
 </code></pre>
 
-<h1 id="conclusion">Conclusion</h1>
+<h2 id="logs">Logs</h2>
 
-<p>Never forget that computing should always be fun!</p>
+<p>Logs are managed with a service named <code>rsyslog</code></p>
+
+<pre><code>sudo service rsyslog status
+</code></pre>
+
+<h2 id="activate-cron-log">Activate cron log</h2>
+
+<p>In <code>sudo vim /etc/rsyslog.conf</code>, uncomment this line:</p>
+
+<pre><code>cron.*                          /var/log/cron.log
+</code></pre>
+
+<p>Restart <code>systemctl</code>:</p>
+
+<pre><code>sudo systemctl restart rsyslog
+</code></pre>
+
+<p>This doesn't log your program output, but logs your cron information.</p>
+
+<p>Considering the following crontab that runs every minute:</p>
+
+<pre><code>* * * * * /home/debian/prog.sh
+</code></pre>
+
+<p>Let's check <code>cron.log</code> details:</p>
+
+<pre><code>sudo tail -f /var/log/cron.log
+
+Feb 11 10:09:01 sandbox CRON[25182]: (root) CMD (  [ -x /usr/lib/php/sessionclean ] &amp;&amp; if [ ! -d /run/systemd/system ]; then /usr/lib/php/sessionclean; fi)
+Feb 11 10:09:01 sandbox CRON[25183]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:10:01 sandbox CRON[25243]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:11:01 sandbox CRON[25373]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:12:01 sandbox CRON[25396]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:13:01 sandbox CRON[25405]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:14:01 sandbox CRON[25415]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:15:01 sandbox CRON[25439]: (root) CMD (command -v debian-sa1 &gt; /dev/null &amp;&amp; debian-sa1 1 1)
+Feb 11 10:15:01 sandbox CRON[25441]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:16:02 sandbox CRON[25459]: (debian) CMD (/home/debian/prog.sh)
+</code></pre>
+
+<h2 id="log-rotation">Log rotation</h2>
+
+<p>Log rotation is managed with a service named <code>logrotate</code></p>
+
+<pre><code>cat /var/lib/logrotate/status | grep apache
+
+"/var/log/apache2/access.log" 2019-2-8-6:25:2
+"/var/log/apache2/other_vhosts_access.log" 2018-5-29-6:0:0
+"/var/log/apache2/error.log" 2019-2-11-6:25:1
+</code></pre>
+
+<p>Let's check apache2 webserver log rotation configuration :</p>
+
+<pre><code>cat /etc/logrotate.d/apache2 
+/var/log/apache2/*.log {
+    daily
+    missingok
+    rotate 14
+    compress
+    delaycompress
+    notifempty
+    create 640 root adm
+    sharedscripts
+    postrotate
+            if /etc/init.d/apache2 status &gt; /dev/null ; then \
+                /etc/init.d/apache2 reload &gt; /dev/null; \
+            fi;
+    endscript
+    prerotate
+        if [ -d /etc/logrotate.d/httpd-prerotate ]; then \
+            run-parts /etc/logrotate.d/httpd-prerotate; \
+        fi; \
+    endscript
+}
+</code></pre>
+
+<h2 id="example-with-%60program.sh%60">Example with <code>program.sh</code></h2>
+
+<h3 id="program-log-location">Program log location</h3>
+
+<p>We will tell our program to write here: <code>/var/log/prog.sh/log</code>. Let's create this file with the right permissions:</p>
+
+<pre><code>sudo mkdir /var/log/prog.sh/
+sudo touch /var/log/prog.sh/log
+sudo chmod ugo+rw /var/log/prog.sh/log
+</code></pre>
+
+<h3 id="program-crontab">Program crontab</h3>
+
+<pre><code>* * * * * /home/debian/prog.sh &gt;&gt; /var/log/prog.sh/log
+</code></pre>
+
+<h3 id="program-log-rotation">Program log rotation</h3>
+
+<p>Edit <code>/etc/logrotate.d/program.sh</code> :</p>
+
+<pre><code>/var/log/program.sh/*.log {
+        daily
+        missingok
+        rotate 5
+        compress
+        delaycompress
+        notifempty
+        create 644 root root
+}
+</code></pre>
+
+<p><a href="https://doc.ubuntu-fr.org/logrotate#exemple">Great doc here</a>.</p>
+
+<h3 id="check-log-rotation">Check log rotation</h3>
+
+<pre><code>ls /var/log/prog.sh/
+</code></pre>
+
+<h2 id="another-example-with-a-cronjob-from-a-webapp-named-%60moodle%60">Another example with a cronjob from a webapp named <code>moodle</code></h2>
+
+<h3 id="moodle-log-location">Moodle log location</h3>
+
+<pre><code>sudo mkdir /var/log/moodle
+sudo touch /var/log/moodle/cron.log
+sudo chmod -R ug+rw /var/log/moodle/
+</code></pre>
+
+<h3 id="moodle-crontab">Moodle crontab</h3>
+
+<p>This job must be run from <code>www-data</code> user, so we need the crontab too to be run from <code>www-data</code> user:</p>
+
+<pre><code>sudo crontab -u www-data -e
+</code></pre>
+
+<p>edit as follow:</p>
+
+<pre><code>#run moodle cron every hour
+0 * * * * php /data/moodle/admin/cli/cron.php &gt;&gt; /var/log/moodle/cron.log 2&gt;&amp;1
+</code></pre>
+
+<p><strong>Important stderr has been redirected to stdout with <code>2&amp;1</code></strong> and all that is printed in a file.</p>
+
+<h3 id="moodle-log-rotation">Moodle log rotation</h3>
+
+<p>Edit <code>/etc/logrotate.d/moodle</code> :</p>
+
+<pre><code>/var/log/moodle/*.log {
+        daily
+        missingok
+        rotate 5
+        compress
+        delaycompress
+        notifempty
+        create 640 www-data www-data
+}    
+</code></pre>
 
         </div>
                     <p class="categories">
             Categories:
-                        <a href="/blog/categories/linux">linux</a>,                         <a href="/blog/categories/docker">docker</a>,                         <a href="/blog/categories/fun">fun</a>                        </p>
+                        <a href="/blog/categories/linux">linux</a>                        </p>
                 
                     <nav class="article">
                 <ul>
-                                            <li>Next: <a class="next" href="/blog/2019/02/11/linux-mastering-logs" title="Linux logs"><span class="title">Linux logs</span></a></li>
-                                                                <li>Previous: <a class="previous" href="/blog/2019/01/15/docker-docker-compose" title="Docker 101: docker-compose"><span class="title">Docker 101: docker-compose</span></a></li>
+                                                                <li>Previous: <a class="previous" href="/blog/2019/01/25/docker-make-a-christmas-garland-with-nginx-apache" title="How to make a christmas garland with a nginx reverse proxy and 3 apache backends under docker?"><span class="title">How to make a christmas garland with a nginx reverse proxy and 3 apache backends under docker?</span></a></li>
                                     </ul>
             </nav>
             </article>
