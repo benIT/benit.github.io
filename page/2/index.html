@@ -71,6 +71,51 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2019/01/15/docker-docker-compose">Docker 101: docker-compose</a></h2>
+        </header>
+        <div>
+            <h1 id="docker-compose">Docker compose</h1>
+
+<p>Purpose: compose is a tool designed to create multi-containers app.</p>
+
+<h2 id="install">Install</h2>
+
+<pre><code>sudo apt install python-pip
+pip install docker-compose
+</code></pre>
+
+<h2 id="docker-compose.yml">docker-compose.yml</h2>
+
+<p>The magic happens in a file named <code>docker-compose.yml</code></p>
+
+<h2 id="run">Run</h2>
+
+<pre><code>docker-compose up -d
+</code></pre>
+
+<h2 id="stop">Stop</h2>
+
+<pre><code>docker-compose down -v
+</code></pre>
+
+<h2 id="networking">Networking</h2>
+
+<p><code>docker-compose</code> handles the creation a private network:</p>
+
+<pre><code>Creating network "n-tiers_default" with the default driver
+Creating object-cache ... done
+Creating pgsql        ... done
+Creating web          ... done
+</code></pre>
+
+<h1 id="example">Example</h1>
+
+<p>Better than words, take a look at this <a href="https://github.com/benIT/docker-compose-n-tiers">repo that illustrates a classical n-tiers web app</a></p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2019/01/14/docker-networking">Docker 101: networking</a></h2>
         </header>
         <div>
@@ -165,46 +210,6 @@ docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO accou
 <p>You will find <a href="https://github.com/benIT/debian-web">in this repo</a> a running <code>Dockerfile</code>  based on a debian image that runs an Apache webserver.</p>
 
 <p>You will find <a href="https://github.com/benIT/debian-web/blob/master/README.md">in this file</a> all the base commands to manage a <code>Dockerfile</code> .</p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2018/04/27/wordpress-migration-procedure">Wordpress migration procedure</a></h2>
-        </header>
-        <div>
-            <h2 id="extract-source-site-filesystem">Extract source site filesystem</h2>
-
-<pre><code>tar -czf mySite.tgz /var/www/mySite
-</code></pre>
-
-<h2 id="extract-source-site-database">Extract source site database</h2>
-
-<pre><code>mysqldump -u mySite -p mySite &gt; mySite.sql
-</code></pre>
-
-<h2 id="transfert-source-fs-and-db-to-target-site">Transfert source fs and db to target site</h2>
-
-<ul>
-<li><p>Extract tar archive</p>
-
-<pre><code>tar -czf mySite.tgz
-</code></pre></li>
-<li><p>Import database</p></li>
-</ul>
-
-<h2 id="migrate-database">Migrate database</h2>
-
-<p>Wordpress stores url in database, some of them can be serialized so wa can't just replace them with a bash script.</p>
-
-<p>The best and easier way is to use this project <a href="https://github.com/interconnectit/Search-Replace-DB">interconnectit/Search-Replace-DB</a> :</p>
-
-<ul>
-<li>download it</li>
-<li>upload it to the wordpress root</li>
-<li>open a browser at the matching url</li>
-<li>fill the form to migrate your database</li>
-</ul>
 
         </div>
             </article>

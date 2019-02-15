@@ -3,7 +3,7 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/open source.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-02-11T13:02:03+00:00</updated>
+    <updated>2019-02-15T13:34:44+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -11,7 +11,7 @@
             <link href="/blog/2017/07/07/cool-open-source-software"/>
             <updated>2017-07-07T00:00:00+00:00</updated>
             <id>/blog/2017/07/07/cool-open-source-software</id>
-            <content type="html"><![CDATA[<p>I spent many years to find a full and cool stack of open source software for home. Here is my personal open source software list, that I really enjoy.</p>
+            <content type="html"><![CDATA[<p>I spent many years to find a full and cool stack of open source softwares for home. Here is my personal open source software list, that I really enjoy.</p>
 
 <h2 id="os">OS</h2>
 
@@ -27,6 +27,7 @@
 <ul>
 <li><a href="http://gparted.org/">gparted</a>: partition made easy</li>
 <li><a href="http://clonezilla.org/">clonezilla</a>: restore your OS</li>
+<li><a href="https://itsfoss.com/multiple-linux-one-usb/">multibootusb</a>: run several live iso on the same usb drive</li>
 </ul>
 
 <h2 id="privacy">Privacy</h2>

@@ -3,9 +3,29 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/linux.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-02-11T13:02:03+00:00</updated>
+    <updated>2019-02-15T13:34:44+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Linux multiusb live]]></title>
+            <link href="/blog/2019/02/15/linux-multiusb-live"/>
+            <updated>2019-02-15T00:00:00+00:00</updated>
+            <id>/blog/2019/02/15/linux-multiusb-live</id>
+            <content type="html"><![CDATA[<h2 id="purpose">Purpose</h2>
+
+<p>This post deals with creating a multi linux iso live usb drive. <a href="https://itsfoss.com/multiple-linux-one-usb/">source</a></p>
+
+<h2 id="procedure">Procedure</h2>
+
+<ul>
+<li>format your drive to fat32</li>
+<li><a href="https://github.com/mbusb/multibootusb/releases/download/v8.8.0/python3-multibootusb_8.8.0-1_all.deb">download MultiBootUsb</a></li>
+<li>install it : <code>dpkg -i python3-multibootusb_8.8.0-1_all.deb</code></li>
+<li>check if all python dependencies are satisfied, if not try install missing with <code>sudo apt install python3-pyqt5 p7zip-full python3-pyudev</code></li>
+<li>enjoy : you can now burn several iso using the GUI. Great tool!</li>
+</ul>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Linux logs]]></title>
             <link href="/blog/2019/02/11/linux-mastering-logs"/>
@@ -681,20 +701,6 @@ SSH is enabled and the default password for the 'pi' user has not been changed.
 This is a security risk - please login as the 'pi' user and type 'passwd' to set a new password.
 pi@raspberrypi:~ $
 </code></pre>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[Setting up a debian dev machine]]></title>
-            <link href="/blog/2017/06/13/setting-up-a-debian-dev-machine"/>
-            <updated>2017-06-13T00:00:00+00:00</updated>
-            <id>/blog/2017/06/13/setting-up-a-debian-dev-machine</id>
-            <content type="html"><![CDATA[<p>Let's put all together to install a debian 8 machine from scratch:</p>
-
-<ul>
-<li><a href="/blog/2017/06/12/create-a-debian-iso-live-usb-drive">burn a usb drive</a></li>
-<li><a href="/blog/2017/06/12/setting-up-git-with-multiple-accounts">install git</a></li>
-<li><a href="/blog/2017/06/12/install-vagrant">install vagrant</a></li>
-</ul>
 ]]></content>
         </entry>
     </feed>

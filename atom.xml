@@ -3,9 +3,29 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-02-11T13:02:03+00:00</updated>
+    <updated>2019-02-15T13:34:44+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Linux multiusb live]]></title>
+            <link href="/blog/2019/02/15/linux-multiusb-live"/>
+            <updated>2019-02-15T00:00:00+00:00</updated>
+            <id>/blog/2019/02/15/linux-multiusb-live</id>
+            <content type="html"><![CDATA[<h2 id="purpose">Purpose</h2>
+
+<p>This post deals with creating a multi linux iso live usb drive. <a href="https://itsfoss.com/multiple-linux-one-usb/">source</a></p>
+
+<h2 id="procedure">Procedure</h2>
+
+<ul>
+<li>format your drive to fat32</li>
+<li><a href="https://github.com/mbusb/multibootusb/releases/download/v8.8.0/python3-multibootusb_8.8.0-1_all.deb">download MultiBootUsb</a></li>
+<li>install it : <code>dpkg -i python3-multibootusb_8.8.0-1_all.deb</code></li>
+<li>check if all python dependencies are satisfied, if not try install missing with <code>sudo apt install python3-pyqt5 p7zip-full python3-pyudev</code></li>
+<li>enjoy : you can now burn several iso using the GUI. Great tool!</li>
+</ul>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Linux logs]]></title>
             <link href="/blog/2019/02/11/linux-mastering-logs"/>
@@ -601,76 +621,6 @@ if ($result) {
 <li>https://www.digitalocean.com/community/tutorials/how-to-share-php-sessions-on-multiple-memcached-servers-on-ubuntu-14-04</li>
 <li>http://www.servermom.org/install-use-memcached-nginx-php-7-ubuntu-16-04/3670/</li>
 </ul>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[Configure moodle 3.x session handling with memcached]]></title>
-            <link href="/blog/2018/01/11/configure-moodle-session-handling-with-memcached"/>
-            <updated>2018-01-11T00:00:00+00:00</updated>
-            <id>/blog/2018/01/11/configure-moodle-session-handling-with-memcached</id>
-            <content type="html"><![CDATA[<p>This procedure has been tested on Moodle <a href="https://github.com/moodle/moodle/commit/7223cd2518ad3b37901b736d6b62e7badd4ecaa1">version 3.0.6+</a> with a dedicated memcached server which @IP:port is 192.168.33.14:11211.</p>
-
-<h2 id="set-up-a--memcached-server">Set up a  memcached server</h2>
-
-<p>see <a href="/blog2018-01-11-php7-nginx-memcached-session">this post</a>.</p>
-
-<h2 id="configure-moodle">Configure moodle</h2>
-
-<p>Configure <a href="https://docs.moodle.org/30/en/Session_handling#Memcached">session handling</a> in <code>config.php</code>:</p>
-
-<pre><code>/********************************************/
-//MEMCACHED SETUP
-$CFG-&gt;session_handler_class = '\core\session\memcached';
-$CFG-&gt;session_memcached_save_path = '192.168.33.14:11211';
-$CFG-&gt;session_memcached_prefix = 'memc.sess.key.';
-$CFG-&gt;session_memcached_acquire_lock_timeout = 120;
-$CFG-&gt;session_memcached_lock_expire = 7200;       // Ignored if memcached extension &lt;= 2.1.0
-/********************************************/
-</code></pre>
-
-<h2 id="checkings">Checkings</h2>
-
-<h2 id="moodle-cookie">Moodle cookie</h2>
-
-<p>If you print out your cookie from your debug tool in your bowser, you well see a cookie named <code>MoodleSession</code></p>
-
-<p>In my case it has value <code>4gp94gr17g78jnh97a6mfml0b4</code></p>
-
-<h2 id="moodle-database">Moodle database</h2>
-
-<p>Now let's check if there is still record in DB for your cookie session:</p>
-
-<pre><code>SELECT * FROM mdl_sessions WHERE sid='4gp94gr17g78jnh97a6mfml0b4';
-</code></pre>
-
-<p>returns:</p>
-
-<pre><code>2507694 0   4gp94gr17g78jnh97a6mfml0b4  48521       1515679016  1515681908  192.168.33.1    192.168.33.1
-</code></pre>
-
-<p>What ??? I was expecting to have no more entries in the mdl_sessions table.
-After searching a little bit more, I found the explanation <a href="https://moodle.org/mod/forum/discuss.php?d=326352">here</a>:</p>
-
-<pre><code>Normally when you have sessions stored in Memcache/d there will still be a record of the session written to mdl_sessions. The session data is not written to the database, it's only written to the memcache/d server itself. The performance gain is seen because the session data is not written every page view for every user, and thus the table rows are not continually being locked and unlocked.
-</code></pre>
-
-<h2 id="memcached-server">memcached server</h2>
-
-<p>Let's check if there is a key/value record for ou session:</p>
-
-<script src="https://gist.github.com/benIT/2e63d3541f4f46d9a47777d467549d2e.js"></script>
-
-<p>run it:</p>
-
-<pre><code>php memcached.php | grep 4gp94gr17g78jnh97a6mfml0b4
-</code></pre>
-
-<p>prints:</p>
-
-<pre><code>key: memc.sess.key.4gp94gr17g78jnh97a6mfml0b4
-</code></pre>
-
-<p>which means that our session is written in memcached! That's ok!</p>
 ]]></content>
         </entry>
     </feed>
