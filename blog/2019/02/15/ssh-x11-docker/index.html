@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Posts Archive &mdash; benIT&#039;s notebook &mdash; </title>
+        <title>SSH X11 &amp; docker &mdash; benIT&#039;s notebook &mdash; </title>
         <meta charset="utf-8">
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <meta name="robots" content="noindex, follow">
-                <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+            <meta name="robots" content="index, follow">
+        <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="/css/style.css" rel="stylesheet" type="text/css" />
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -69,38 +69,85 @@
         <div class="mainContent container">
             <div class="row-fluid">
                 <div class="span8">
-                    <h2>Posts Archive</h2>
-        <h3>June 2017</h3>
-  <div>
-    <a href="/blog/2017/06/12/create-a-debian-iso-live-usb-drive">Create a debian live usb drive</a>
-  </div>
-    <h3>May 2017</h3>
-  <div>
-    <a href="/blog/2017/05/29/getting-started-with-npm">Getting started with npm</a>
-  </div>
-    <h3>April 2017</h3>
-  <div>
-    <a href="/blog/2017/04/18/setting-up-angular-in moodle-3">Setting up angularjs and chartjs in Moodle 3.X</a>
-  </div>
-  <div>
-    <a href="/blog/2017/04/11/moodle-configurable-reports-filters">Filter functionality in Moodle Configurable Reports</a>
-  </div>
-    <h3>March 2017</h3>
-  <div>
-    <a href="/blog/2017/03/31/setting-up-a-php-cool-development-environment">Setting up a cool php development environment</a>
-  </div>
-  <div>
-    <a href="/blog/2017/03/29/consumming-a-moodle-webservice">Consuming a Moodle webservice</a>
-  </div>
-  <div>
-    <a href="/blog/2017/03/28/getting-started-with-sculpin">Getting started with Sculpin</a>
-  </div>
+                        <article>
+        <header>
+            <h2>SSH X11 &amp; docker <small>post</small></h2>
+        </header>
+        <div>
+            <h2 id="purpose">Purpose</h2>
 
-<div>
-    <nav class="article clearfix">
-        <a class="previous" href="/blog/page/3.html" title="Previous Page"><span class="title">Previous Page</span></a>
+<p>Run GUI application inside a docker container using X11Forwarding.</p>
+
+<p><a href="https://gist.github.com/udkyo/c20935c7577c71d634f0090ef6fa8393">source from github.</a></p>
+
+<h2 id="create-a-container">Create a container</h2>
+
+<h3 id="dockerfile">DockerFile</h3>
+
+<pre><code>FROM ubuntu
+RUN apt update \
+    &amp;&amp; apt install -y firefox \
+                      openssh-server \
+                      xauth \
+                      emacs \
+    &amp;&amp; mkdir /var/run/sshd \
+    &amp;&amp; mkdir /root/.ssh \
+    &amp;&amp; chmod 700 /root/.ssh \
+    &amp;&amp; ssh-keygen -A \
+    &amp;&amp; sed -i "s/^.*PasswordAuthentication.*$/PasswordAuthentication no/" /etc/ssh/sshd_config \
+    &amp;&amp; sed -i "s/^.*X11Forwarding.*$/X11Forwarding yes/" /etc/ssh/sshd_config \
+    &amp;&amp; sed -i "s/^.*X11UseLocalhost.*$/X11UseLocalhost no/" /etc/ssh/sshd_config \
+    &amp;&amp; grep "^X11UseLocalhost" /etc/ssh/sshd_config || echo "X11UseLocalhost no" &gt;&gt; /etc/ssh/sshd_config
+
+RUN echo "CONTENT_OF_ID_RSA_PUB_KEY_HERE" &gt;&gt; /root/.ssh/authorized_keys
+</code></pre>
+
+<h3 id="build-it">Build it</h3>
+
+<pre><code>docker build -t benit/ubuntu-x11 . --build-arg http_proxy=$http_proxy
+</code></pre>
+
+<h2 id="run-container">Run Container</h2>
+
+<pre><code>docker run --name ubuntu-x11 --rm -d -p 2150:22 benit/ubuntu-x11
+</code></pre>
+
+<h2 id="ssh-client-configuration">SSH client configuration</h2>
+
+<p>Edit <code>~/.ssh/config</code> on the client, here my workstation is named <code>lxdev</code>:</p>
+
+<pre><code>Host ubuntuX11
+     Hostname lxdev
+     Port 2150
+     user root
+     ForwardX11 yes
+     ForwardX11Trusted yes
+</code></pre>
+
+<h2 id="use-it%21">Use it!</h2>
+
+<pre><code>ssh -X ubuntu-x11 emacs     
+</code></pre>
+
+<h2 id="enjoy%21">Enjoy!</h2>
+
+<p><img src="/images/docker/docker-ssh-x11-emacs.png" alt="screenshot" /></p>
+
+        </div>
+                    <p class="categories">
+            Categories:
+                        <a href="/blog/categories/linux">linux</a>,                         <a href="/blog/categories/docker">docker</a>                        </p>
+                
+                    <nav class="article">
+                <ul>
+                                                                <li>Previous: <a class="previous" href="/blog/2019/02/15/linux-multiusb-live" title="Linux multiusb live"><span class="title">Linux multiusb live</span></a></li>
+                                    </ul>
             </nav>
-</div>                </div>
+            </article>
+
+
+
+                </div>
                 <!--<div class="span4 sidebar">-->
                     <!--<div class="well">-->
                         <!--<h4>benIT&#039;s notebook</h4>-->

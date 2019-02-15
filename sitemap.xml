@@ -7,6 +7,12 @@
     <priority>0.8</priority>
   </url>
     <url>
+    <loc>/blog/2019/02/15/ssh-x11-docker</loc>
+    <lastmod>2019-02-15T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+    <url>
     <loc>/blog/2019/02/15/linux-multiusb-live</loc>
     <lastmod>2019-02-15T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
