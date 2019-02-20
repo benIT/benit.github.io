@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Home &mdash; benIT&#039;s notebook &mdash; </title>
+        <title>Openstack: resize volume and partition size on a running instance &mdash; benIT&#039;s notebook &mdash; </title>
         <meta charset="utf-8">
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <meta name="robots" content="noindex, follow">
-                <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+            <meta name="robots" content="index, follow">
+        <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="/css/style.css" rel="stylesheet" type="text/css" />
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -71,162 +71,159 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2017/11/09/moodle-activate-debug-using-sql">Moodle 3.X: activate debug whithout GUI</a></h2>
+            <h2>Openstack: resize volume and partition size on a running instance <small>post</small></h2>
         </header>
         <div>
-            <p>If you need to activate debug but you cannot access moodle admin page, this article is for you:</p>
+            <h2 id="context">Context</h2>
 
-<h2 id="step-1%3A-note-original-settings">Step 1: note original settings</h2>
+<p>This post deals with how to increase a volume attached to a server instance on openstack. <a href="https://docs.openstack.org/cinder/rocky/cli/cli-manage-volumes.html#">See openstack volume ressource</a>.</p>
 
-<pre><code>SELECT name, value
-FROM mdl_config
-where name ='debug' or name ='debugdisplay'
-;
+<h2 id="test-database">Test database</h2>
+
+<p>To test everything goes well, a test database is setup:</p>
+
+<pre><code>sudo -u postgres
+sudo -u postgres psql -c "create database webapp";
+sudo -u postgres psql -d webapp -c "CREATE TABLE account(user_id serial PRIMARY KEY,username VARCHAR (50) UNIQUE NOT NULL,created_on TIMESTAMP NOT NULL);" ;
+sudo -u postgres psql -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('foo','2019-01-01') ;" ;
+sudo -u postgres psql -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('bar','2019-01-02') ;" ;
 </code></pre>
 
-<p>for instance :</p>
+<p>Check command:</p>
 
-<pre><code>debug   0
-debugdisplay    0
+<pre><code>sudo -u postgres psql -d webapp -c "SELECT * FROM account" ;
 </code></pre>
 
-<h2 id="step-2-%3A-setup-debug-config-in-db">Step 2 : setup debug config in db</h2>
+<h2 id="switch-off-automatic-volume-mount-in-%60%2Fetc%2Ffstab-%60">Switch off automatic volume mount in <code>/etc/fstab</code></h2>
 
-<pre><code>UPDATE mdl_config SET VALUE = 32767 WHERE name = 'debug';
-UPDATE mdl_config SET VALUE = 1 WHERE name = 'debugdisplay';
+<pre><code>ssh demo
 </code></pre>
 
-<h2 id="step-3%3A-clear-cache-from-cli">Step 3: clear cache from CLI</h2>
+<p>Comment lines in <code>/etc/fstab</code> that concern the volume you want to increase:</p>
 
-<pre><code>php  moodle/admin/cli/purge_caches.php
+<pre><code>sudo vim /etc/fstab 
+
+#/dev/vdb1 /data ext4 defaults 0 0
+#/data/pgsql /var/lib/postgresql none bind 0 0
+
+sudo reboot
 </code></pre>
 
-<h2 id="step-4%3A-restore-original-settings">Step 4: restore original settings</h2>
+<h2 id="check">Check</h2>
 
-<pre><code>UPDATE mdl_config SET VALUE = 0 WHERE name = 'debug';
-UPDATE mdl_config SET VALUE = 0 WHERE name = 'debugdisplay';
+<pre><code>ssh demo
+</code></pre>
+
+<p>Check that they are no more mount point that depend on the volume we are going to manipulate.</p>
+
+<pre><code>df -h
+Filesystem      Size  Used Avail Use% Mounted on
+udev            992M     0  992M   0% /dev
+tmpfs           201M  4,5M  197M   3% /run
+/dev/vda1       4,9G  1,9G  2,9G  40% /
+tmpfs          1003M  8,0K 1003M   1% /dev/shm
+tmpfs           5,0M     0  5,0M   0% /run/lock
+tmpfs          1003M     0 1003M   0% /sys/fs/cgroup
+</code></pre>
+
+<h2 id="stop-your-applications-if-needed">Stop your applications if needed</h2>
+
+<pre><code>sudo service apache2 stop
+sudo service postgresql stop
+</code></pre>
+
+<h2 id="increase-our-volume-size">Increase our volume size</h2>
+
+<p>identify your target server and target volume with <code>openstack volume list</code> and <code>openstack server list</code></p>
+
+<pre><code>TARGET_SERVER=ed864066-ed73-46e0-b551-5bfca9873af6
+TARGET_VOLUME=1be3646a-3bb5-40fc-b9eb-6ab803b60d2c
+VOLUME_SIZE=25
+</code></pre>
+
+<h2 id="detach-volume-from-server">Detach volume from server</h2>
+
+<pre><code>openstack server remove volume $TARGET_SERVER $TARGET_VOLUME
+</code></pre>
+
+<h2 id="increase-volume-size">Increase volume size</h2>
+
+<pre><code>openstack volume set $TARGET_VOLUME --size $VOLUME_SIZE
+</code></pre>
+
+<h2 id="attach-volume-to-server">Attach volume to server</h2>
+
+<pre><code>openstack server add volume $TARGET_SERVER $TARGET_VOLUME --device /dev/vdb
+</code></pre>
+
+<h2 id="manage-partition-on-your-openstack-server">Manage partition on your openstack server</h2>
+
+<p>Let's configure the partition to use all the volume space.</p>
+
+<pre><code>ssh demo
+sudo parted /dev/vdb resizepart 1 100%
+sudo e2fsck -f /dev/vdb1
+sudo resize2fs /dev/vdb1
+</code></pre>
+
+<h2 id="restore-%60%2Fetc%2Ffstab%60">Restore <code>/etc/fstab</code></h2>
+
+<p>uncomment the lines:</p>
+
+<pre><code>/dev/vdb1 /data ext4 defaults 0 0
+/data/pgsql /var/lib/postgresql none bind 0 0
+</code></pre>
+
+<p>reboot: <code>sudo reboot</code></p>
+
+<h2 id="check-your-fs">Check your fs</h2>
+
+<h3 id="check-volume-size-and-partition-size">Check volume size and partition size</h3>
+
+<pre><code>sudo fdisk -l
+
+Disk /dev/vdb: 25 GiB, 26843545600 bytes, 52428800 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x0e1b27a4
+
+Device     Boot Start      End  Sectors Size Id Type
+/dev/vdb1        2048 52428799 52426752  25G 83 Linux
+</code></pre>
+
+<h3 id="check-database">Check database</h3>
+
+<p>Use our test command to check our database:</p>
+
+<pre><code>ssh demo
+sudo -u postgres psql -d webapp -c "SELECT * FROM account" ;
+</code></pre>
+
+<p>check data are ok:</p>
+
+<pre><code> user_id | username |     created_on      
+---------+----------+---------------------
+       1 | foo      | 2019-01-01 00:00:00
+       2 | bar      | 2019-01-02 00:00:00
+(2 rows)
 </code></pre>
 
         </div>
+                    <p class="categories">
+            Categories:
+                        <a href="/blog/categories/linux">linux</a>,                         <a href="/blog/categories/openstack">openstack</a>                        </p>
+                
+                    <nav class="article">
+                <ul>
+                                                                <li>Previous: <a class="previous" href="/blog/2019/02/15/ssh-x11-docker" title="SSH X11 &amp; docker"><span class="title">SSH X11 &amp; docker</span></a></li>
+                                    </ul>
+            </nav>
             </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2017/11/06/ssh-key-authentication">SSH key authentication</a></h2>
-        </header>
-        <div>
-            <p>Access your server using ssh key authentication.</p>
 
-<p>If you loose your time, typing password, this is for you:</p>
 
-<h2 id="generate-ssh-authentication-keys-on-the-client-side">Generate ssh authentication keys on the client side</h2>
 
-<pre><code>ssh-keygen -t rsa
-</code></pre>
-
-<h2 id="create-a-.ssh-folder-on-the-server">Create a .ssh folder on the server</h2>
-
-<pre><code>ssh pi@192.168.1.84 mkdir -p .ssh
-</code></pre>
-
-<h2 id="grant-the-client-to-access-to-the-server-using-public-key">Grant the client to access to the server using public key</h2>
-
-<pre><code>cat .ssh/id_local.pub | ssh pi@192.168.1.84 'cat &gt;&gt; .ssh/authorized_keys'
-</code></pre>
-
-<h2 id="connect-to-server-without-password">Connect to server without password</h2>
-
-<pre><code>ssh pi@192.168.1.84
-</code></pre>
-
-<p>That's it, you can now access your server whithout typing your password!</p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2017/10/16/nginx-survival-sheet">Nginx survival sheet</a></h2>
-        </header>
-        <div>
-            <p>In this post, the most common Nginx commands that I use are listed. This is not really interesting but I'm bored of asking google for it every week!</p>
-
-<p><a href="https://www.geek17.com/fr/content/debian-9-stretch-installer-et-configurer-la-derniere-version-de-nginx-et-php-7-fpm-63">source</a></p>
-
-<pre><code>sudo apt-get install -y nginx
-
-sudo apt-get install -y php7.0-fpm
-
-sudo apt-get install -y php7.0-gd php7.0-mysql php7.0-cli php7.0-common php7.0-curl php7.0-opcache php7.0-json php7.0-imap php7.0-mbstring php7.0-xml php7-pgsql php7.0-sqlite
-</code></pre>
-
-<h2 id="vagrant-tips-for-dev-env">Vagrant tips for dev env</h2>
-
-<p>In the following files change <code>www-data</code> to <code>vagrant</code>:</p>
-
-<ul>
-<li>/etc/php/7.0/fpm/php-fpm.conf</li>
-<li>/etc/php/7.0/fpm/pool.d/www.conf</li>
-</ul>
-
-<h2 id="restart-services">Restart services</h2>
-
-<pre><code>sudo service nginx restart &amp;&amp; sudo service php7.0-fpm restart
-</code></pre>
-
-<h2 id="vhost">Vhost</h2>
-
-<h3 id="create-a-vhost-file">Create a vhost file</h3>
-
-<p>In <code>/etc/nginx/sites-available/default</code> file:</p>
-
-<pre><code>server {
-    listen 80;
-    listen [::]:80;
-    server_name www.massonweb.fr;
-    # enforce https
-    return 301 https://$server_name$request_uri;
-}
-
-server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
-    server_name massonweb.fr;
-
-    ssl_certificate /etc/letsencrypt/live/massonweb.fr/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/massonweb.fr/privkey.pem;
-
-    root /var/www/html;
-
-    index index.php index.html;
-
-    access_log /var/log/nginx/default-access_log;
-    error_log /var/log/nginx/default-error_log;
-
-    location / {
-        try_files $uri $uri/ /index.php?$args;
-    }
-
-    location ~ \.php$ {
-        try_files $uri =404;
-        fastcgi_index index.php;
-        fastcgi_pass unix:/run/php/php7.0-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        include /etc/nginx/fastcgi_params;
-    }
-}
-</code></pre>
-
-<h3 id="enable--vhost">Enable  vhost</h3>
-
-<pre><code>sudo ln -s /etc/nginx/sites-available/default  /etc/nginx/sites-enabled/default    
-sudo service nginx restart
-</code></pre>
-
-        </div>
-            </article>
-    <nav>
-        <a href="/page/5">Newer Posts</a><br />
-        <a href="/page/7">Older Posts</a><br />
-    </nav>
                 </div>
                 <!--<div class="span4 sidebar">-->
                     <!--<div class="well">-->
