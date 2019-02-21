@@ -94,6 +94,15 @@ sudo -u postgres psql -d webapp -c "INSERT INTO account (username,created_on ) V
 <pre><code>sudo -u postgres psql -d webapp -c "SELECT * FROM account" ;
 </code></pre>
 
+<p>returns:</p>
+
+<pre><code> user_id | username |     created_on      
+---------+----------+---------------------
+       1 | foo      | 2019-01-01 00:00:00
+       2 | bar      | 2019-01-02 00:00:00
+(2 rows)
+</code></pre>
+
 <h2 id="switch-off-automatic-volume-mount-in-%60%2Fetc%2Ffstab-%60">Switch off automatic volume mount in <code>/etc/fstab</code></h2>
 
 <pre><code>ssh demo
@@ -146,6 +155,8 @@ VOLUME_SIZE=25
 <pre><code>openstack server remove volume $TARGET_SERVER $TARGET_VOLUME
 </code></pre>
 
+<p><em>At this point, the device should NOT be visible when you execute: <code>ls -l /dev/vd*</code></em>.</p>
+
 <h2 id="increase-volume-size">Increase volume size</h2>
 
 <pre><code>openstack volume set $TARGET_VOLUME --size $VOLUME_SIZE
@@ -155,6 +166,8 @@ VOLUME_SIZE=25
 
 <pre><code>openstack server add volume $TARGET_SERVER $TARGET_VOLUME --device /dev/vdb
 </code></pre>
+
+<p><em>At this point, the device should BE visible when you execute: <code>ls -l /dev/vd*</code></em>.</p>
 
 <h2 id="manage-partition-on-your-openstack-server">Manage partition on your openstack server</h2>
 
