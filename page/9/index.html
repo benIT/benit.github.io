@@ -71,6 +71,56 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2017/06/19/veracrypt-first-steps">First steps with Veracrypt</a></h2>
+        </header>
+        <div>
+            <h2 id="why-vercrypt%3F">Why Vercrypt?</h2>
+
+<p>It's :</p>
+
+<ul>
+<li><a href="https://www.nextinpact.com/news/91703-veracrypt-comment-chiffrer-et-cacher-fichiers-disque-dur-externe-ou-clef-usb.htm">secure</a> (based on truecrypt audit and security fix)</li>
+<li><a href="https://github.com/veracrypt/VeraCrypt">open source</a></li>
+<li><a href="https://www.nextinpact.com/news/91703-veracrypt-comment-chiffrer-et-cacher-fichiers-disque-dur-externe-ou-clef-usb.htm">french</a></li>
+</ul>
+
+<h2 id="download">Download</h2>
+
+<ul>
+<li><a href="https://veracrypt.codeplex.com/wikipage?title=Downloads#Title">download from official site</a></li>
+</ul>
+
+<h2 id="create-a-container-based-on-keyfile-authentication">Create a container based on keyfile authentication</h2>
+
+<p>In this example, my container is called <code>animals</code> and has been created from Veracrypt GUI. 
+This container has no password, it based on key system. The key has been generated from Veracrypt GUI.</p>
+
+<ul>
+<li>The container is called <code>animals</code></li>
+<li>The key is called <code>animals-key</code></li>
+</ul>
+
+<h2 id="add-files-to-container">Add files to container</h2>
+
+<pre><code>    cd veracrypt
+    veracrypt animals --keyfiles=animals-key --password=''
+    tar -cvzf animals.tgz /home/ben/Images/animals-wallpapers
+    cp animals.tgz /media/veracrypt1/
+    veracrypt -d
+</code></pre>
+
+<h2 id="let%27s-backup-it-on-a-friend-rpi%21">Let's backup it on a friend RPI!</h2>
+
+<pre><code>    rsync -avzh ben@XXX.XXX.XXX.XXX:/home/ben/veracrypt /home/ben/veracrypt        
+</code></pre>
+
+        </div>
+                    <p class="tags">
+            Tags:
+                        <a href="/blog/tags/privacy">privacy</a>,                         <a href="/blog/tags/security">security</a>                        </p>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2017/06/15/moodle-migration-procedure.">Moodle migration procedure</a></h2>
         </header>
         <div>
@@ -175,108 +225,6 @@ xdebug.idekey=MY_AWESOME_KEY
                     <p class="tags">
             Tags:
                         <a href="/blog/tags/xdebug">xdebug</a>,                         <a href="/blog/tags/phpstorm">phpstorm</a>                        </p>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2017/06/14/install-a-nextcloudbox">Install a nextcloud box with NextCloudPi</a></h2>
-        </header>
-        <div>
-            <p>Here is exposed steps to setup a nextcloud box on RPI <a href="https://ownyourbits.com/2017/02/13/nextcloud-ready-raspberry-pi-image/">consuming the nextCloudPi image</a> . enjoy ;)</p>
-
-<h2 id="nextcloudbox-setup">Nextcloudbox setup</h2>
-
-<ul>
-<li><p><a href="/blog/2017/06/12/create-a-debian-iso-live-usb-drive">burn a usb drive</a>. <a href="https://ownyourbits.com/2017/02/13/nextcloud-ready-raspberry-pi-image/">NextCloudPi</a> offers a fully configured box.</p></li>
-<li><p>insert sd card and boot. Default credentials are: <code>pi</code>/<code>raspberry</code></p></li>
-<li><p><a href="https://raspberrypi.stackexchange.com/questions/10060/raspbian-keyboard-layout">change keyboard layout</a> if needed before getting crazy:</p>
-
-<ul>
-<li><p>edit the <code>XKBLAYOUT="fr"</code> directive in <code>/etc/default/keyboard</code>:</p></li>
-<li><p>reboot: <code>sudo reboot now</code></p></li>
-</ul></li>
-<li><p>enable usb device automount:</p>
-
-<pre><code>sudo nextcloudpi-config
-</code></pre>
-
-<p>then: <code>nc-automount</code> > <code>active=yes</code></p></li>
-</ul>
-
-<p>Wait a few seconds and check your drive is mounted using:</p>
-
-<pre><code>    sudo fdisk -l
-</code></pre>
-
-<h2 id="test-it%21">Test it!</h2>
-
-<h3 id="locally">Locally</h3>
-
-<ul>
-<li>In order to test it you can <a href="/blog/2017/06/15/connect-to-raspberry-over-ethernet">take a look about connecting to pi over ethernet</a>. <em>That's pretty nice to connect to RPI with a simple ethernet cable.</em></li>
-</ul>
-
-<h3 id="behind-a-router%2Finternet-connection">Behind a router/internet connection</h3>
-
-<ul>
-<li><p>Plug RPI to your router</p></li>
-<li><p>Go to the admin panel</p></li>
-<li><p>Perform port redirection to the RPI: external 443/internal 443.</p></li>
-</ul>
-
-<h3 id="it-works%2C-yeah%21-beer-time%21">It works, yeah! beer time!</h3>
-
-<p>Enter the RPI @IP in your web browser (<code>https://10.42.0.100</code> in my case), after adding a security exception because of self signed certificate, you should see:</p>
-
-<p><img src="/images/nextcloud/nextcloud-login.png" alt="screenshot" /></p>
-
-<p><em>credentials: admin/ownyourbits</em></p>
-
-<h2 id="external-storage-setup">External storage setup</h2>
-
-<ul>
-<li><p>format your usb-drive as <code>ext4</code> and create a <code>msdos</code> partition table if necessary using gparted. The partition must be a linux partition kind to support linux right management.</p></li>
-<li><p>change nc-database to the flashdrive: <code>sudo nextcloudpi-config</code> > <code>nc-database</code></p></li>
-<li><p>change nc-datadir to the flashdrive using: <code>sudo nextcloudpi-config</code> > <code>nc-datadir</code></p></li>
-</ul>
-
-<p>If everything goes well, you should see that data and database are stored in <code>/media/USBdrive/ncdata</code> and <code>/media/USBdrive/ncdatabase</code></p>
-
-<h2 id="enable-and-set-up-wifi">Enable and set up WIFI</h2>
-
-<p>You can enable and select your WIFI connection in:
-        <code>sudo nextcloudpi-config</code> > <code>nc-wifi</code> > <code>ACTIVE=YES</code></p>
-
-<h2 id="enable-ssh">Enable SSH</h2>
-
-<p>SSH is not enabled by default, enable it in: <code>sudo raspi-config</code> > <code>5 Interfacing Options</code> > <code>P2 SSH</code>
-You can now ssh the rpi machine:</p>
-
-<pre><code>    ssh pi@10.42.0.100
-</code></pre>
-
-<p>Default rpi credentials are <em>pi/raspberry</em>, CHANGE IT by running: <code>passwd</code></p>
-
-<h2 id="troubleshooting">Troubleshooting</h2>
-
-<h3 id="trusted-domains-issue">Trusted domains issue</h3>
-
-<p>Fix it in editing <code>nexcloud/config/config.php</code>:</p>
-
-<pre><code>    ...
-    'trusted_domains' =&gt;
-    array(
-        ...
-        3 =&gt; '10.42.0.100'
-    )
-    ...
-</code></pre>
-
-<p><img src="/images/nextcloud/nextcloud-trusted-domains.png" alt="screenshot" /></p>
-
-        </div>
-                    <p class="tags">
-            Tags:
-                        <a href="/blog/tags/debian">debian</a>,                         <a href="/blog/tags/raspberry">raspberry</a>                        </p>
             </article>
     <nav>
         <a href="/page/8">Newer Posts</a><br />

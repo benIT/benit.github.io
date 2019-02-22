@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title><![CDATA[benIT&#039;s notebook]]></title>
+    <link href="/blog/categories/regexp.xml" rel="self"/>
+    <link href="/"/>
+    <updated>2019-02-22T09:25:24+00:00</updated>
+    <id>/</id>
+        <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[PHPSTORM search &amp; replace with regexp]]></title>
+            <link href="/blog/2019/02/22/phpstorm-search-and-replace-regexp"/>
+            <updated>2019-02-22T00:00:00+00:00</updated>
+            <id>/blog/2019/02/22/phpstorm-search-and-replace-regexp</id>
+            <content type="html"><![CDATA[<h2 id="context">Context</h2>
+
+<p>I have a list of 10K of #ID,and need to add a <code>,</code> at the end of each line to process them in a SQL query.</p>
+
+<h2 id="data-input">data input</h2>
+
+<pre><code>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+...
+</code></pre>
+
+<h2 id="the-trick">the trick</h2>
+
+<p>Hit <code>ctrl+R</code> to launch the <code>search &amp; replace action</code>.</p>
+
+<p>Search the following pattern:</p>
+
+<pre><code>(.*)$
+</code></pre>
+
+<p>And replace it with:</p>
+
+<pre><code>$1,
+</code></pre>
+
+<p><img src="/images/phpstorm/search-replace-regexp.png" alt="screenshot" /></p>
+
+<h2 id="data-output">data output</h2>
+
+<pre><code>1,
+2,
+3,
+4,
+5,
+6,
+7,
+8,
+9,
+10,
+...,
+</code></pre>
+]]></content>
+        </entry>
+    </feed>
