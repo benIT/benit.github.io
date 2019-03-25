@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Home &mdash; benIT&#039;s notebook &mdash; </title>
+        <title>GIT rebase &mdash; benIT&#039;s notebook &mdash; </title>
         <meta charset="utf-8">
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <meta name="robots" content="noindex, follow">
-                <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+            <meta name="robots" content="index, follow">
+        <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="/css/style.css" rel="stylesheet" type="text/css" />
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -71,98 +71,194 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2019/01/14/docker-dockerfile">Docker 101: Dockerfile</a></h2>
+            <h2>GIT rebase <small>post</small></h2>
         </header>
         <div>
-            <h1 id="dockerfile">Dockerfile</h1>
+            <p>The aim of this post is to understand and get confortable with the git rebase command.</p>
 
-<p>A <code>Dockerfile</code> is a text document that contains all the commands a user could call on the command line to assemble an image.</p>
+<p><a href="https://www.atlassian.com/git/tutorials/rewriting-history/git-rebase">Definition</a>:</p>
 
-<h2 id="example">Example</h2>
+<blockquote>
+  <p>Rebasing is the process of moving or combining a sequence of commits to a new base commit. Rebasing is most useful and easily visualized in the context of a feature branching workflow.</p>
+</blockquote>
 
-<p>You will find <a href="https://github.com/benIT/debian-web">in this repo</a> a running <code>Dockerfile</code>  based on a debian image that runs an Apache webserver.</p>
+<h2 id="create-a-git-repo">Create a git repo</h2>
 
-<p>You will find <a href="https://github.com/benIT/debian-web/blob/master/README.md">in this file</a> all the base commands to manage a <code>Dockerfile</code> .</p>
+<pre><code>mkdir rebase-test &amp;&amp; cd rebase-test
+git init
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>Initialized empty Git repository in /home/bmn/rebase-test/.git/
+</code></pre>
+
+<h2 id="create-one-commit-on-%60master%60-branch">Create one commit on <code>master</code> branch</h2>
+
+<pre><code>echo "first content from master" &gt;&gt; README.md
+git add README.md 
+git commit -m "first commit"
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>[master (root-commit) dc5f8d2] first commit
+1 file changed, 1 insertion(+)
+create mode 100644 README.md
+</code></pre>
+
+<h2 id="create-a-%60feature%60-branch-from-that-commit">Create a <code>feature</code> branch from that commit</h2>
+
+<pre><code>git checkout -b feature
+Switched to a new branch 'feature'
+</code></pre>
+
+<h2 id="create-one-commit-on-the-%60feature%60-branch">Create one commit on the <code>feature</code> branch</h2>
+
+<pre><code>echo "introducing a new feature" &gt;&gt; README.md
+</code></pre>
+
+<p>Check file:</p>
+
+<pre><code>cat README.md
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>first content from master
+introducing a new feature
+
+
+git commit -am "add feature line"
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>[feature 2212653] add feature line
+1 file changed, 1 insertion(+)
+</code></pre>
+
+<h2 id="check-repo-graph">Check repo graph</h2>
+
+<pre><code>nohup gitg &amp;
+</code></pre>
+
+<p><img src="/images/git-rebase/graph1.png" alt="screenshot" /></p>
+
+<h2 id="create-a-new-commit-on-master-branch">Create a new commit on master branch</h2>
+
+<pre><code>git checkout master 
+Switched to branch 'master'
+</code></pre>
+
+<p>Check file:</p>
+
+<pre><code>cat README.md 
+first content from master
+
+vim README.md # add a title line for example
+cat README.md
+</code></pre>
+
+<p>output:</p>
+
+<pre><code># Master title
+first content from master
+</code></pre>
+
+<p>Commit that:</p>
+
+<pre><code>git commit -am "add master title"
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>[master ec82793] add master title
+ 1 file changed, 1 insertion(+)
+</code></pre>
+
+<blockquote>
+  <p>Let's say that <code>master</code> branch has a new commit because work on master has been delivered. Let's rebase the <code>feature</code> branch to this new commit, to get the new content from <code>master</code> and play the commit from <code>feature</code> branch.</p>
+</blockquote>
+
+<h2 id="let%27s-rebase-the-%60feature%60-branch-on-the-%60master%60-branch">Let's rebase the <code>feature</code> branch on the <code>master</code> branch</h2>
+
+<pre><code>git checkout feature 
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>Switched to branch 'feature'
+
+
+git rebase -i master 
+</code></pre>
+
+<p><img src="/images/git-rebase/rebase.png" alt="screenshot" /></p>
+
+<p>output:</p>
+
+<pre><code>Successfully rebased and updated refs/heads/feature.
+</code></pre>
+
+<p><em>Our <code>feature</code> branch starts now from <code>master</code> head commit and now git is replaying all the commit from our <code>feature</code> branch from this point.</em></p>
+
+<p>The result is the following:</p>
+
+<p>The file <code>README.ms</code> now contains the commits from <code>master</code> + the commit from <code>feature</code>.</p>
+
+<h2 id="let%27s-check-feature-branch-content">Let's check feature branch content</h2>
+
+<pre><code>cat README.md 
+</code></pre>
+
+<p>output:</p>
+
+<pre><code># Master title
+first content from master
+introducing a new feature
+</code></pre>
+
+<h2 id="let%27s-check-%60master%60-branch-content">Let's check <code>master</code> branch content</h2>
+
+<pre><code>git checkout master 
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>Switched to branch 'master'
+
+
+cat README.md
+</code></pre>
+
+<p>output:</p>
+
+<pre><code># Master title
+first content from master
+</code></pre>
+
+<h2 id="check-repo-graph">Check repo graph</h2>
+
+<pre><code>nohup gitg &amp;
+</code></pre>
+
+<p><img src="/images/git-rebase/graph2.png" alt="screenshot" /></p>
 
         </div>
+                    <p class="categories">
+            Categories:
+                        <a href="/blog/categories/GIT">GIT</a>                        </p>
+                
+                    <nav class="article">
+                <ul>
+                                                                <li>Previous: <a class="previous" href="/blog/2019/02/22/phpstorm-search-and-replace-regexp" title="PHPSTORM search &amp; replace with regexp"><span class="title">PHPSTORM search &amp; replace with regexp</span></a></li>
+                                    </ul>
+            </nav>
             </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2018/04/27/wordpress-migration-procedure">Wordpress migration procedure</a></h2>
-        </header>
-        <div>
-            <h2 id="extract-source-site-filesystem">Extract source site filesystem</h2>
 
-<pre><code>tar -czf mySite.tgz /var/www/mySite
-</code></pre>
 
-<h2 id="extract-source-site-database">Extract source site database</h2>
 
-<pre><code>mysqldump -u mySite -p mySite &gt; mySite.sql
-</code></pre>
-
-<h2 id="transfert-source-fs-and-db-to-target-site">Transfert source fs and db to target site</h2>
-
-<ul>
-<li><p>Extract tar archive</p>
-
-<pre><code>tar -czf mySite.tgz
-</code></pre></li>
-<li><p>Import database</p></li>
-</ul>
-
-<h2 id="migrate-database">Migrate database</h2>
-
-<p>Wordpress stores url in database, some of them can be serialized so wa can't just replace them with a bash script.</p>
-
-<p>The best and easier way is to use this project <a href="https://github.com/interconnectit/Search-Replace-DB">interconnectit/Search-Replace-DB</a> :</p>
-
-<ul>
-<li>download it</li>
-<li>upload it to the wordpress root</li>
-<li>open a browser at the matching url</li>
-<li>fill the form to migrate your database</li>
-</ul>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2018/02/23/keepass-kee-linux">Install keepass and kee on linux</a></h2>
-        </header>
-        <div>
-            <h2 id="install-keepass2">install keepass2</h2>
-
-<pre><code>sudo add-apt-repository ppa:jtaylor/keepass
-sudo apt-get update &amp;&amp; sudo apt-get install keepass2
-</code></pre>
-
-<h2 id="install-firefox-addon-%27kee%27">install firefox addon 'kee'</h2>
-
-<ul>
-<li><a href="https://addons.mozilla.org/fr/firefox/addon/keefox/?src=search">download it here</a></li>
-<li><a href="https://github.com/kee-org/KeeFox/wiki/en-|-Getting-started#linux">kee doc here</a> with linux keepass requirement.</li>
-</ul>
-
-<h2 id="download-keepassrpc.plgx-plugin">download KeePassRPC.plgx plugin</h2>
-
-<p><a href="https://github.com/kee-org/keepassrpc/releases">download KeePassRPC.plgx plugin</a></p>
-
-<pre><code>sudo mkdir /usr/lib/keepass2/plugins
-sudo cp 'KeePassRPC.plgx' '/usr/lib/keepass2/plugins/'
-sudo apt-get install mono-complete
-</code></pre>
-
-<h2 id="restart-keepass-and-firefox">Restart keepass and firefox</h2>
-
-<p>you should be prompt about kee to authorize keepass</p>
-
-        </div>
-            </article>
-    <nav>
-        <a href="/page/3">Newer Posts</a><br />
-        <a href="/page/5">Older Posts</a><br />
-    </nav>
                 </div>
                 <!--<div class="span4 sidebar">-->
                     <!--<div class="well">-->

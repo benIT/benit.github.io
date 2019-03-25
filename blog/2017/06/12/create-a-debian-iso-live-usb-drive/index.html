@@ -80,12 +80,15 @@
 <li>Download a debian iso from <a href="https://cdimage.debian.org/debian-cd/current-live/amd64/iso-hybrid/">debian official site</a></li>
 </ul>
 
+<h2 id="identify-usb-drive">Identify USB drive</h2>
+
+<p>identify your usb drive with: <code>fdisk -l</code> OR with <code>lsblk</code></p>
+
 <h2 id="format-your-usb-key-and-flag-it-as-bootable">Format your usb key and flag it as bootable</h2>
 
 <ul>
 <li>install gparted: <code>sudo apt-get install gparted</code></li>
-<li>identify your usb drive with: <code>fdisk -l</code></li>
-<li>format it as <code>ntfs</code>(so the drive can be used with windows too) or for linux exclusive usage as <code>ext4</code></li>
+<li>format it as <code>fat32</code>(so the drive can be used with windows too) or for linux exclusive usage as <code>ext4</code></li>
 <li>flag it as <code>boot</code></li>
 <li>unmount the key</li>
 <li><a href="http://elinux.org/RPi_Adding_USB_Drives">here is a great resource</a> about partition and flashdrive</li>
@@ -95,7 +98,7 @@
 
 <p>Copy iso file to key using <code>dd</code> (~5 minutes ):</p>
 
-<pre><code>sudo dd bs=4M if=debian-live-8.8.0-amd64-gnome-desktop.iso of=/dev/sdb
+<pre><code>sudo dd bs=4M if=debian-live-8.8.0-amd64-gnome-desktop.iso of=/dev/sdb  &amp;&amp; sync 
 </code></pre>
 
 <ul>
