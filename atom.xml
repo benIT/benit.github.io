@@ -3,7 +3,7 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-03-25T09:01:55+00:00</updated>
+    <updated>2019-03-25T09:12:59+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -120,15 +120,19 @@ first content from master
 
 <h2 id="let%27s-rebase-the-%60feature%60-branch-on-the-%60master%60-branch">Let's rebase the <code>feature</code> branch on the <code>master</code> branch</h2>
 
+<p>Let's move on our <code>feature</code> branch:</p>
+
 <pre><code>git checkout feature 
 </code></pre>
 
 <p>output:</p>
 
 <pre><code>Switched to branch 'feature'
+</code></pre>
 
+<p>And now the rebase operation itself:</p>
 
-git rebase -i master 
+<pre><code>git rebase -i master 
 </code></pre>
 
 <p><img src="/images/git-rebase/rebase.png" alt="screenshot" /></p>
