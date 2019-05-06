@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Posts Archive &mdash; benIT&#039;s notebook &mdash; </title>
+        <title>RIP a password protected archive with John the Ripper &mdash; benIT&#039;s notebook &mdash; </title>
         <meta charset="utf-8">
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <meta name="robots" content="noindex, follow">
-                <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+            <meta name="robots" content="index, follow">
+        <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="/css/style.css" rel="stylesheet" type="text/css" />
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -69,50 +69,134 @@
         <div class="mainContent container">
             <div class="row-fluid">
                 <div class="span8">
-                    <h2>Posts Archive</h2>
-        <h3>January 2019</h3>
-  <div>
-    <a href="/blog/2019/01/14/docker-networking">Docker 101: networking</a>
-  </div>
-  <div>
-    <a href="/blog/2019/01/14/docker-dockerfile">Docker 101: Dockerfile</a>
-  </div>
-        <h3>April 2018</h3>
-  <div>
-    <a href="/blog/2018/04/27/wordpress-migration-procedure">Wordpress migration procedure</a>
-  </div>
-    <h3>February 2018</h3>
-  <div>
-    <a href="/blog/2018/02/23/keepass-kee-linux">Install keepass and kee on linux</a>
-  </div>
-    <h3>January 2018</h3>
-  <div>
-    <a href="/blog/2018/01/22/mysql-2-pgsql-conversion">mySQL to postgreSQL schema conversion</a>
-  </div>
-  <div>
-    <a href="/blog/2018/01/11/php7-nginx-memcached-session">Setting up a memcached server with PHP7.X and a NGINX webserver</a>
-  </div>
-  <div>
-    <a href="/blog/2018/01/11/configure-moodle-session-handling-with-memcached">Configure moodle 3.x session handling with memcached</a>
-  </div>
-        <h3>December 2017</h3>
-  <div>
-    <a href="/blog/2017/12/08/docker-basics">Docker 101:  basics</a>
-  </div>
-    <h3>November 2017</h3>
-  <div>
-    <a href="/blog/2017/11/13/debian-fixing-error-after-partition-edition">Debian:  fixing error: &#039;A start job is running for dev-disk-...&#039;</a>
-  </div>
-  <div>
-    <a href="/blog/2017/11/09/moodle-activate-debug-using-sql">Moodle 3.X: activate debug whithout GUI</a>
-  </div>
+                        <article>
+        <header>
+            <h2>RIP a password protected archive with John the Ripper <small>post</small></h2>
+        </header>
+        <div>
+            <h2 id="install-kali">Install KALI</h2>
 
-<div>
-    <nav class="article clearfix">
-        <a class="previous" href="/blog" title="Previous Page"><span class="title">Previous Page</span></a>
-            <a class="next" href="/blog/page/3.html" title="Next Page"><span class="title">Next Page</span></a>
-        </nav>
-</div>                </div>
+<p>First, <a href="https://www.kali.org/news/announcing-kali-for-vagrant/">intall a kali headless VM with vagrant</a>.</p>
+
+<p>Grant large CPUs and RAM resources to the VM. For instance, in <code>Vagrantfile</code>:</p>
+
+<pre><code># Create a forwarded port
+config.vm.network "forwarded_port", guest: 80, host: 8080
+
+# Create a private network. In VirtualBox, this is a Host-Only network
+config.vm.network "private_network", ip: "192.168.33.101"
+
+# VirtualBox specific settings
+config.vm.provider "virtualbox" do |vb|
+# Hide the VirtualBox GUI when booting the machine
+vb.gui = false
+
+# Customize the amount of memory on the VM:
+vb.memory = "8192"
+vb.cpus= "5"
+end
+
+# Provision the machine with a shell script
+config.vm.provision "shell", inline: &lt;&lt;-SHELL
+apt-get update
+apt-get install -y crowbar
+SHELL
+end
+</code></pre>
+
+<h2 id="generate-a-test-archive">Generate a test archive</h2>
+
+<pre><code>echo "foo bar" &gt; file.txt
+zip -P pass archive.zip file.txt
+</code></pre>
+
+<p><strong>Thus, our archive is protected with the password: <code>pass</code></strong></p>
+
+<p>Test password protection:</p>
+
+<pre><code>unzip archive.zip 
+Archive:  archive.zip
+[archive.zip] file.txt password: 
+</code></pre>
+
+<h2 id="rip-archive.zip">RIP archive.zip</h2>
+
+<h3 id="get-password-hash-with-zip2john">Get password hash with zip2john</h3>
+
+<pre><code>zip2john archive.zip &gt; hash.txt
+</code></pre>
+
+<p>Prints :</p>
+
+<pre><code>ver 1.0 efh 5455 efh 7875 archive.zip/file.txt PKZIP Encr: 2b chk, TS_chk, cmplen=20, decmplen=8, crc=13DDB427
+</code></pre>
+
+<h3 id="rip-hash">RIP hash</h3>
+
+<pre><code>john hash.txt
+</code></pre>
+
+<p>Prints:</p>
+
+<pre><code>Using default input encoding: UTF-8
+Loaded 1 password hash (PKZIP [32/64])
+Will run 2 OpenMP threads
+Proceeding with single, rules:Wordlist
+Press 'q' or Ctrl-C to abort, almost any other key for status
+Warning: Only 4 candidates buffered for the current salt, minimum 8
+needed for performance.
+Warning: Only 5 candidates buffered for the current salt, minimum 8
+needed for performance.
+Warning: Only 6 candidates buffered for the current salt, minimum 8
+needed for performance.
+Warning: Only 4 candidates buffered for the current salt, minimum 8
+needed for performance.
+Almost done: Processing the remaining buffered candidate passwords, if any
+Proceeding with wordlist:/usr/share/john/password.lst, rules:Wordlist
+pass             (archive.zip/file.txt)
+1g 0:00:00:00 DONE 2/3 (2019-05-06 09:53) 50.00g/s 2109Kp/s 2109Kc/s 2109KC/s 123456..Peter
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed
+</code></pre>
+
+<h3 id="and-archive-password-is...">And archive password is...</h3>
+
+<pre><code>pass             (archive.zip/file.txt)
+</code></pre>
+
+<h3 id="tips">Tips</h3>
+
+<p>If you run <code>john</code> again, you will get:</p>
+
+<pre><code>john hash.txt
+Using default input encoding: UTF-8
+Loaded 1 password hash (PKZIP [32/64])
+No password hashes left to crack (see FAQ)
+</code></pre>
+
+<p>This means that the password has already been ripped, to print password check <code>.john/john.pot</code> file or use <code>--show</code> option:</p>
+
+<pre><code>john hash.txt --show
+archive.zip/file.txt:pass:file.txt:archive.zip::archive.zip
+
+1 password hash cracked, 0 left
+</code></pre>
+
+        </div>
+                    <p class="categories">
+            Categories:
+                        <a href="/blog/categories/hacking">hacking</a>,                         <a href="/blog/categories/kali">kali</a>                        </p>
+                
+                    <nav class="article">
+                <ul>
+                                                                <li>Previous: <a class="previous" href="/blog/2019/04/08/install-redmine" title="Install REDMINE 3.4 with PgSQL and Apache2 on debian 9"><span class="title">Install REDMINE 3.4 with PgSQL and Apache2 on debian 9</span></a></li>
+                                    </ul>
+            </nav>
+            </article>
+
+
+
+                </div>
                 <!--<div class="span4 sidebar">-->
                     <!--<div class="well">-->
                         <!--<h4>benIT&#039;s notebook</h4>-->
