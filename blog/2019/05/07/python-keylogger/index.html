@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Home &mdash; benIT&#039;s notebook &mdash; </title>
+        <title>Python keylogger &mdash; benIT&#039;s notebook &mdash; </title>
         <meta charset="utf-8">
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <meta name="robots" content="noindex, follow">
-                <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+            <meta name="robots" content="index, follow">
+        <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="/css/style.css" rel="stylesheet" type="text/css" />
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -71,7 +71,7 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2019/05/07/python-keylogger">Python keylogger</a></h2>
+            <h2>Python keylogger <small>post</small></h2>
         </header>
         <div>
             <h2 id="python-keylogger-package">Python keylogger package</h2>
@@ -169,185 +169,19 @@ d
 </code></pre>
 
         </div>
+                    <p class="categories">
+            Categories:
+                        <a href="/blog/categories/hacking">hacking</a>,                         <a href="/blog/categories/kali">kali</a>                        </p>
+                
+                    <nav class="article">
+                <ul>
+                                                                <li>Previous: <a class="previous" href="/blog/2019/05/06/john-the-ripper-rip-linux-user-password" title="RIP linux user password with John the Ripper"><span class="title">RIP linux user password with John the Ripper</span></a></li>
+                                    </ul>
+            </nav>
             </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/05/06/john-the-ripper-rip-linux-user-password">RIP linux user password with John the Ripper</a></h2>
-        </header>
-        <div>
-            <h2 id="add-a-new-user">Add a new user</h2>
 
-<pre><code>sudo useradd -r foo
-sudo passwd foo
-Enter new UNIX password: 
-Retype new UNIX password: 
-passwd: password updated successfully
-</code></pre>
 
-<h2 id="password-hash-file">Password hash file</h2>
 
-<p>Linux user password hash are stored here: <code>/etc/shadow</code></p>
-
-<h2 id="rip-it%21">Rip it!</h2>
-
-<pre><code>sudo john /etc/shadow
-Created directory: /root/.john
-Using default input encoding: UTF-8
-Loaded 3 password hashes with 3 different salts (sha512crypt, crypt(3) $6$ [SHA512 256/256 AVX2 4x])
-Cost 1 (iteration count) is 5000 for all loaded hashes
-Will run 5 OpenMP threads
-Proceeding with single, rules:Wordlist
-Press 'q' or Ctrl-C to abort, almost any other key for status
-vagrant          (vagrant)
-Warning: Only 3 candidates buffered for the current salt, minimum 20
-needed for performance.
-toor             (root)
-Warning: Only 14 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 6 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 16 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 17 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 3 candidates buffered for the current salt, minimum 20
-needed for performance.
-Almost done: Processing the remaining buffered candidate passwords, if any
-Warning: Only 15 candidates buffered for the current salt, minimum 20
-needed for performance.
-Proceeding with wordlist:/usr/share/john/password.lst, rules:Wordlist
-foobar           (foo)
-3g 0:00:00:01 DONE 2/3 (2019-05-06 10:39) 1.570g/s 1806p/s 1808c/s 1808C/s 1234qwer..ford
-Use the "--show" option to display all of the cracked passwords reliably
-Session completed
-</code></pre>
-
-<h3 id="and-user-password-is...">And user password is...</h3>
-
-<pre><code>foobar           (foo)
-</code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/05/06/john-the-ripper-rip-archive">RIP a password protected archive with John the Ripper</a></h2>
-        </header>
-        <div>
-            <h2 id="install-kali">Install KALI</h2>
-
-<p>First, <a href="https://www.kali.org/news/announcing-kali-for-vagrant/">intall a kali headless VM with vagrant</a>.</p>
-
-<p>Grant large CPUs and RAM resources to the VM. For instance, in <code>Vagrantfile</code>:</p>
-
-<pre><code># Create a forwarded port
-config.vm.network "forwarded_port", guest: 80, host: 8080
-
-# Create a private network. In VirtualBox, this is a Host-Only network
-config.vm.network "private_network", ip: "192.168.33.101"
-
-# VirtualBox specific settings
-config.vm.provider "virtualbox" do |vb|
-# Hide the VirtualBox GUI when booting the machine
-vb.gui = false
-
-# Customize the amount of memory on the VM:
-vb.memory = "8192"
-vb.cpus= "5"
-end
-
-# Provision the machine with a shell script
-config.vm.provision "shell", inline: &lt;&lt;-SHELL
-apt-get update
-apt-get install -y crowbar
-SHELL
-end
-</code></pre>
-
-<h2 id="generate-a-test-archive">Generate a test archive</h2>
-
-<pre><code>echo "foo bar" &gt; file.txt
-zip -P pass archive.zip file.txt
-</code></pre>
-
-<p><strong>Thus, our archive is protected with the password: <code>pass</code></strong></p>
-
-<p>Test password protection:</p>
-
-<pre><code>unzip archive.zip 
-Archive:  archive.zip
-[archive.zip] file.txt password: 
-</code></pre>
-
-<h2 id="rip-archive.zip">RIP archive.zip</h2>
-
-<h3 id="get-password-hash-with-zip2john">Get password hash with zip2john</h3>
-
-<pre><code>zip2john archive.zip &gt; hash.txt
-</code></pre>
-
-<p>Prints :</p>
-
-<pre><code>ver 1.0 efh 5455 efh 7875 archive.zip/file.txt PKZIP Encr: 2b chk, TS_chk, cmplen=20, decmplen=8, crc=13DDB427
-</code></pre>
-
-<h3 id="rip-hash">RIP hash</h3>
-
-<pre><code>john hash.txt
-</code></pre>
-
-<p>Prints:</p>
-
-<pre><code>Using default input encoding: UTF-8
-Loaded 1 password hash (PKZIP [32/64])
-Will run 2 OpenMP threads
-Proceeding with single, rules:Wordlist
-Press 'q' or Ctrl-C to abort, almost any other key for status
-Warning: Only 4 candidates buffered for the current salt, minimum 8
-needed for performance.
-Warning: Only 5 candidates buffered for the current salt, minimum 8
-needed for performance.
-Warning: Only 6 candidates buffered for the current salt, minimum 8
-needed for performance.
-Warning: Only 4 candidates buffered for the current salt, minimum 8
-needed for performance.
-Almost done: Processing the remaining buffered candidate passwords, if any
-Proceeding with wordlist:/usr/share/john/password.lst, rules:Wordlist
-pass             (archive.zip/file.txt)
-1g 0:00:00:00 DONE 2/3 (2019-05-06 09:53) 50.00g/s 2109Kp/s 2109Kc/s 2109KC/s 123456..Peter
-Use the "--show" option to display all of the cracked passwords reliably
-Session completed
-</code></pre>
-
-<h3 id="and-archive-password-is...">And archive password is...</h3>
-
-<pre><code>pass             (archive.zip/file.txt)
-</code></pre>
-
-<h3 id="tips">Tips</h3>
-
-<p>If you run <code>john</code> again, you will get:</p>
-
-<pre><code>john hash.txt
-Using default input encoding: UTF-8
-Loaded 1 password hash (PKZIP [32/64])
-No password hashes left to crack (see FAQ)
-</code></pre>
-
-<p>This means that the password has already been ripped, to print password check <code>.john/john.pot</code> file or use <code>--show</code> option:</p>
-
-<pre><code>john hash.txt --show
-archive.zip/file.txt:pass:file.txt:archive.zip::archive.zip
-
-1 password hash cracked, 0 left
-</code></pre>
-
-        </div>
-            </article>
-    <nav>
-        <br />
-        <a href="/page/2">Older Posts</a><br />
-    </nav>
                 </div>
                 <!--<div class="span4 sidebar">-->
                     <!--<div class="well">-->
