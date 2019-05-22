@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Posts Archive &mdash; benIT&#039;s notebook &mdash; </title>
+        <title>RIP a md5 hash with john the ripper &mdash; benIT&#039;s notebook &mdash; </title>
         <meta charset="utf-8">
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <meta name="robots" content="noindex, follow">
-                <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+            <meta name="robots" content="index, follow">
+        <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="/css/style.css" rel="stylesheet" type="text/css" />
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -69,49 +69,42 @@
         <div class="mainContent container">
             <div class="row-fluid">
                 <div class="span8">
-                    <h2>Posts Archive</h2>
-        <h3>February 2019</h3>
-  <div>
-    <a href="/blog/2019/02/11/linux-mastering-logs">Linux logs</a>
-  </div>
-    <h3>January 2019</h3>
-  <div>
-    <a href="/blog/2019/01/25/docker-make-a-christmas-garland-with-nginx-apache">How to make a christmas garland with a nginx reverse proxy and 3 apache backends under docker?</a>
-  </div>
-  <div>
-    <a href="/blog/2019/01/15/docker-docker-compose">Docker 101: docker-compose</a>
-  </div>
-  <div>
-    <a href="/blog/2019/01/14/docker-networking">Docker 101: networking</a>
-  </div>
-  <div>
-    <a href="/blog/2019/01/14/docker-dockerfile">Docker 101: Dockerfile</a>
-  </div>
-  <div>
-    <a href="/blog/2019/01/10/docker-installation">Install Docker on ubuntu 16.04</a>
-  </div>
-        <h3>April 2018</h3>
-  <div>
-    <a href="/blog/2018/04/27/wordpress-migration-procedure">Wordpress migration procedure</a>
-  </div>
-    <h3>February 2018</h3>
-  <div>
-    <a href="/blog/2018/02/23/keepass-kee-linux">Install keepass and kee on linux</a>
-  </div>
-    <h3>January 2018</h3>
-  <div>
-    <a href="/blog/2018/01/22/mysql-2-pgsql-conversion">mySQL to postgreSQL schema conversion</a>
-  </div>
-  <div>
-    <a href="/blog/2018/01/11/php7-nginx-memcached-session">Setting up a memcached server with PHP7.X and a NGINX webserver</a>
-  </div>
+                        <article>
+        <header>
+            <h2>RIP a md5 hash with john the ripper <small>post</small></h2>
+        </header>
+        <div>
+            <h2 id="rip-a-md5-hash">RIP a md5 hash</h2>
 
-<div>
-    <nav class="article clearfix">
-        <a class="previous" href="/blog" title="Previous Page"><span class="title">Previous Page</span></a>
-            <a class="next" href="/blog/page/3.html" title="Next Page"><span class="title">Next Page</span></a>
-        </nav>
-</div>                </div>
+<pre><code>echo "ca50dfb151104b1ee005d68fa9a970ce" &gt; md5-to-crack
+john --format=raw-md5 md5-to-crack --show
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code>john --format=raw-md5 md5-to-crack --show
+?:dolorem
+
+1 password hash cracked, 0 left
+</code></pre>
+
+<p>Password for hash <code>ca50dfb151104b1ee005d68fa9a970ce</code> is <code>dolorem</code></p>
+
+        </div>
+                    <p class="categories">
+            Categories:
+                        <a href="/blog/categories/hacking">hacking</a>,                         <a href="/blog/categories/kali">kali</a>                        </p>
+                
+                    <nav class="article">
+                <ul>
+                                                                <li>Previous: <a class="previous" href="/blog/2019/05/07/python-keylogger" title="Python keylogger"><span class="title">Python keylogger</span></a></li>
+                                    </ul>
+            </nav>
+            </article>
+
+
+
+                </div>
                 <!--<div class="span4 sidebar">-->
                     <!--<div class="well">-->
                         <!--<h4>benIT&#039;s notebook</h4>-->

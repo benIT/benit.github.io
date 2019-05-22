@@ -71,6 +71,51 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2019/01/15/docker-docker-compose">Docker 101: docker-compose</a></h2>
+        </header>
+        <div>
+            <h1 id="docker-compose">Docker compose</h1>
+
+<p>Purpose: compose is a tool designed to create multi-containers app.</p>
+
+<h2 id="install">Install</h2>
+
+<pre><code>sudo apt install python-pip
+pip install docker-compose
+</code></pre>
+
+<h2 id="docker-compose.yml">docker-compose.yml</h2>
+
+<p>The magic happens in a file named <code>docker-compose.yml</code></p>
+
+<h2 id="run">Run</h2>
+
+<pre><code>docker-compose up -d
+</code></pre>
+
+<h2 id="stop">Stop</h2>
+
+<pre><code>docker-compose down -v
+</code></pre>
+
+<h2 id="networking">Networking</h2>
+
+<p><code>docker-compose</code> handles the creation a private network:</p>
+
+<pre><code>Creating network "n-tiers_default" with the default driver
+Creating object-cache ... done
+Creating pgsql        ... done
+Creating web          ... done
+</code></pre>
+
+<h1 id="example">Example</h1>
+
+<p>Better than words, take a look at this <a href="https://github.com/benIT/docker-compose-n-tiers">repo that illustrates a classical n-tiers web app</a></p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2019/01/14/docker-networking">Docker 101: networking</a></h2>
         </header>
         <div>
@@ -165,46 +210,6 @@ docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO accou
 <p>You will find <a href="https://github.com/benIT/debian-web">in this repo</a> a running <code>Dockerfile</code>  based on a debian image that runs an Apache webserver.</p>
 
 <p>You will find <a href="https://github.com/benIT/debian-web/blob/master/README.md">in this file</a> all the base commands to manage a <code>Dockerfile</code> .</p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/01/10/docker-installation">Install Docker on ubuntu 16.04</a></h2>
-        </header>
-        <div>
-            <h2 id="install-docker-ce-for-ubuntu">Install Docker CE for Ubuntu</h2>
-
-<p>See <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/">official documentation</a>.</p>
-
-<h2 id="run-docker-as-a-non-root-user">Run docker as a non-root user</h2>
-
-<p>See <a href="https://docs.docker.com/install/linux/linux-postinstall/">official documentation</a>.</p>
-
-<h2 id="configure-docker-to-be-used-behind-a-http-proxy">Configure docker to be used behind a http proxy</h2>
-
-<p>Create the following file <code>/etc/systemd/system/docker.service.d/http-proxy.conf</code> and edit it:</p>
-
-<pre><code>[Service]
-Environment=http_proxy=http://user:pass@ip:port
-Environment=https_proxy=http://user:pass@ip:port
-</code></pre>
-
-<h2 id="test">Test</h2>
-
-<pre><code>docker run hello-world
-</code></pre>
-
-<h2 id="install-docker-compose">Install docker-compose</h2>
-
-<p>See <a href="https://docs.docker.com/compose/install/">official documentation</a>.</p>
-
-<p>currently, I use docker-compose <code>v1.23.2</code></p>
-
-<pre><code>sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-docker-compose --version
-</code></pre>
 
         </div>
             </article>

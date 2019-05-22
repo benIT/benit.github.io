@@ -3,9 +3,31 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/hacking.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-05-22T14:33:04+00:00</updated>
+    <updated>2019-05-22T15:09:41+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[RIP a md5 hash with john the ripper]]></title>
+            <link href="/blog/2019/05/22/john-the-ripper-rip-md5-hash"/>
+            <updated>2019-05-22T00:00:00+00:00</updated>
+            <id>/blog/2019/05/22/john-the-ripper-rip-md5-hash</id>
+            <content type="html"><![CDATA[<h2 id="rip-a-md5-hash">RIP a md5 hash</h2>
+
+<pre><code>echo "ca50dfb151104b1ee005d68fa9a970ce" &gt; md5-to-crack
+john --format=raw-md5 md5-to-crack --show
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code>john --format=raw-md5 md5-to-crack --show
+?:dolorem
+
+1 password hash cracked, 0 left
+</code></pre>
+
+<p>Password for hash <code>ca50dfb151104b1ee005d68fa9a970ce</code> is <code>dolorem</code></p>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Python keylogger]]></title>
             <link href="/blog/2019/05/07/python-keylogger"/>
