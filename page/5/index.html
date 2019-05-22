@@ -170,41 +170,41 @@ docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO accou
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2018/04/27/wordpress-migration-procedure">Wordpress migration procedure</a></h2>
+            <h2><a href="/blog/2019/01/10/docker-installation">Install Docker on ubuntu 16.04</a></h2>
         </header>
         <div>
-            <h2 id="extract-source-site-filesystem">Extract source site filesystem</h2>
+            <h2 id="install-docker-ce-for-ubuntu">Install Docker CE for Ubuntu</h2>
 
-<pre><code>tar -czf mySite.tgz /var/www/mySite
+<p>See <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/">official documentation</a>.</p>
+
+<h2 id="run-docker-as-a-non-root-user">Run docker as a non-root user</h2>
+
+<p>See <a href="https://docs.docker.com/install/linux/linux-postinstall/">official documentation</a>.</p>
+
+<h2 id="configure-docker-to-be-used-behind-a-http-proxy">Configure docker to be used behind a http proxy</h2>
+
+<p>Create the following file <code>/etc/systemd/system/docker.service.d/http-proxy.conf</code> and edit it:</p>
+
+<pre><code>[Service]
+Environment=http_proxy=http://user:pass@ip:port
+Environment=https_proxy=http://user:pass@ip:port
 </code></pre>
 
-<h2 id="extract-source-site-database">Extract source site database</h2>
+<h2 id="test">Test</h2>
 
-<pre><code>mysqldump -u mySite -p mySite &gt; mySite.sql
+<pre><code>docker run hello-world
 </code></pre>
 
-<h2 id="transfert-source-fs-and-db-to-target-site">Transfert source fs and db to target site</h2>
+<h2 id="install-docker-compose">Install docker-compose</h2>
 
-<ul>
-<li><p>Extract tar archive</p>
+<p>See <a href="https://docs.docker.com/compose/install/">official documentation</a>.</p>
 
-<pre><code>tar -czf mySite.tgz
-</code></pre></li>
-<li><p>Import database</p></li>
-</ul>
+<p>currently, I use docker-compose <code>v1.23.2</code></p>
 
-<h2 id="migrate-database">Migrate database</h2>
-
-<p>Wordpress stores url in database, some of them can be serialized so wa can't just replace them with a bash script.</p>
-
-<p>The best and easier way is to use this project <a href="https://github.com/interconnectit/Search-Replace-DB">interconnectit/Search-Replace-DB</a> :</p>
-
-<ul>
-<li>download it</li>
-<li>upload it to the wordpress root</li>
-<li>open a browser at the matching url</li>
-<li>fill the form to migrate your database</li>
-</ul>
+<pre><code>sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+</code></pre>
 
         </div>
             </article>

@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Category Archive "linux" &mdash; benIT&#039;s notebook &mdash; </title>
+        <title>Install Docker on ubuntu 16.04 &mdash; benIT&#039;s notebook &mdash; </title>
         <meta charset="utf-8">
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="alternate" type="application/atom+xml" href="/blog/categories/linux.xml" title="benIT&#039;s notebook 'linux' category feed" />
-    <meta name="robots" content="noindex, follow">
+            <meta name="robots" content="index, follow">
         <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="/css/style.css" rel="stylesheet" type="text/css" />
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
@@ -70,36 +69,59 @@
         <div class="mainContent container">
             <div class="row-fluid">
                 <div class="span8">
-                    <h2>"linux"</h2>
-        <h3>November 2017</h3>
-<article>
-  <div><a href="/blog/2017/11/13/debian-fixing-error-after-partition-edition">Debian:  fixing error: &#039;A start job is running for dev-disk-...&#039;</a></div>
-</article>
-    <h3>June 2017</h3>
-<article>
-  <div><a href="/blog/2017/06/14/install-a-nextcloudbox">Install a nextcloud box with NextCloudPi</a></div>
-</article>
-<article>
-  <div><a href="/blog/2017/06/14/connect-to-raspberry-over-ethernet">Connect to raspberry pi from linux host using a simple ethernet cable</a></div>
-</article>
-<article>
-  <div><a href="/blog/2017/06/13/setting-up-a-debian-dev-machine">Setting up a debian dev machine</a></div>
-</article>
-<article>
-  <div><a href="/blog/2017/06/12/setting-up-git-with-multiple-accounts">Setting up git with multiple accounts</a></div>
-</article>
-<article>
-  <div><a href="/blog/2017/06/12/install-vagrant">Installing Vagrant</a></div>
-</article>
-<article>
-  <div><a href="/blog/2017/06/12/create-a-debian-iso-live-usb-drive">Create a debian live usb drive</a></div>
-</article>
+                        <article>
+        <header>
+            <h2>Install Docker on ubuntu 16.04 <small>post</small></h2>
+        </header>
+        <div>
+            <h2 id="install-docker-ce-for-ubuntu">Install Docker CE for Ubuntu</h2>
 
-<div>
-    <nav class="article clearfix">
-        <a class="previous" href="/blog/categories/linux" title="Previous Page"><span class="title">Previous Page</span></a>
+<p>See <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/">official documentation</a>.</p>
+
+<h2 id="run-docker-as-a-non-root-user">Run docker as a non-root user</h2>
+
+<p>See <a href="https://docs.docker.com/install/linux/linux-postinstall/">official documentation</a>.</p>
+
+<h2 id="configure-docker-to-be-used-behind-a-http-proxy">Configure docker to be used behind a http proxy</h2>
+
+<p>Create the following file <code>/etc/systemd/system/docker.service.d/http-proxy.conf</code> and edit it:</p>
+
+<pre><code>[Service]
+Environment=http_proxy=http://user:pass@ip:port
+Environment=https_proxy=http://user:pass@ip:port
+</code></pre>
+
+<h2 id="test">Test</h2>
+
+<pre><code>docker run hello-world
+</code></pre>
+
+<h2 id="install-docker-compose">Install docker-compose</h2>
+
+<p>See <a href="https://docs.docker.com/compose/install/">official documentation</a>.</p>
+
+<p>currently, I use docker-compose <code>v1.23.2</code></p>
+
+<pre><code>sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+</code></pre>
+
+        </div>
+                    <p class="categories">
+            Categories:
+                        <a href="/blog/categories/linux">linux</a>,                         <a href="/blog/categories/docker">docker</a>                        </p>
+                
+                    <nav class="article">
+                <ul>
+                                            <li>Next: <a class="next" href="/blog/2019/01/14/docker-dockerfile" title="Docker 101: Dockerfile"><span class="title">Docker 101: Dockerfile</span></a></li>
+                                                                <li>Previous: <a class="previous" href="/blog/2018/04/27/wordpress-migration-procedure" title="Wordpress migration procedure"><span class="title">Wordpress migration procedure</span></a></li>
+                                    </ul>
             </nav>
-</div>
+            </article>
+
+
+
                 </div>
                 <!--<div class="span4 sidebar">-->
                     <!--<div class="well">-->
