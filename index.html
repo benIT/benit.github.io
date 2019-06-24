@@ -71,6 +71,52 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2019/06/24/Apache2-customize-index-options">Apache2 customize index page</a></h2>
+        </header>
+        <div>
+            <h2 id="customize-the-default-apache2-page-index-page">Customize the default apache2 page index page</h2>
+
+<p>Apache2 index option is highly customizable. <a href="http://httpd.apache.org/docs/2.2/mod/mod_autoindex.html">See this official resource.</a></p>
+
+<p>With the following code:</p>
+
+<pre><code>&lt;VirtualHost *:80&gt;
+        DocumentRoot /data/moodle_versions
+    &lt;Directory /&gt;
+        Options FollowSymLinks
+        AllowOverride None
+    &lt;/Directory&gt;
+    &lt;Directory /data/moodle_versions/&gt;
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Require all granted
+        allow from all
+        AddDescription "Installation de moodle 3.5.4 LTS standard" moodle_354
+        AddDescription "Installation de moodle 3.6.4 à des fins de test" moodle_364
+        IndexStyleSheet "style.css"
+        HeaderName header.html
+        ReadmeName footer.html
+        IndexIgnore *.html
+        IndexIgnore *.css
+    &lt;/Directory&gt;
+        ServerAdmin webmaster@localhost
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+&lt;/VirtualHost&gt;
+</code></pre>
+
+<p>You can turn the default page:</p>
+
+<p><img src="/images/apache2/default.png" alt="screenshot" /></p>
+
+<p>to this one:</p>
+
+<p><img src="/images/apache2/custom.png" alt="screenshot" /></p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2019/05/22/john-the-ripper-rip-md5-hash">RIP a md5 hash with john the ripper</a></h2>
         </header>
         <div>
@@ -198,65 +244,6 @@ w
 o
 r
 d
-</code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/05/06/john-the-ripper-rip-linux-user-password">RIP linux user password with John the Ripper</a></h2>
-        </header>
-        <div>
-            <h2 id="add-a-new-user">Add a new user</h2>
-
-<pre><code>sudo useradd -r foo
-sudo passwd foo
-Enter new UNIX password: 
-Retype new UNIX password: 
-passwd: password updated successfully
-</code></pre>
-
-<h2 id="password-hash-file">Password hash file</h2>
-
-<p>Linux user password hash are stored here: <code>/etc/shadow</code></p>
-
-<h2 id="rip-it%21">Rip it!</h2>
-
-<pre><code>sudo john /etc/shadow
-Created directory: /root/.john
-Using default input encoding: UTF-8
-Loaded 3 password hashes with 3 different salts (sha512crypt, crypt(3) $6$ [SHA512 256/256 AVX2 4x])
-Cost 1 (iteration count) is 5000 for all loaded hashes
-Will run 5 OpenMP threads
-Proceeding with single, rules:Wordlist
-Press 'q' or Ctrl-C to abort, almost any other key for status
-vagrant          (vagrant)
-Warning: Only 3 candidates buffered for the current salt, minimum 20
-needed for performance.
-toor             (root)
-Warning: Only 14 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 6 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 16 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 17 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 3 candidates buffered for the current salt, minimum 20
-needed for performance.
-Almost done: Processing the remaining buffered candidate passwords, if any
-Warning: Only 15 candidates buffered for the current salt, minimum 20
-needed for performance.
-Proceeding with wordlist:/usr/share/john/password.lst, rules:Wordlist
-foobar           (foo)
-3g 0:00:00:01 DONE 2/3 (2019-05-06 10:39) 1.570g/s 1806p/s 1808c/s 1808C/s 1234qwer..ford
-Use the "--show" option to display all of the cracked passwords reliably
-Session completed
-</code></pre>
-
-<h3 id="and-user-password-is...">And user password is...</h3>
-
-<pre><code>foobar           (foo)
 </code></pre>
 
         </div>

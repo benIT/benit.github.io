@@ -3,9 +3,54 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-05-23T07:36:20+00:00</updated>
+    <updated>2019-06-24T14:54:40+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Apache2 customize index page]]></title>
+            <link href="/blog/2019/06/24/Apache2-customize-index-options"/>
+            <updated>2019-06-24T00:00:00+00:00</updated>
+            <id>/blog/2019/06/24/Apache2-customize-index-options</id>
+            <content type="html"><![CDATA[<h2 id="customize-the-default-apache2-page-index-page">Customize the default apache2 page index page</h2>
+
+<p>Apache2 index option is highly customizable. <a href="http://httpd.apache.org/docs/2.2/mod/mod_autoindex.html">See this official resource.</a></p>
+
+<p>With the following code:</p>
+
+<pre><code>&lt;VirtualHost *:80&gt;
+        DocumentRoot /data/moodle_versions
+    &lt;Directory /&gt;
+        Options FollowSymLinks
+        AllowOverride None
+    &lt;/Directory&gt;
+    &lt;Directory /data/moodle_versions/&gt;
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Require all granted
+        allow from all
+        AddDescription "Installation de moodle 3.5.4 LTS standard" moodle_354
+        AddDescription "Installation de moodle 3.6.4 à des fins de test" moodle_364
+        IndexStyleSheet "style.css"
+        HeaderName header.html
+        ReadmeName footer.html
+        IndexIgnore *.html
+        IndexIgnore *.css
+    &lt;/Directory&gt;
+        ServerAdmin webmaster@localhost
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+&lt;/VirtualHost&gt;
+</code></pre>
+
+<p>You can turn the default page:</p>
+
+<p><img src="/images/apache2/default.png" alt="screenshot" /></p>
+
+<p>to this one:</p>
+
+<p><img src="/images/apache2/custom.png" alt="screenshot" /></p>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[RIP a md5 hash with john the ripper]]></title>
             <link href="/blog/2019/05/22/john-the-ripper-rip-md5-hash"/>
@@ -901,26 +946,6 @@ RUN echo "CONTENT_OF_ID_RSA_PUB_KEY_HERE" &gt;&gt; /root/.ssh/authorized_keys
 <h2 id="enjoy%21">Enjoy!</h2>
 
 <p><img src="/images/docker/docker-ssh-x11-emacs.png" alt="screenshot" /></p>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[Linux multiusb live]]></title>
-            <link href="/blog/2019/02/15/linux-multiusb-live"/>
-            <updated>2019-02-15T00:00:00+00:00</updated>
-            <id>/blog/2019/02/15/linux-multiusb-live</id>
-            <content type="html"><![CDATA[<h2 id="purpose">Purpose</h2>
-
-<p>This post deals with creating a multi linux iso live usb drive. <a href="https://itsfoss.com/multiple-linux-one-usb/">source</a></p>
-
-<h2 id="procedure">Procedure</h2>
-
-<ul>
-<li>format your drive to fat32</li>
-<li><a href="https://github.com/mbusb/multibootusb/releases/download/v8.8.0/python3-multibootusb_8.8.0-1_all.deb">download MultiBootUsb</a></li>
-<li>install it : <code>dpkg -i python3-multibootusb_8.8.0-1_all.deb</code></li>
-<li>check if all python dependencies are satisfied, if not try install missing with <code>sudo apt install python3-pyqt5 p7zip-full python3-pyudev</code></li>
-<li>enjoy : you can now burn several iso using the GUI. Great tool!</li>
-</ul>
 ]]></content>
         </entry>
     </feed>

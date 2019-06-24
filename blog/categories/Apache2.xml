@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title><![CDATA[benIT&#039;s notebook]]></title>
+    <link href="/blog/categories/Apache2.xml" rel="self"/>
+    <link href="/"/>
+    <updated>2019-06-24T14:54:40+00:00</updated>
+    <id>/</id>
+        <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Apache2 customize index page]]></title>
+            <link href="/blog/2019/06/24/Apache2-customize-index-options"/>
+            <updated>2019-06-24T00:00:00+00:00</updated>
+            <id>/blog/2019/06/24/Apache2-customize-index-options</id>
+            <content type="html"><![CDATA[<h2 id="customize-the-default-apache2-page-index-page">Customize the default apache2 page index page</h2>
+
+<p>Apache2 index option is highly customizable. <a href="http://httpd.apache.org/docs/2.2/mod/mod_autoindex.html">See this official resource.</a></p>
+
+<p>With the following code:</p>
+
+<pre><code>&lt;VirtualHost *:80&gt;
+        DocumentRoot /data/moodle_versions
+    &lt;Directory /&gt;
+        Options FollowSymLinks
+        AllowOverride None
+    &lt;/Directory&gt;
+    &lt;Directory /data/moodle_versions/&gt;
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Require all granted
+        allow from all
+        AddDescription "Installation de moodle 3.5.4 LTS standard" moodle_354
+        AddDescription "Installation de moodle 3.6.4 à des fins de test" moodle_364
+        IndexStyleSheet "style.css"
+        HeaderName header.html
+        ReadmeName footer.html
+        IndexIgnore *.html
+        IndexIgnore *.css
+    &lt;/Directory&gt;
+        ServerAdmin webmaster@localhost
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+&lt;/VirtualHost&gt;
+</code></pre>
+
+<p>You can turn the default page:</p>
+
+<p><img src="/images/apache2/default.png" alt="screenshot" /></p>
+
+<p>to this one:</p>
+
+<p><img src="/images/apache2/custom.png" alt="screenshot" /></p>
+]]></content>
+        </entry>
+    </feed>

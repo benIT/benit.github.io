@@ -71,6 +71,32 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2017/06/12/install-vagrant">Installing Vagrant</a></h2>
+        </header>
+        <div>
+            <h2 id="install-virtual-box">Install virtual box</h2>
+
+<pre><code>sudo apt-get install virtualbox
+</code></pre>
+
+<h2 id="install-vagrant">Install vagrant</h2>
+
+<ul>
+<li><p>Download <a href="https://www.vagrantup.com/downloads.html">Vagrant deb package</a>:</p>
+
+<pre><code>cd /tmp/mozilla_ben0
+dpkg -i vagrant_1.9.5_x86_64.deb
+</code></pre></li>
+<li><p>Clone your vagrant repo and install it!</p></li>
+</ul>
+
+        </div>
+                    <p class="tags">
+            Tags:
+                        <a href="/blog/tags/debian">debian</a>                        </p>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2017/06/12/create-a-debian-iso-live-usb-drive">Create a debian live usb drive</a></h2>
         </header>
         <div>
@@ -266,31 +292,6 @@ npm install
                     <p class="tags">
             Tags:
                         <a href="/blog/tags/dev">dev</a>                        </p>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2017/04/18/setting-up-angular-in moodle-3">Setting up angularjs and chartjs in Moodle 3.X</a></h2>
-        </header>
-        <div>
-            <p>I was wondering how can I integrate angularjs to my moodle plugin. 
-Moodle isn't designed as frontend/backend, so how can I integrate angularjs with smashing moodle?
-I create a POOC, let's checkout that:</p>
-
-<ul>
-<li><p>Create a custom template page : <a href="https://github.com/benIT/moodle_report_angularjspooc/blob/master/templates/reportindex_page.mustache">the custom template</a> will be only used to put <code>ng-app</code> directive</p></li>
-<li><p>Load <a href="https://github.com/benIT/moodle_report_angularjspooc/blob/master/index.php#L26">all javascript</a> in the template page</p></li>
-<li><p>Write PHP AJAX or Moodle Webservice to expose data:
-In my case, I didn't care about exposing webservices so I choose to <a href="https://github.com/benIT/moodle_report_angularjspooc/blob/master/ajax.php">write a simple ajax page</a>.</p></li>
-<li><p>Write your <a href="https://github.com/benIT/moodle_report_angularjspooc/tree/master/angular">angularjs code</a></p></li>
-<li><p>Enjoy angularjs on moodle ! In this cas, we will use this to generate beautiful reports with Charts.js</p>
-
-<p><strong><a href="https://github.com/benIT/moodle_report_angularjspooc">The Repository is available at github.</a></strong></p></li>
-</ul>
-
-        </div>
-                    <p class="tags">
-            Tags:
-                        <a href="/blog/tags/Moodle">Moodle</a>,                         <a href="/blog/tags/angularjs">angularjs</a>                        </p>
             </article>
     <nav>
         <a href="/page/13">Newer Posts</a><br />
