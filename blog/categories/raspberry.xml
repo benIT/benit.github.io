@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title><![CDATA[benIT&#039;s notebook]]></title>
+    <link href="/blog/categories/raspberry.xml" rel="self"/>
+    <link href="/"/>
+    <updated>2019-06-28T12:25:32+00:00</updated>
+    <id>/</id>
+        <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Install a nextcloud box with NextCloudPi]]></title>
+            <link href="/blog/2017/06/14/install-a-nextcloudbox"/>
+            <updated>2017-06-14T00:00:00+00:00</updated>
+            <id>/blog/2017/06/14/install-a-nextcloudbox</id>
+            <content type="html"><![CDATA[<p>Here is exposed steps to setup a nextcloud box on RPI <a href="https://ownyourbits.com/2017/02/13/nextcloud-ready-raspberry-pi-image/">consuming the nextCloudPi image</a> . enjoy ;)</p>
+
+<h2 id="nextcloudbox-setup">Nextcloudbox setup</h2>
+
+<ul>
+<li><p><a href="/blog/2017/06/12/create-a-debian-iso-live-usb-drive">burn a usb drive</a>. <a href="https://ownyourbits.com/2017/02/13/nextcloud-ready-raspberry-pi-image/">NextCloudPi</a> offers a fully configured box.</p></li>
+<li><p>insert sd card and boot. Default credentials are: <code>pi</code>/<code>raspberry</code></p></li>
+<li><p><a href="https://raspberrypi.stackexchange.com/questions/10060/raspbian-keyboard-layout">change keyboard layout</a> if needed before getting crazy:</p>
+
+<ul>
+<li><p>edit the <code>XKBLAYOUT="fr"</code> directive in <code>/etc/default/keyboard</code>:</p></li>
+<li><p>reboot: <code>sudo reboot now</code></p></li>
+</ul></li>
+<li><p>enable usb device automount:</p>
+
+<pre><code>sudo nextcloudpi-config
+</code></pre>
+
+<p>then: <code>nc-automount</code> > <code>active=yes</code></p></li>
+</ul>
+
+<p>Wait a few seconds and check your drive is mounted using:</p>
+
+<pre><code>    sudo fdisk -l
+</code></pre>
+
+<h2 id="test-it%21">Test it!</h2>
+
+<h3 id="locally">Locally</h3>
+
+<ul>
+<li>In order to test it you can <a href="/blog/2017/06/15/connect-to-raspberry-over-ethernet">take a look about connecting to pi over ethernet</a>. <em>That's pretty nice to connect to RPI with a simple ethernet cable.</em></li>
+</ul>
+
+<h3 id="behind-a-router%2Finternet-connection">Behind a router/internet connection</h3>
+
+<ul>
+<li><p>Plug RPI to your router</p></li>
+<li><p>Go to the admin panel</p></li>
+<li><p>Perform port redirection to the RPI: external 443/internal 443.</p></li>
+</ul>
+
+<h3 id="it-works%2C-yeah%21-beer-time%21">It works, yeah! beer time!</h3>
+
+<p>Enter the RPI @IP in your web browser (<code>https://10.42.0.100</code> in my case), after adding a security exception because of self signed certificate, you should see:</p>
+
+<p><img src="/images/nextcloud/nextcloud-login.png" alt="screenshot" /></p>
+
+<p><em>credentials: admin/ownyourbits</em></p>
+
+<h2 id="external-storage-setup">External storage setup</h2>
+
+<ul>
+<li><p>format your usb-drive as <code>ext4</code> and create a <code>msdos</code> partition table if necessary using gparted. The partition must be a linux partition kind to support linux right management.</p></li>
+<li><p>change nc-database to the flashdrive: <code>sudo nextcloudpi-config</code> > <code>nc-database</code></p></li>
+<li><p>change nc-datadir to the flashdrive using: <code>sudo nextcloudpi-config</code> > <code>nc-datadir</code></p></li>
+</ul>
+
+<p>If everything goes well, you should see that data and database are stored in <code>/media/USBdrive/ncdata</code> and <code>/media/USBdrive/ncdatabase</code></p>
+
+<h2 id="enable-and-set-up-wifi">Enable and set up WIFI</h2>
+
+<p>You can enable and select your WIFI connection in:
+        <code>sudo nextcloudpi-config</code> > <code>nc-wifi</code> > <code>ACTIVE=YES</code></p>
+
+<h2 id="enable-ssh">Enable SSH</h2>
+
+<p>SSH is not enabled by default, enable it in: <code>sudo raspi-config</code> > <code>5 Interfacing Options</code> > <code>P2 SSH</code>
+You can now ssh the rpi machine:</p>
+
+<pre><code>    ssh pi@10.42.0.100
+</code></pre>
+
+<p>Default rpi credentials are <em>pi/raspberry</em>, CHANGE IT by running: <code>passwd</code></p>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<h3 id="trusted-domains-issue">Trusted domains issue</h3>
+
+<p>Fix it in editing <code>nexcloud/config/config.php</code>:</p>
+
+<pre><code>    ...
+    'trusted_domains' =&gt;
+    array(
+        ...
+        3 =&gt; '10.42.0.100'
+    )
+    ...
+</code></pre>
+
+<p><img src="/images/nextcloud/nextcloud-trusted-domains.png" alt="screenshot" /></p>
+]]></content>
+        </entry>
+            <entry>
+            <title type="html"><![CDATA[Connect to raspberry pi from linux host using a simple ethernet cable]]></title>
+            <link href="/blog/2017/06/14/connect-to-raspberry-over-ethernet"/>
+            <updated>2017-06-14T00:00:00+00:00</updated>
+            <id>/blog/2017/06/14/connect-to-raspberry-over-ethernet</id>
+            <content type="html"><![CDATA[<p>This post describes how to connect a RPI to a linux station with a simple ethernet cable.</p>
+
+<h2 id="on-debian-host-machine">On debian host machine</h2>
+
+<ul>
+<li><p>run <code>gnome-nettool</code>, change the edit the wired connection and edit IPv4 settings.</p>
+
+<ul>
+<li><p>Change the <code>DHCP</code> default method 
+<img src="/images/rpi/ethernet-connection/wired-dhcp.png" alt="network conf" /></p>
+
+<p>to <code>shared with other computer</code>:
+<img src="/images/rpi/ethernet-connection/wired-shared.png" alt="network conf" /></p></li>
+</ul></li>
+<li><p>power off the RPI</p>
+
+<pre><code>sudo halt
+</code></pre></li>
+<li><p>mount the RPI SD card to the host PC</p></li>
+<li><p>identify the PC eth0 @IP adress:</p>
+
+<pre><code>sudo ifconfig
+</code></pre></li>
+</ul>
+
+<p>In my case: <code>10.42.0.1</code></p>
+
+<ul>
+<li><p>edit the <code>cmdline.txt</code> located on the <code>boot</code> partition file adding:</p>
+
+<pre><code>ip=10.42.0.100
+</code></pre></li>
+<li><p><em>The pi and the debian PC must on the same subnetwork ie: <code>10.42.0.XXX</code></em></p></li>
+<li><p>insert SD card and boot RPI</p></li>
+<li><p>check the connectivity:</p>
+
+<pre><code>ping 169.254.6.100
+--- 10.42.0.100 ping statistics ---
+6 packets transmitted, 6 received, 0% packet loss, time 4999ms
+rtt min/avg/max/mdev = 0.326/0.351/0.392/0.028 ms
+</code></pre></li>
+</ul>
+
+<h2 id="on-the-rpi-machine">On the RPI machine</h2>
+
+<ul>
+<li><p>enable ssh:</p>
+
+<pre><code>sudo raspi-config 
+</code></pre></li>
+<li><p><code>Interfacing Options</code> then <code>P2 SSH</code></p></li>
+</ul>
+
+<h2 id="ssh-it-%21">SSH IT !</h2>
+
+<p>From the debian pc:</p>
+
+<pre><code>ssh pi@169.254.6.100
+</code></pre>
+
+<p>That was it! You are now connected over SSH on the RPI:</p>
+
+<pre><code>The authenticity of host '10.42.0.100 (10.42.0.100)' can't be established.
+ECDSA key fingerprint is ca:cc:0c:80:ab:1a:b4:a9:4b:2b:a8:1a:fa:b4:7e:23.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '10.42.0.100' (ECDSA) to the list of known hosts.
+pi@10.42.0.100's password: 
+
+
+
+NextCloudPi v0.12.8 is up to date
+Last login: Fri May 26 18:34:10 2017
+
+SSH is enabled and the default password for the 'pi' user has not been changed.
+This is a security risk - please login as the 'pi' user and type 'passwd' to set a new password.
+pi@raspberrypi:~ $
+</code></pre>
+]]></content>
+        </entry>
+    </feed>

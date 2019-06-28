@@ -3,7 +3,7 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/moodle.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-06-28T09:26:03+00:00</updated>
+    <updated>2019-06-28T12:25:32+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -112,6 +112,54 @@ UPDATE mdl_config SET VALUE = 1 WHERE name = 'debugdisplay';
 
 <pre><code>UPDATE mdl_config SET VALUE = 0 WHERE name = 'debug';
 UPDATE mdl_config SET VALUE = 0 WHERE name = 'debugdisplay';
+</code></pre>
+]]></content>
+        </entry>
+            <entry>
+            <title type="html"><![CDATA[Moodle migration procedure]]></title>
+            <link href="/blog/2017/06/15/moodle-migration-procedure."/>
+            <updated>2017-06-15T00:00:00+00:00</updated>
+            <id>/blog/2017/06/15/moodle-migration-procedure.</id>
+            <content type="html"><![CDATA[<p>In this post is described how to export you moodle app and import it on another environment.</p>
+
+<h2 id="export-from-the-source-database">Export from the source database</h2>
+
+<pre><code>     sudo -u postgres pg_dump moodle &gt; /vagrant/shared/dump/moodle-database-exported.sql
+</code></pre>
+
+<h2 id="migrate-database">Migrate database</h2>
+
+<p>Here I sustitute the string 'moodle-dev' by 'moodle-deploy' from 'moodle-database-exported.sql' and write it to 'database-to-import.sql':</p>
+
+<pre><code>     sed 's/moodle-dev/moodle-deploy/g' moodle-database-exported.sql &gt; database-to-import.sql
+</code></pre>
+
+<h2 id="let%27s-tar-db-and-filesystem">Let's tar db and filesystem</h2>
+
+<pre><code>    tar -cvzf moodle-to-import.tgz database-to-import.sql moodle moodledata/
+    exit
+    mv ~/vagrant/vagrant-moodle/shared/moodle-to-import.tgz ~/vagrant/vagrant-moodle-deploy/shared/
+</code></pre>
+
+<h2 id="cleanup-the-target-machine">Cleanup the target machine</h2>
+
+<p>Connect on the target machine. here target database is also named 'moodle':</p>
+
+<pre><code>     cd /vagrant/shared
+     rm -rf moodle moodledata/
+     sudo -u postgres psql -c "DROP DATABASE moodle"
+     sudo -u postgres psql -c "CREATE DATABASE moodle"
+</code></pre>
+
+<h2 id="import-db-and-filesystem-on-the-target-database">Import db and filesystem on the target database</h2>
+
+<pre><code>    sudo tar -xzf moodle-to-import.tgz
+    sudo -u postgres psql --set ON_ERROR_STOP=on moodle &lt; database-to-import.sql
+</code></pre>
+
+<h2 id="migrate-the-config.php-file">Migrate the config.php file</h2>
+
+<pre><code>    sed -i 's/moodle-dev/moodle-deploy/g' moodle/config.php
 </code></pre>
 ]]></content>
         </entry>
