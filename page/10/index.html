@@ -231,6 +231,8 @@ cat /etc/apache2/.htpasswd
 <pre><code>postgres=# CREATE USER videoapp WITH PASSWORD 'videoapp' CREATEDB ;
 </code></pre>
 
+<p>Note : This user has privilege to create a db.</p>
+
 <p>output:</p>
 
 <pre><code>CREATE ROLE
@@ -238,7 +240,7 @@ cat /etc/apache2/.htpasswd
 
 <h2 id="list-db-tables">List DB tables</h2>
 
-<h3 id="switch-user">Switch user</h3>
+<h3 id="switch-database">Switch database</h3>
 
 <pre><code>postgres=# \c videoapp
 </code></pre>
@@ -263,6 +265,22 @@ cat /etc/apache2/.htpasswd
  public | video       | table | videoapp | 8192 bytes | 
  public | videos_tags | table | videoapp | 0 bytes    | 
 (4 rows)
+</code></pre>
+
+<h2 id="privileges">Privileges</h2>
+
+<h3 id="connect-as-%60postgres%60-superuser">Connect as <code>postgres</code> superuser</h3>
+
+<pre><code>PGPASSWORD="P@ss0rd" psql -U postgres -h 10.11.12.13 -p 5432
+</code></pre>
+
+<h3 id="grant-privileges">Grant Privileges</h3>
+
+<pre><code>GRANT CONNECT ON DATABASE app_database TO app_user;
+\c app_database
+GRANT USAGE ON SCHEMA public TO app_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO app_user;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO app_user;
 </code></pre>
 
 <h2 id="config-files">Config files</h2>
