@@ -74,16 +74,44 @@
             <h2><a href="/blog/2017/10/02/apache2-survival-sheet">Apache2 survival sheet</a></h2>
         </header>
         <div>
-            <p>In this post, the most common Apache2 commands that I use are listed. This is not really interesting but I'm bored of asking google for it every week!</p>
+            <h2 id="virtual-hosts">Virtual hosts</h2>
 
-<h2 id="virtual-host">Virtual host</h2>
+<p>Virtual hosts allow to run several sites on the same server.</p>
 
-<h2 id="enable-a-vhost">Enable a vhost</h2>
+<h3 id="several-sites-on-the-same-machine">Several sites on the same machine</h3>
+
+<p>Make use of the <code>ServerName</code> directive to match the right site.</p>
+
+<p>In <code>/etc/apache2/sites-enabled/foo.conf</code>:</p>
+
+<pre><code>    &lt;VirtualHost *:80&gt; 
+            ServerName foo.local
+            ServerAdmin webmaster@localhost
+            DocumentRoot /home/pi/projects/foo/
+            ErrorLog /foo.log
+            CustomLog /access-foo.log combined
+    &lt;/VirtualHost&gt;
+</code></pre>
+
+<p>In <code>/etc/apache2/sites-enabled/bar.conf</code>:</p>
+
+<pre><code>    &lt;VirtualHost *:80&gt; 
+            ServerName bar.local
+            ServerAdmin webmaster@localhost
+            DocumentRoot /home/pi/projects/bar/
+            ErrorLog /bar.log
+            CustomLog /access-bar.log combined
+    &lt;/VirtualHost&gt; 
+</code></pre>
+
+<p>When an http request corresponding to the <code>ServerName</code> value is received, the right answer is served according to the vhost.conf.</p>
+
+<h3 id="enable-a-vhost">Enable a vhost</h3>
 
 <pre><code>a2ensite video-app
 </code></pre>
 
-<h2 id="disable--a-vhost">Disable  a vhost</h2>
+<h3 id="disable--a-vhost">Disable  a vhost</h3>
 
 <pre><code>a2dissite video-app
 </code></pre>
@@ -105,7 +133,24 @@
 <pre><code>apache2ctl status
 </code></pre>
 
-<h2 id="securing-a-vhost-with-a-basic-authentication">Securing a vhost with a basic authentication</h2>
+<h2 id="security">Security</h2>
+
+<h3 id="hide-server-version">Hide server version</h3>
+
+<p>In <code>/etc/apache2/conf-available/security.conf</code>:</p>
+
+<pre><code>ServerTokens Prod
+ServerSignature Off
+</code></pre>
+
+<h3 id="prevent-site-encapsulation-in-an-external-iframe">Prevent site encapsulation in an external iframe</h3>
+
+<p>In <code>/etc/apache2/conf-available/security.conf</code>:</p>
+
+<pre><code>Leader set X-Frame-Options: "sameorigin" 
+</code></pre>
+
+<h3 id="secure-a-vhost-with-a-basic-authentication">Secure a vhost with a basic authentication</h3>
 
 <p>install utils:</p>
 
