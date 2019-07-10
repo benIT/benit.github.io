@@ -3,9 +3,65 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/dev.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-07-09T12:41:11+00:00</updated>
+    <updated>2019-07-10T07:35:54+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Use your own fork with composer]]></title>
+            <link href="/blog/2019/07/10/use-your-own-fork-with-composer"/>
+            <updated>2019-07-10T00:00:00+00:00</updated>
+            <id>/blog/2019/07/10/use-your-own-fork-with-composer</id>
+            <content type="html"><![CDATA[<p>Resources:</p>
+
+<ul>
+<li>https://getcomposer.org/doc/04-schema.md#minimum-stability</li>
+<li>https://stackoverflow.com/a/13500676/1632809</li>
+</ul>
+
+<h2 id="context">Context</h2>
+
+<ul>
+<li><p>Original project: <a href="https://github.com/KnpLabs/KnpGaufretteBundle">https://github.com/KnpLabs/KnpGaufretteBundle</a></p></li>
+<li><p>My fork: <a href="https://github.com/benIT/KnpGaufretteBundle.git">https://github.com/benIT/KnpGaufretteBundle.git</a></p></li>
+<li><p>My branch name: <code>benIT-gaufrette-1.0</code>. This one contains my commits.</p></li>
+</ul>
+
+<h2 id="composer">Composer</h2>
+
+<p>My <code>composer.json</code> file that tracks my fork with ly branch.</p>
+
+<p>Note: branch must be prefixed bt <code>dev-</code>. In this case: <code>dev-benIT-gaufrette-1.0</code>:</p>
+
+<pre><code>{
+  "name": "root/test-composer",
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/benIT/KnpGaufretteBundle.git"
+    }
+  ],
+  "require": {
+    "knplabs/knp-gaufrette-bundle": "dev-benIT-gaufrette-1.0"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
+</code></pre>
+
+<p>The following directive :</p>
+
+<pre><code>"minimum-stability": "dev",
+"prefer-stable": true
+</code></pre>
+
+<p>prevents this kind of error related to minimum stability:</p>
+
+<pre><code>  Problem 1
+    - Installation request for knplabs/knp-gaufrette-bundle dev-benIT-gaufrette-1.0 -&gt; satisfiable by knplabs/knp-gaufrette-bundle[dev-benIT-gaufrette-1.0].
+    - knplabs/knp-gaufrette-bundle dev-benIT-gaufrette-1.0 requires knplabs/gaufrette ^1.0 -&gt; satisfiable by knplabs/gaufrette[1.x-dev] but these conflict with your requirements or minimum-stability.
+</code></pre>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Moodle migration procedure]]></title>
             <link href="/blog/2017/06/15/moodle-migration-procedure."/>
