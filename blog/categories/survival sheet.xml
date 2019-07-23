@@ -3,9 +3,71 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/survival sheet.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-07-10T07:38:13+00:00</updated>
+    <updated>2019-07-23T07:51:29+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[PHP survival sheet]]></title>
+            <link href="/blog/2019/07/12/php-survival-sheet"/>
+            <updated>2019-07-12T00:00:00+00:00</updated>
+            <id>/blog/2019/07/12/php-survival-sheet</id>
+            <content type="html"><![CDATA[<h2 id="identify-different-%60php.ini%60-files">Identify different <code>php.ini</code> files</h2>
+
+<p>This <code>find</code> command:</p>
+
+<pre><code>find /etc -name php.ini 
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code>/etc/php/7.1/apache2/php.ini
+/etc/php/7.1/cli/php.ini
+</code></pre>
+
+<h2 id="identify-loaded-php.ini-files-from-command-line">Identify loaded php.ini files from command line</h2>
+
+<p>This command:</p>
+
+<pre><code>php --ini
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code>Configuration File (php.ini) Path: /etc/php/7.1/cli
+Loaded Configuration File:         /etc/php/7.1/cli/php.ini
+Scan for additional .ini files in: /etc/php/7.1/cli/conf.d
+Additional .ini files parsed:      /etc/php/7.1/cli/conf.d/10-mysqlnd.ini,
+/etc/php/7.1/cli/conf.d/10-opcache.ini,
+/etc/php/7.1/cli/conf.d/10-pdo.ini,
+/etc/php/7.1/cli/conf.d/15-xml.ini,
+...
+</code></pre>
+
+<h2 id="get-configuration-values-from-the-command-line">Get configuration values from the command line</h2>
+
+<p>This command returns:</p>
+
+<pre><code>php -i | grep upload_max_filesize
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code>upload_max_filesize =&gt; 2M =&gt; 2M
+</code></pre>
+
+<p>Common configuration to change in <code>php.ini</code> files:</p>
+
+<pre><code>memory_limit
+max_execution_time
+max_input_time
+post_max_size
+upload_max_filesize
+
+display_errors
+html_errors
+</code></pre>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Nginx survival sheet]]></title>
             <link href="/blog/2017/10/16/nginx-survival-sheet"/>

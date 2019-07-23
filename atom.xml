@@ -3,9 +3,71 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-07-10T07:38:13+00:00</updated>
+    <updated>2019-07-23T07:51:29+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[PHP survival sheet]]></title>
+            <link href="/blog/2019/07/12/php-survival-sheet"/>
+            <updated>2019-07-12T00:00:00+00:00</updated>
+            <id>/blog/2019/07/12/php-survival-sheet</id>
+            <content type="html"><![CDATA[<h2 id="identify-different-%60php.ini%60-files">Identify different <code>php.ini</code> files</h2>
+
+<p>This <code>find</code> command:</p>
+
+<pre><code>find /etc -name php.ini 
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code>/etc/php/7.1/apache2/php.ini
+/etc/php/7.1/cli/php.ini
+</code></pre>
+
+<h2 id="identify-loaded-php.ini-files-from-command-line">Identify loaded php.ini files from command line</h2>
+
+<p>This command:</p>
+
+<pre><code>php --ini
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code>Configuration File (php.ini) Path: /etc/php/7.1/cli
+Loaded Configuration File:         /etc/php/7.1/cli/php.ini
+Scan for additional .ini files in: /etc/php/7.1/cli/conf.d
+Additional .ini files parsed:      /etc/php/7.1/cli/conf.d/10-mysqlnd.ini,
+/etc/php/7.1/cli/conf.d/10-opcache.ini,
+/etc/php/7.1/cli/conf.d/10-pdo.ini,
+/etc/php/7.1/cli/conf.d/15-xml.ini,
+...
+</code></pre>
+
+<h2 id="get-configuration-values-from-the-command-line">Get configuration values from the command line</h2>
+
+<p>This command returns:</p>
+
+<pre><code>php -i | grep upload_max_filesize
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code>upload_max_filesize =&gt; 2M =&gt; 2M
+</code></pre>
+
+<p>Common configuration to change in <code>php.ini</code> files:</p>
+
+<pre><code>memory_limit
+max_execution_time
+max_input_time
+post_max_size
+upload_max_filesize
+
+display_errors
+html_errors
+</code></pre>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Use your own fork with composer]]></title>
             <link href="/blog/2019/07/10/use-your-own-fork-with-composer"/>
@@ -781,161 +843,6 @@ git rebase origin/master
 9,
 10,
 ...,
-</code></pre>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[Openstack: resize volume and partition size on a running instance]]></title>
-            <link href="/blog/2019/02/20/openstack-resize-volume"/>
-            <updated>2019-02-20T00:00:00+00:00</updated>
-            <id>/blog/2019/02/20/openstack-resize-volume</id>
-            <content type="html"><![CDATA[<h2 id="context">Context</h2>
-
-<p>This post deals with how to increase a volume attached to a server instance on openstack. <a href="https://docs.openstack.org/cinder/rocky/cli/cli-manage-volumes.html#">See openstack volume ressource</a>.</p>
-
-<h2 id="test-database">Test database</h2>
-
-<p>To test everything goes well, a test database is setup:</p>
-
-<pre><code>sudo -u postgres
-sudo -u postgres psql -c "create database webapp";
-sudo -u postgres psql -d webapp -c "CREATE TABLE account(user_id serial PRIMARY KEY,username VARCHAR (50) UNIQUE NOT NULL,created_on TIMESTAMP NOT NULL);" ;
-sudo -u postgres psql -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('foo','2019-01-01') ;" ;
-sudo -u postgres psql -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('bar','2019-01-02') ;" ;
-</code></pre>
-
-<p>Check command:</p>
-
-<pre><code>sudo -u postgres psql -d webapp -c "SELECT * FROM account" ;
-</code></pre>
-
-<p>returns:</p>
-
-<pre><code> user_id | username |     created_on      
----------+----------+---------------------
-       1 | foo      | 2019-01-01 00:00:00
-       2 | bar      | 2019-01-02 00:00:00
-(2 rows)
-</code></pre>
-
-<h2 id="switch-off-automatic-volume-mount-in-%60%2Fetc%2Ffstab-%60">Switch off automatic volume mount in <code>/etc/fstab</code></h2>
-
-<pre><code>ssh demo
-</code></pre>
-
-<p>Comment lines in <code>/etc/fstab</code> that concern the volume you want to increase:</p>
-
-<pre><code>sudo vim /etc/fstab 
-
-#/dev/vdb1 /data ext4 defaults 0 0
-#/data/pgsql /var/lib/postgresql none bind 0 0
-
-sudo reboot
-</code></pre>
-
-<h2 id="check">Check</h2>
-
-<pre><code>ssh demo
-</code></pre>
-
-<p>Check that they are no more mount point that depend on the volume we are going to manipulate.</p>
-
-<pre><code>df -h
-Filesystem      Size  Used Avail Use% Mounted on
-udev            992M     0  992M   0% /dev
-tmpfs           201M  4,5M  197M   3% /run
-/dev/vda1       4,9G  1,9G  2,9G  40% /
-tmpfs          1003M  8,0K 1003M   1% /dev/shm
-tmpfs           5,0M     0  5,0M   0% /run/lock
-tmpfs          1003M     0 1003M   0% /sys/fs/cgroup
-</code></pre>
-
-<h2 id="stop-your-applications-if-needed">Stop your applications if needed</h2>
-
-<pre><code>sudo service apache2 stop
-sudo service postgresql stop
-</code></pre>
-
-<h2 id="increase-our-volume-size">Increase our volume size</h2>
-
-<p>identify your target server and target volume with <code>openstack volume list</code> and <code>openstack server list</code></p>
-
-<pre><code>TARGET_SERVER=ed864066-ed73-46e0-b551-5bfca9873af6
-TARGET_VOLUME=1be3646a-3bb5-40fc-b9eb-6ab803b60d2c
-VOLUME_SIZE=25
-</code></pre>
-
-<h2 id="detach-volume-from-server">Detach volume from server</h2>
-
-<pre><code>openstack server remove volume $TARGET_SERVER $TARGET_VOLUME
-</code></pre>
-
-<p><em>At this point, the device should NOT be visible when you execute: <code>ls -l /dev/vd*</code></em>.</p>
-
-<h2 id="increase-volume-size">Increase volume size</h2>
-
-<pre><code>openstack volume set $TARGET_VOLUME --size $VOLUME_SIZE
-</code></pre>
-
-<h2 id="attach-volume-to-server">Attach volume to server</h2>
-
-<pre><code>openstack server add volume $TARGET_SERVER $TARGET_VOLUME --device /dev/vdb
-</code></pre>
-
-<p><em>At this point, the device should BE visible when you execute: <code>ls -l /dev/vd*</code></em>.</p>
-
-<h2 id="manage-partition-on-your-openstack-server">Manage partition on your openstack server</h2>
-
-<p>Let's configure the partition to use all the volume space.</p>
-
-<pre><code>ssh demo
-sudo parted /dev/vdb resizepart 1 100%
-sudo e2fsck -f /dev/vdb1
-sudo resize2fs /dev/vdb1
-</code></pre>
-
-<h2 id="restore-%60%2Fetc%2Ffstab%60">Restore <code>/etc/fstab</code></h2>
-
-<p>uncomment the lines:</p>
-
-<pre><code>/dev/vdb1 /data ext4 defaults 0 0
-/data/pgsql /var/lib/postgresql none bind 0 0
-</code></pre>
-
-<p>reboot: <code>sudo reboot</code></p>
-
-<h2 id="check-your-fs">Check your fs</h2>
-
-<h3 id="check-volume-size-and-partition-size">Check volume size and partition size</h3>
-
-<pre><code>sudo fdisk -l
-
-Disk /dev/vdb: 25 GiB, 26843545600 bytes, 52428800 sectors
-Units: sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disklabel type: dos
-Disk identifier: 0x0e1b27a4
-
-Device     Boot Start      End  Sectors Size Id Type
-/dev/vdb1        2048 52428799 52426752  25G 83 Linux
-</code></pre>
-
-<h3 id="check-database">Check database</h3>
-
-<p>Use our test command to check our database:</p>
-
-<pre><code>ssh demo
-sudo -u postgres psql -d webapp -c "SELECT * FROM account" ;
-</code></pre>
-
-<p>check data are ok:</p>
-
-<pre><code> user_id | username |     created_on      
----------+----------+---------------------
-       1 | foo      | 2019-01-01 00:00:00
-       2 | bar      | 2019-01-02 00:00:00
-(2 rows)
 </code></pre>
 ]]></content>
         </entry>

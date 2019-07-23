@@ -72,6 +72,27 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2019/02/15/linux-multiusb-live">Linux multiusb live</a></h2>
+        </header>
+        <div>
+            <h2 id="purpose">Purpose</h2>
+
+<p>This post deals with creating a multi linux iso live usb drive. <a href="https://itsfoss.com/multiple-linux-one-usb/">source</a></p>
+
+<h2 id="procedure">Procedure</h2>
+
+<ul>
+<li>format your drive to fat32</li>
+<li><a href="https://github.com/mbusb/multibootusb/releases/download/v8.8.0/python3-multibootusb_8.8.0-1_all.deb">download MultiBootUsb</a></li>
+<li>install it : <code>dpkg -i python3-multibootusb_8.8.0-1_all.deb</code></li>
+<li>check if all python dependencies are satisfied, if not try install missing with <code>sudo apt install python3-pyqt5 p7zip-full python3-pyudev</code></li>
+<li>enjoy : you can now burn several iso using the GUI. Great tool!</li>
+</ul>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2019/02/11/linux-mastering-logs">Linux logs</a></h2>
         </header>
         <div>
@@ -268,7 +289,7 @@ sudo chmod -R ug+rw /var/log/moodle/
 
 <h1 id="demo">Demo</h1>
 
-<p><a href="/video/docker-christmas-garland-demo.mp4">A video is available here.</a></p>
+<p><center><video width="640" height="480" controls src="https://benit.github.io/docker-nginx-reverse-proxy/demo.mp4"></video></center></p>
 
 <p>If it does not work, download it from github repo:</p>
 
@@ -279,51 +300,6 @@ vlc demo.mp4
 <h1 id="conclusion">Conclusion</h1>
 
 <p>Never forget that computing should always be fun!</p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/01/15/docker-docker-compose">Docker 101: docker-compose</a></h2>
-        </header>
-        <div>
-            <h1 id="docker-compose">Docker compose</h1>
-
-<p>Purpose: compose is a tool designed to create multi-containers app.</p>
-
-<h2 id="install">Install</h2>
-
-<pre><code>sudo apt install python-pip
-pip install docker-compose
-</code></pre>
-
-<h2 id="docker-compose.yml">docker-compose.yml</h2>
-
-<p>The magic happens in a file named <code>docker-compose.yml</code></p>
-
-<h2 id="run">Run</h2>
-
-<pre><code>docker-compose up -d
-</code></pre>
-
-<h2 id="stop">Stop</h2>
-
-<pre><code>docker-compose down -v
-</code></pre>
-
-<h2 id="networking">Networking</h2>
-
-<p><code>docker-compose</code> handles the creation a private network:</p>
-
-<pre><code>Creating network "n-tiers_default" with the default driver
-Creating object-cache ... done
-Creating pgsql        ... done
-Creating web          ... done
-</code></pre>
-
-<h1 id="example">Example</h1>
-
-<p>Better than words, take a look at this <a href="https://github.com/benIT/docker-compose-n-tiers">repo that illustrates a classical n-tiers web app</a></p>
 
         </div>
             </article>

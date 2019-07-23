@@ -3,7 +3,7 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/docker.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-07-10T07:38:13+00:00</updated>
+    <updated>2019-07-23T07:51:29+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -94,7 +94,7 @@ RUN echo "CONTENT_OF_ID_RSA_PUB_KEY_HERE" &gt;&gt; /root/.ssh/authorized_keys
 
 <h1 id="demo">Demo</h1>
 
-<p><a href="/video/docker-christmas-garland-demo.mp4">A video is available here.</a></p>
+<p><center><video width="640" height="480" controls src="https://benit.github.io/docker-nginx-reverse-proxy/demo.mp4"></video></center></p>
 
 <p>If it does not work, download it from github repo:</p>
 

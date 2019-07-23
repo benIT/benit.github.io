@@ -72,6 +72,46 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2019/01/10/docker-installation">Install Docker on ubuntu 16.04</a></h2>
+        </header>
+        <div>
+            <h2 id="install-docker-ce-for-ubuntu">Install Docker CE for Ubuntu</h2>
+
+<p>See <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/">official documentation</a>.</p>
+
+<h2 id="run-docker-as-a-non-root-user">Run docker as a non-root user</h2>
+
+<p>See <a href="https://docs.docker.com/install/linux/linux-postinstall/">official documentation</a>.</p>
+
+<h2 id="configure-docker-to-be-used-behind-a-http-proxy">Configure docker to be used behind a http proxy</h2>
+
+<p>Create the following file <code>/etc/systemd/system/docker.service.d/http-proxy.conf</code> and edit it:</p>
+
+<pre><code>[Service]
+Environment=http_proxy=http://user:pass@ip:port
+Environment=https_proxy=http://user:pass@ip:port
+</code></pre>
+
+<h2 id="test">Test</h2>
+
+<pre><code>docker run hello-world
+</code></pre>
+
+<h2 id="install-docker-compose">Install docker-compose</h2>
+
+<p>See <a href="https://docs.docker.com/compose/install/">official documentation</a>.</p>
+
+<p>currently, I use docker-compose <code>v1.23.2</code></p>
+
+<pre><code>sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2018/04/27/wordpress-migration-procedure">Wordpress migration procedure</a></h2>
         </header>
         <div>
@@ -140,73 +180,6 @@ sudo apt-get install mono-complete
 <h2 id="restart-keepass-and-firefox">Restart keepass and firefox</h2>
 
 <p>you should be prompt about kee to authorize keepass</p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2018/01/22/mysql-2-pgsql-conversion">mySQL to postgreSQL schema conversion</a></h2>
-        </header>
-        <div>
-            <h2 id="purpose">Purpose</h2>
-
-<p>I was looking for a tool that convert a mysql db to a pgsql one.
-<a href="https://github.com/philipsoutham/py-mysql2pgsql">philipsoutham/py-mysql2pgsql</a> does the trick and saved my day!</p>
-
-<h2 id="install">Install</h2>
-
-<pre><code>sudo apt-get install python-pip
-pip install py-mysql2pgsql
-</code></pre>
-
-<h2 id="configure">Configure</h2>
-
-<p>Edit configuration in <code>mysql2pgsql.yml</code></p>
-
-<pre><code># if a socket is specified we will use that
-# if tcp is chosen you can use compression
-mysql:
- hostname: localhost
- port: 3306
- socket: /var/run/mysqld/mysqld.sock
- #socket: /tmp/mysql.sock
- username: emedia
- password: emedia
- database: emedia
- compress: false
-destination:
- # if file is given, output goes to file, else postgres
- file: /vagrant/shared/migrationMysql2Pgsql.sql
- postgres:
-  hostname: localhost
-  port: 5432
-  username: mysql2psql
-  password:
-  database: mysql2psql_test
-
-# if tables is given, only the listed tables will be converted.  leave empty to convert all tables.
-only_tables:
-- lti2_consumer
-- lti2_context
-- lti2_nonce
-- lti2_resource_link
-- lti2_share_key
-- lti2_tool_proxy
-- lti2_user_result
-# if exclude_tables is given, exclude the listed tables from the conversion.
-#exclude_tables:
-#- table3
-#- table4
-
-# if supress_data is true, only the schema definition will be exported/migrated, and not the data
-supress_data: true
-
-# if supress_ddl is true, only the data will be exported/imported, and not the schema
-supress_ddl: false
-
-# if force_truncate is true, forces a table truncate before table loading
-force_truncate: false
-</code></pre>
 
         </div>
             </article>
