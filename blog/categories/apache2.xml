@@ -3,7 +3,7 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/apache2.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-09-19T14:49:28+00:00</updated>
+    <updated>2019-09-19T14:50:53+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -82,8 +82,8 @@ echo "&lt;?php phpinfo(); ?&gt;" &gt; /var/www/php71/index.php
 
 <p>Edit <code>/etc/hosts</code>:</p>
 
-<pre><code>10.11.12.13 php56.test.mi
-10.11.12.13 php71.test.mi
+<pre><code>10.11.12.13 php56.test
+10.11.12.13 php71.test
 </code></pre>
 
 <h4 id="php-5.6-virtual-host">PHP 5.6 virtual host</h4>
