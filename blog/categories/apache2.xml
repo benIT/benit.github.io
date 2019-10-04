@@ -3,9 +3,52 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/apache2.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-09-30T14:44:19+00:00</updated>
+    <updated>2019-10-04T13:34:30+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Configure an apache2 SSL virtual host from a P12 certificate]]></title>
+            <link href="/blog/2019/10/01/from-a-p12-certificate-to-apache-ssl"/>
+            <updated>2019-10-01T00:00:00+00:00</updated>
+            <id>/blog/2019/10/01/from-a-p12-certificate-to-apache-ssl</id>
+            <content type="html"><![CDATA[<p><a href="https://www.tbs-certificats.com/FAQ/fr/346.html">source article</a></p>
+
+<h2 id="about-pkcs_12">About PKCS_12</h2>
+
+<p><a href="https://en.wikipedia.org/wiki/PKCS_12">Wikipedia</a>:</p>
+
+<p>In cryptography, PKCS #12 defines an archive file format for storing many cryptography objects as a single file. It is commonly used to bundle a private key with its X.509 certificate or to bundle all the members of a chain of trust.</p>
+
+<h2 id="get-certificate-and-private-key-from-p12-file">Get certificate and private key from P12 file</h2>
+
+<pre><code>openssl pkcs12 -in file.p12 -out package.pem -nodes
+cp package.pem myapp.domain.fr.key
+cp package.pem myapp.domain.fr.cert
+</code></pre>
+
+<h3 id="extract-certificate">Extract certificate</h3>
+
+<p>Edit <code>myapp.domain.fr.key</code> and keep only the certificate section from <code>-----BEGIN CERTIFICATE-----</code> to <code>-----END CERTIFICATE-----</code></p>
+
+<h3 id="extract-private-key">Extract private key</h3>
+
+<p>Edit <code>myapp.domain.fr.key</code> and keep only the certificate section from <code>-----BEGIN PRIVATE KEY-----</code> to <code>-----BEGIN PRIVATE KEY-----</code></p>
+
+<h2 id="%C2%A0configure-your-webserver"> Configure your webserver</h2>
+
+<h3 id="move-files">Move files</h3>
+
+<pre><code>mv myapp.domain.fr.cert /etc/ssl/certs/
+mv myapp.domain.fr.key /etc/ssl/private
+</code></pre>
+
+<h4 id="configure-your-virtual-host">Configure your virtual host</h4>
+
+<pre><code>SSLCertificateFile  /etc/ssl/certs/myapp.domain.fr.cert
+SSLCertificateKeyFile /etc/ssl/private/myapp.domain.fr.key
+</code></pre>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Run multiple php versions on the same server with PHP-FPM and apache2]]></title>
             <link href="/blog/2019/09/19/run-multiple-php-versions-same-server-with-fpm"/>

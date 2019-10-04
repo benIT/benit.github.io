@@ -3,9 +3,52 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-09-30T14:44:19+00:00</updated>
+    <updated>2019-10-04T13:34:30+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Configure an apache2 SSL virtual host from a P12 certificate]]></title>
+            <link href="/blog/2019/10/01/from-a-p12-certificate-to-apache-ssl"/>
+            <updated>2019-10-01T00:00:00+00:00</updated>
+            <id>/blog/2019/10/01/from-a-p12-certificate-to-apache-ssl</id>
+            <content type="html"><![CDATA[<p><a href="https://www.tbs-certificats.com/FAQ/fr/346.html">source article</a></p>
+
+<h2 id="about-pkcs_12">About PKCS_12</h2>
+
+<p><a href="https://en.wikipedia.org/wiki/PKCS_12">Wikipedia</a>:</p>
+
+<p>In cryptography, PKCS #12 defines an archive file format for storing many cryptography objects as a single file. It is commonly used to bundle a private key with its X.509 certificate or to bundle all the members of a chain of trust.</p>
+
+<h2 id="get-certificate-and-private-key-from-p12-file">Get certificate and private key from P12 file</h2>
+
+<pre><code>openssl pkcs12 -in file.p12 -out package.pem -nodes
+cp package.pem myapp.domain.fr.key
+cp package.pem myapp.domain.fr.cert
+</code></pre>
+
+<h3 id="extract-certificate">Extract certificate</h3>
+
+<p>Edit <code>myapp.domain.fr.key</code> and keep only the certificate section from <code>-----BEGIN CERTIFICATE-----</code> to <code>-----END CERTIFICATE-----</code></p>
+
+<h3 id="extract-private-key">Extract private key</h3>
+
+<p>Edit <code>myapp.domain.fr.key</code> and keep only the certificate section from <code>-----BEGIN PRIVATE KEY-----</code> to <code>-----BEGIN PRIVATE KEY-----</code></p>
+
+<h2 id="%C2%A0configure-your-webserver"> Configure your webserver</h2>
+
+<h3 id="move-files">Move files</h3>
+
+<pre><code>mv myapp.domain.fr.cert /etc/ssl/certs/
+mv myapp.domain.fr.key /etc/ssl/private
+</code></pre>
+
+<h4 id="configure-your-virtual-host">Configure your virtual host</h4>
+
+<pre><code>SSLCertificateFile  /etc/ssl/certs/myapp.domain.fr.cert
+SSLCertificateKeyFile /etc/ssl/private/myapp.domain.fr.key
+</code></pre>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[CentOS course notes]]></title>
             <link href="/blog/2019/09/30/centos-course-notes"/>
@@ -1032,130 +1075,6 @@ archive.zip/file.txt:pass:file.txt:archive.zip::archive.zip
 
 1 password hash cracked, 0 left
 </code></pre>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[Install REDMINE 3.4 with PgSQL and Apache2 on debian 9]]></title>
-            <link href="/blog/2019/04/08/install-redmine"/>
-            <updated>2019-04-08T00:00:00+00:00</updated>
-            <id>/blog/2019/04/08/install-redmine</id>
-            <content type="html"><![CDATA[<h2 id="resources">Resources</h2>
-
-<ul>
-<li>http://www.redmine.org/projects/redmine/wiki/howto_install_redmine_on_ubuntu_step_by_step</li>
-<li>http://www.redmine.org/projects/redmine/wiki/redmineinstall</li>
-</ul>
-
-<h2 id="tested-version">Tested version</h2>
-
-<pre><code>pg_config --version
-PostgreSQL 11.2 (Debian 11.2-1.pgdg90+1)
-
-ruby -v
-ruby 2.3.3p222 (2016-11-21) [x86_64-linux-gnu]
-</code></pre>
-
-<h2 id="server-packages">Server packages</h2>
-
-<h3 id="debian-packages">Debian packages</h3>
-
-<pre><code>sudo apt-get install apache2 libapache2-mod-passenger ruby ruby-dev
-sudo apt install postgresql-server-dev-all
-</code></pre>
-
-<h3 id="ruby-gems">Ruby GEMs</h3>
-
-<pre><code>sudo -E gem install bundler -v 1.17.3
-</code></pre>
-
-<h2 id="database">Database</h2>
-
-<pre><code>CREATE ROLE redmine LOGIN ENCRYPTED PASSWORD 'redmine' NOINHERIT VALID UNTIL 'infinity';
-CREATE DATABASE redmine WITH ENCODING='UTF8' OWNER=redmine;
-</code></pre>
-
-<h2 id="app">App</h2>
-
-<pre><code>tar -xzf redmine-3.4.10.tar.gz
-cd redmine-3.4.10/
-mv config/database.yml.example  config/database.yml
-cd ..
-mv redmine-3.4.10/ /var/www/redmine
-</code></pre>
-
-<p>Edit <code>config/database.yml.example</code> :</p>
-
-<pre><code># PostgreSQL configuration example
-production:
-  adapter: postgresql
-  database: redmine
-  host: localhost
-  username: redmine
-  password: "redmine"
-</code></pre>
-
-<p>And rename it:</p>
-
-<pre><code>mv config/database.yml.example  config/database.yml
-</code></pre>
-
-<h3 id="dependencies">Dependencies</h3>
-
-<pre><code>bundle install --without development test
-</code></pre>
-
-<h3 id="setup">Setup</h3>
-
-<pre><code>bundle exec rake generate_secret_token
-RAILS_ENV=production bundle exec rake db:migrate
-RAILS_ENV=production REDMINE_LANG=fr bundle exec rake redmine:load_default_data
-
-
-mkdir -p tmp tmp/pdf public/plugin_assets
-sudo chown -R www-data: files log tmp public/plugin_assets
-sudo chmod -R 755 files log tmp public/plugin_assets
-</code></pre>
-
-<h2 id="apache2">Apache2</h2>
-
-<h3 id="permissions-%26-ownership">Permissions &amp; ownership</h3>
-
-<pre><code>sudo chown -R www-data: /var/www/
-sudo chmod -R 755 /var/www/
-</code></pre>
-
-<h3 id="%C2%A0configuration-of-passenger.conf"> Configuration of passenger.conf</h3>
-
-<p>Add the following line to <code>/etc/apache2/mods-available/passenger.conf</code>:</p>
-
-<pre><code>PassengerDefaultUser www-data
-</code></pre>
-
-<h3 id="virtual-host">Virtual Host</h3>
-
-<p>Edit <code>/etc/apache2/sites-enabled/000-default.conf</code>:</p>
-
-<pre><code>&lt;VirtualHost *:80&gt;
-    #ServerName www.example.com
-    ServerAdmin webmaster@localhost
-    DocumentRoot /var/www/redmine/public/
-        #MaxRequestLen 20971520
-
-        &lt;Directory "/var/www/redmine/public"&gt;
-                Options Indexes ExecCGI FollowSymLinks
-                Order allow,deny
-                Allow from all
-                AllowOverride all
-        &lt;/Directory&gt;
-
-    ErrorLog ${APACHE_LOG_DIR}/redmine.error.log
-    CustomLog ${APACHE_LOG_DIR}/redmine.access.log combined
-&lt;/VirtualHost&gt;
-</code></pre>
-
-<h2 id="test">Test</h2>
-
-<p>REDMINE should be running, login with <code>admin</code>/<code>admin</code>.</p>
 ]]></content>
         </entry>
     </feed>
