@@ -3,9 +3,351 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/apache2.xml" rel="self"/>
     <link href="/"/>
-    <updated>2019-10-04T13:34:30+00:00</updated>
+    <updated>2019-10-21T14:14:06+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Bash scripting course notes]]></title>
+            <link href="/blog/2019/10/15/bash-scripting-course-note"/>
+            <updated>2019-10-15T00:00:00+00:00</updated>
+            <id>/blog/2019/10/15/bash-scripting-course-note</id>
+            <content type="html"><![CDATA[<h1 id="shell%2Fbash-course">Shell/bash course</h1>
+
+<p>https://urfist.unistra.fr/uploads/media/command_memento_fr.pdf</p>
+
+<ul>
+<li>BSD: berkely univsersity. public/research</li>
+<li>system V: private, constructors: DEC, SUN</li>
+<li>POSIX: standard on all system</li>
+</ul>
+
+<h2 id="change-shell">Change shell</h2>
+
+<pre><code>usermod -s /bin/bash formation
+chsh
+
+[root@localhost ~]# useradd ben
+[root@localhost ~]# passwd ben
+Changement de mot de passe pour l'utilisateur ben.
+Nouveau mot de passe : 
+MOT DE PASSE INCORRECT : Le mot de passe comporte moins de 8 caractères
+Retapez le nouveau mot de passe : 
+passwd : mise à jour réussie de tous les jetons d'authentification.
+[root@localhost ~]# usermod -s /bin/ksh ben
+[root@localhost ~]# tail -4 /etc/passwd
+tcpdump:x:72:72::/:/sbin/nologin
+formation:x:1000:1000:Formation:/home/formation:/bin/bash
+vboxadd:x:988:1::/var/run/vboxadd:/bin/false
+ben:x:1001:1001::/home/ben:/bin/ksh
+</code></pre>
+
+<h3 id="switch-user%3A-su">Switch user: su</h3>
+
+<p>Make use of the <code>-</code> to get user env
+    [root@localhost ~]# su - ben
+    Dernière connexion : lundi  7 octobre 2019 à 09:46:27 CEST sur pts/0</p>
+
+<h2 id="text-shell">Text shell</h2>
+
+<pre><code>ctrl + alt + F1 =&gt; graphical shell mode
+ctrl + alt + F[2-6] =&gt; text shell mode
+</code></pre>
+
+<h2 id="file-type">File type</h2>
+
+<pre><code>- file
+d directory
+l link
+c char I/O hardware
+b block I/O hardware
+p pipe : inter process (local)
+s socket : inter process (network)
+</code></pre>
+
+<h2 id="tty">tty</h2>
+
+<p>terminal teletype</p>
+
+<pre><code>[formation@localhost ~]$ tty
+/dev/pts/0
+[formation@localhost ~]$ echo "hello"
+hello
+[formation@localhost ~]$ echo "hello" &gt; /dev/pts/1
+</code></pre>
+
+<h2 id="env-var">Env var</h2>
+
+<p>available in:</p>
+
+<ul>
+<li>new window</li>
+<li>new shell</li>
+<li>new script</li>
+</ul>
+
+<p>env: list env var
+set: env + pre param shell</p>
+
+<h2 id="file-command">File command</h2>
+
+<pre><code>[formation@localhost ~]$ file /bin/ls
+/bin/ls: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.32, BuildID[sha1]=c5ad78cfc1de12b9bb6829207cececb990b3e987, stripped
+[formation@localhost ~]$ file foo.pdf 
+foo.pdf: ASCII text
+[formation@localhost ~]$ mv foo.pdf foo.md
+[formation@localhost ~]$ file foo.md 
+foo.md: ASCII text
+</code></pre>
+
+<h2 id="special-bits">special bits</h2>
+
+<h3 id="setuid">setuid</h3>
+
+<p>when present on an executable file, the programm is executed with the identity of the file owner</p>
+
+<pre><code>[formation@localhost ~]$ which passwd 
+/usr/bin/passwd
+[formation@localhost ~]$ ls -l /usr/bin/passwd 
+-rwsr-xr-x. 1 root root 27832 10 juin   2014 /usr/bin/passwd
+
+chmod 4555 prog.sh 
+[formation@localhost ~]$ ls -l prog.sh 
+-r-sr-xr-x. 1 formation formation 0  7 oct.  10:56 prog.sh
+</code></pre>
+
+<h3 id="setgid">setgid</h3>
+
+<p>idem for group</p>
+
+<h3 id="sticky-bit%3A-t">sticky bit: t</h3>
+
+<p>only owner can destroy folder (add resistance to destruction).</p>
+
+<pre><code>ls -ld /tmp/
+drwxrwxrwt. 15 root root 4096  7 oct.  10:59 /tmp/
+</code></pre>
+
+<h2 id="groups">Groups</h2>
+
+<p>create first group
+then create user, and assign group</p>
+
+<pre><code>groupadd friends
+groupadd painters
+
+useradd foo -g firends -G painters
+</code></pre>
+
+<h2 id="%24path">$PATH</h2>
+
+<p>contains paths of executables path</p>
+
+<pre><code>PATH=$PATH:/new/location/exec
+</code></pre>
+
+<h2 id="find-command">find command</h2>
+
+<pre><code>find /dev - type l -name "*or*" -exec file {} \;
+</code></pre>
+
+<h2 id="locate-command">locate command</h2>
+
+<p>locate file2Search
+updatedb</p>
+
+<h2 id="command-io">Command IO</h2>
+
+<ul>
+<li>stdin: &lt;1</li>
+<li>stdout: >1</li>
+<li>stderr: >2</li>
+</ul>
+
+<p>2>&amp;1: recirect stderr to stdout
+1>&amp;2: redirect stdout to stderr</p>
+
+<pre><code>ls -l file 1&gt; out
+ls -l file doesNotExist 2&gt; error 1&gt;out
+ls -l file &amp;&gt; out
+</code></pre>
+
+<h2 id="tree">tree</h2>
+
+<p>tree of files</p>
+
+<h2 id="pstree">pstree</h2>
+
+<p>tree of ps</p>
+
+<pre><code>ps clax
+ps -ef
+</code></pre>
+
+<h2 id="bash-debug-mode">bash debug mode</h2>
+
+<p>bash -vx script.sh</p>
+
+<h2 id="command-return-code">command return code</h2>
+
+<p>$? == 0 ok
+$? != 0 ko</p>
+
+<h2 id="logical-operators">logical operators</h2>
+
+<h3 id="and-%26%26">AND &amp;&amp;</h3>
+
+<p>if left part is OK</p>
+
+<pre><code>ls &amp;&amp; echo "ls done"
+</code></pre>
+
+<h3 id="or-%7C%7C">OR ||</h3>
+
+<p>if left part fails</p>
+
+<pre><code>ls -l inexistant || echo "inexistant file does not exist"
+</code></pre>
+
+<h3 id="together">Together</h3>
+
+<p>concatenate if exists,else copy</p>
+
+<pre><code>ls -l mypasswd &amp;&amp; cat /etc/passwd &gt;&gt; mypasswd || cp /etc/passwd mypasswd
+
+
+
+cut -d":" -f1,3 /etc/passwd | tr ':' ' ' &gt; users-id
+</code></pre>
+
+<p>cat /etc/group | cut -d":" -f1,3 | sort | nl
+cut -d: -f1,3 /etc/group|sort -t: -n -k2 | nl</p>
+
+<h2 id="terminal-movement-utilities">Terminal movement utilities</h2>
+
+<p>ctrl+a
+ctrl+e
+alt+d</p>
+
+<h2 id="vim">Vim</h2>
+
+<p>filetype  indent plugin on
+gg=G => indent all file</p>
+
+<h2 id="source-vs-.%2F">source VS ./</h2>
+
+<p>source script: execute in current shell
+./script: execute in a child shell</p>
+
+<h2 id="nohut">nohut</h2>
+
+<p>run a script whithout deconnexion
+nohup ./script.sh &amp;</p>
+
+<h2 id="exec-command">exec command</h2>
+
+<p>exec date
+print date and kill exit current process</p>
+
+<h2 id="signals">signals</h2>
+
+<ul>
+<li>ctrl + c: </li>
+<li>ctrl + z:</li>
+<li>ctrl + d:
+When killing a parent process with child process, children are adopted by systemd PID #1.
+example
+eyes &amp;
+ctrl+d
+ps aux
+eyes has PPID=1</li>
+</ul>
+
+<h2 id="jobs-command">jobs command</h2>
+
+<h3 id="foreground-%2B-ctrl-c">foreground + ctrl-c</h3>
+
+<pre><code>[formation@localhost ~]$ xeyes &amp;
+[1] 19078
+[formation@localhost ~]$ jobs
+[1]+  En cours d'exécution   xeyes &amp;
+[formation@localhost ~]$ fg %1
+xeyes
+^C
+[formation@localhost ~]$ 
+</code></pre>
+
+<h3 id="kill-it">kill it</h3>
+
+<pre><code>[formation@localhost ~]$ xeyes &amp;
+[1] 19207
+[formation@localhost ~]$ kill %1
+[1]+  Complété              xeyes
+</code></pre>
+
+<h2 id="trap">trap</h2>
+
+<pre><code>[root@localhost ~]# trap -l
+ 1) SIGHUP   2) SIGINT   3) SIGQUIT  4) SIGILL   5) SIGTRAP
+ 6) SIGABRT  7) SIGBUS   8) SIGFPE   9) SIGKILL 10) SIGUSR1
+11) SIGSEGV 12) SIGUSR2 13) SIGPIPE 14) SIGALRM 15) SIGTERM
+16) SIGSTKFLT   17) SIGCHLD 18) SIGCONT 19) SIGSTOP 20) SIGTSTP
+21) SIGTTIN 22) SIGTTOU 23) SIGURG  24) SIGXCPU 25) SIGXFSZ
+26) SIGVTALRM   27) SIGPROF 28) SIGWINCH    29) SIGIO   30) SIGPWR
+31) SIGSYS  34) SIGRTMIN    35) SIGRTMIN+1  36) SIGRTMIN+2  37) SIGRTMIN+3
+38) SIGRTMIN+4  39) SIGRTMIN+5  40) SIGRTMIN+6  41) SIGRTMIN+7  42) SIGRTMIN+8
+43) SIGRTMIN+9  44) SIGRTMIN+10 45) SIGRTMIN+11 46) SIGRTMIN+12 47) SIGRTMIN+13
+48) SIGRTMIN+14 49) SIGRTMIN+15 50) SIGRTMAX-14 51) SIGRTMAX-13 52) SIGRTMAX-12
+53) SIGRTMAX-11 54) SIGRTMAX-10 55) SIGRTMAX-9  56) SIGRTMAX-8  57) SIGRTMAX-7
+58) SIGRTMAX-6  59) SIGRTMAX-5  60) SIGRTMAX-4  61) SIGRTMAX-3  62) SIGRTMAX-2
+63) SIGRTMAX-1  64) SIGRTMAX    
+</code></pre>
+
+<h2 id="loop">Loop</h2>
+
+<h3 id="sequence-command">sequence command</h3>
+
+<pre><code>seq 5
+1
+2
+3
+4
+5
+
+for i in $(seq 5); do echo $i; done
+</code></pre>
+
+<h2 id="return-code">Return code</h2>
+
+<p>$?
+value ok: 0</p>
+
+<p>shift: process &amp; remove first value of array parameter
+shift.sh</p>
+
+<pre><code>#!/bin/bash
+while test $# -ne 0
+do
+    echo "current paramater: $1 - nb remaning paramter "$#
+    shift 1
+done
+</code></pre>
+
+<p>bash shift.sh aa bb cc</p>
+
+<pre><code>current paramater: aa - nb remaning paramter 3
+current paramater: bb - nb remaning paramter 2
+current paramater: cc - nb remaning paramter 1
+</code></pre>
+
+<h2 id="arithmetic-expression-%3A--expr-">arithmetic expression : (( expr ))</h2>
+
+<pre><code>echo $(( 2+2+6+6 ))
+16
+
+((i=i+1))
+</code></pre>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Configure an apache2 SSL virtual host from a P12 certificate]]></title>
             <link href="/blog/2019/10/01/from-a-p12-certificate-to-apache-ssl"/>
