@@ -72,214 +72,189 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2017/06/14/connect-to-raspberry-over-ethernet">Connect to raspberry pi from linux host using a simple ethernet cable</a></h2>
+            <h2><a href="/blog/2017/12/08/docker-basics">Docker 101:  basics</a></h2>
         </header>
         <div>
-            <p>This post describes how to connect a RPI to a linux station with a simple ethernet cable.</p>
+            <h2 id="containers">Containers</h2>
 
-<h2 id="on-debian-host-machine">On debian host machine</h2>
+<p>A container is a way to create isolated env that can run code while sharing a single OS.</p>
 
-<ul>
-<li><p>run <code>gnome-nettool</code>, change the edit the wired connection and edit IPv4 settings.</p>
+<h3 id="run-a-container">Run a container</h3>
 
-<ul>
-<li><p>Change the <code>DHCP</code> default method 
-<img src="/images/rpi/ethernet-connection/wired-dhcp.png" alt="network conf" /></p>
-
-<p>to <code>shared with other computer</code>:
-<img src="/images/rpi/ethernet-connection/wired-shared.png" alt="network conf" /></p></li>
-</ul></li>
-<li><p>power off the RPI</p>
-
-<pre><code>sudo halt
-</code></pre></li>
-<li><p>mount the RPI SD card to the host PC</p></li>
-<li><p>identify the PC eth0 @IP adress:</p>
-
-<pre><code>sudo ifconfig
-</code></pre></li>
-</ul>
-
-<p>In my case: <code>10.42.0.1</code></p>
-
-<ul>
-<li><p>edit the <code>cmdline.txt</code> located on the <code>boot</code> partition file adding:</p>
-
-<pre><code>ip=10.42.0.100
-</code></pre></li>
-<li><p><em>The pi and the debian PC must on the same subnetwork ie: <code>10.42.0.XXX</code></em></p></li>
-<li><p>insert SD card and boot RPI</p></li>
-<li><p>check the connectivity:</p>
-
-<pre><code>ping 169.254.6.100
---- 10.42.0.100 ping statistics ---
-6 packets transmitted, 6 received, 0% packet loss, time 4999ms
-rtt min/avg/max/mdev = 0.326/0.351/0.392/0.028 ms
-</code></pre></li>
-</ul>
-
-<h2 id="on-the-rpi-machine">On the RPI machine</h2>
-
-<ul>
-<li><p>enable ssh:</p>
-
-<pre><code>sudo raspi-config 
-</code></pre></li>
-<li><p><code>Interfacing Options</code> then <code>P2 SSH</code></p></li>
-</ul>
-
-<h2 id="ssh-it-%21">SSH IT !</h2>
-
-<p>From the debian pc:</p>
-
-<pre><code>ssh pi@169.254.6.100
+<pre><code>docker container run -p 9999:80 httpd:2.4
 </code></pre>
 
-<p>That was it! You are now connected over SSH on the RPI:</p>
+<p>The <code>--detach</code> flag can be used to run the container in background:</p>
 
-<pre><code>The authenticity of host '10.42.0.100 (10.42.0.100)' can't be established.
-ECDSA key fingerprint is ca:cc:0c:80:ab:1a:b4:a9:4b:2b:a8:1a:fa:b4:7e:23.
-Are you sure you want to continue connecting (yes/no)? yes
-Warning: Permanently added '10.42.0.100' (ECDSA) to the list of known hosts.
-pi@10.42.0.100's password: 
-
-
-
-NextCloudPi v0.12.8 is up to date
-Last login: Fri May 26 18:34:10 2017
-
-SSH is enabled and the default password for the 'pi' user has not been changed.
-This is a security risk - please login as the 'pi' user and type 'passwd' to set a new password.
-pi@raspberrypi:~ $
+<pre><code>docker container run --detach -p 9999:80 httpd:2.4
 </code></pre>
+
+<h3 id="list-containers">List containers</h3>
+
+<pre><code>docker container ls
+</code></pre>
+
+<h3 id="run-commands-on-container">Run commands on container</h3>
+
+<pre><code>docker container exec my_container_name du -mh
+</code></pre>
+
+<h3 id="attaching-a-shell-to-a-container">Attaching a Shell to a Container</h3>
+
+<p>To get a shell inside the container:</p>
+
+<pre><code>docker container exec -it my_container_name /bin/bash
+
+PATH=$PATH:/usr/games/
+export PATH
+</code></pre>
+
+<h2 id="dockerfiles">Dockerfiles</h2>
+
+<p>Dockerfile -> create an image -> to generate a container</p>
+
+<p>Inside a file named <code>Dockerfile</code>.</p>
+
+<h3 id="dockerfile-example">Dockerfile example</h3>
+
+<pre><code>FROM httpd:2.4
+EXPOSE 80
+RUN apt-get update &amp;&amp; apt-get install -y fortunes
+COPY page.html /var/www/html/
+LABEL maintainer="moby-dock@example.com"
+</code></pre>
+
+<h3 id="building-an-image-from-a-dockerfile">Building an Image From a Dockerfile</h3>
+
+<pre><code>docker image build --tag web-server:1.0 .
+</code></pre>
+
+<p>End the command with a single . so it knows to look for the Dockerfile in the same folder that the command is run in.</p>
+
+<pre><code>docker image ls
+
+
+docker container run -p 80:80 web-server:1.0
+</code></pre>
+
+<h2 id="volumes">Volumes</h2>
+
+<p>It is possible to copy files into a container but files will be lost when container stops.</p>
+
+<pre><code>docker container cp page.html my_container_name:/var/www/html/.
+</code></pre>
+
+<p>A better solution is to use volumes.
+Data volumes expose files on your host machine to the container.</p>
+
+<h3 id="creating-a-volume">Creating a Volume</h3>
+
+<pre><code>docker run -d -p 80:80 -v /my-files:/var/www/html web-server:1.1
+</code></pre>
+
+<p>Shared folder  between <code>/my-files</code> on host machine and the <code>html</code> folder in the container</p>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2017/06/13/setting-up-a-debian-dev-machine">Setting up a debian dev machine</a></h2>
+            <h2><a href="/blog/2017/11/13/debian-fixing-error-after-partition-edition">Debian:  fixing error: &#039;A start job is running for dev-disk-...&#039;</a></h2>
         </header>
         <div>
-            <p>Let's put all together to install a debian 8 machine from scratch:</p>
+            <h2 id="error-encountered">Error encountered</h2>
 
-<ul>
-<li><a href="/blog/2017/06/12/create-a-debian-iso-live-usb-drive">burn a usb drive</a></li>
-<li><a href="/blog/2017/06/12/setting-up-git-with-multiple-accounts">install git</a></li>
-<li><a href="/blog/2017/06/12/install-vagrant">install vagrant</a></li>
-</ul>
+<p>After editing partitions to enlarge my vagrant box. The following error is encountered and the machine took 1min30 to boot:</p>
+
+<pre><code>A start job is running for dev-disk-by\x2duuid
+</code></pre>
+
+<h2 id="solution">Solution</h2>
+
+<h3 id="list-machine-partition-by-uuid">List machine partition by-uuid</h3>
+
+<pre><code>vagrant@moodle-prod:~$ ls -l /dev/disk/by-uuid/
+total 0
+lrwxrwxrwx 1 root root 10 Nov 13 08:49 a01bd0bf-1ffc-400d-b383-d74354750926 -&gt; ../../sda2
+lrwxrwxrwx 1 root root 10 Nov 13 08:49 db36bd9a-c8f7-4b02-bb1a-81e4913a21d7 -&gt; ../../sda1
+</code></pre>
+
+<h3 id="check-%60%2Fetc%2Ffstab%60-file">Check <code>/etc/fstab</code> file</h3>
+
+<pre><code>vagrant@moodle-prod:~$ sudo cat /etc/fstab
+# /etc/fstab: static file system information.
+#
+# Use 'blkid' to print the universally unique identifier for a
+# device; this may be used with UUID= as a more robust way to name devices
+# that works even if disks are added and removed. See fstab(5).
+#
+# &lt;file system&gt; &lt;mount point&gt;   &lt;type&gt;  &lt;options&gt;       &lt;dump&gt;  &lt;pass&gt;
+# / was on /dev/vda1 during installation
+UUID=db36bd9a-c8f7-4b02-bb1a-81e4913a21d7 /               ext4    errors=remount-ro 0       1
+# swap was on /dev/vda5 during installation
+UUID=8d7d9300-7fd3-4a5a-bfd1-9bc61a20fabd none            swap    sw              0       0
+/dev/sr0        /media/cdrom0   udf,iso9660 user,noauto     0       0
+</code></pre>
+
+<h3 id="swap-uuid-has-changed">SWAP UUID has changed</h3>
+
+<p>Problem: SWAP UID has changed</p>
+
+<pre><code># swap was on /dev/vda5 during installation
+UUID=8d7d9300-7fd3-4a5a-bfd1-9bc61a20fabd none            swap    sw     
+</code></pre>
+
+<p>Edit this line with the new UUID (change '8d7d9300-7fd3-4a5a-bfd1-9bc61a20fabd' to 'a01bd0bf-1ffc-400d-b383-d74354750926') in <code>/etc/fstab</code>:</p>
+
+<pre><code>UUID=a01bd0bf-1ffc-400d-b383-d74354750926 none            swap    sw              0       0
+</code></pre>
+
+<h2 id="check">Check</h2>
+
+<p>Everything is now fine! Error solved!</p>
+
+<p><a href="https://www.debian-fr.org/t/demarrage-a-start-job-is-running-for-dev-disk-by-x2duuid/64527">source</a></p>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2017/06/12/setting-up-git-with-multiple-accounts">Setting up git with multiple accounts</a></h2>
+            <h2><a href="/blog/2017/11/09/moodle-activate-debug-using-sql">Moodle 3.X: activate debug whithout GUI</a></h2>
         </header>
         <div>
-            <h2 id="git-install">git install</h2>
+            <p>If you need to activate debug but you cannot access moodle admin page, this article is for you:</p>
 
-<pre><code>sudo apt-get install git
+<h2 id="step-1%3A-note-original-settings">Step 1: note original settings</h2>
+
+<pre><code>SELECT name, value
+FROM mdl_config
+where name ='debug' or name ='debugdisplay'
+;
 </code></pre>
 
-<h3 id="git-config">git config</h3>
+<p>for instance :</p>
 
-<pre><code>git config --global user.email benoit.works@gmail.com
-git config --global user.name ben
-cat .gitconfig 
-[user]
-    email = benoit.works@gmail.com
-    name = ben
+<pre><code>debug   0
+debugdisplay    0
 </code></pre>
 
-<h3 id="ssh-keys">ssh keys</h3>
+<h2 id="step-2-%3A-setup-debug-config-in-db">Step 2 : setup debug config in db</h2>
 
-<h4 id="github-key">github key</h4>
-
-<pre><code>ben@debian:~$ ssh-keygen -t rsa -C "benoit.works@gmail.com"
-Generating public/private rsa key pair.
-Enter file in which to save the key (/home/ben/.ssh/id_rsa): /home/ben/.ssh/id_rsa_github
-Enter passphrase (empty for no passphrase): 
-Enter same passphrase again: 
-Your identification has been saved in /home/ben/.ssh/id_rsa_github.
-Your public key has been saved in /home/ben/.ssh/id_rsa_github.pub.
-The key fingerprint is:
-e0:ff:69:e3:fd:67:9b:97:7e:3b:d7:0c:5e:c8:98:94 benoit.works@gmail.com
-The key's randomart image is:
-+---[RSA 2048]----+
-|                 |
-|                 |
-|      .      .   |
-|     . .    E    |
-|      . S  . + . |
-|       .    o + .|
-|        .    . +o|
-|         .oo  .oX|
-|         o+...oBB|
-+-----------------+
-ben@debian:~$ ls -al .ssh/
-total 16
-drwx------  2 ben ben 4096 juin   7 10:01 .
-drwxr-xr-x 21 ben ben 4096 juin   7 10:00 ..
--rw-------  1 ben ben 1675 juin   7 10:01 id_rsa_github
--rw-r--r--  1 ben ben  404 juin   7 10:01 id_rsa_github.pub
-
-
-ben@debian:~$ ssh-add ~/.ssh/id_rsa_github
-Identity added: /home/ben/.ssh/id_rsa_github (rsa w/o comment)
+<pre><code>UPDATE mdl_config SET VALUE = 32767 WHERE name = 'debug';
+UPDATE mdl_config SET VALUE = 1 WHERE name = 'debugdisplay';
 </code></pre>
 
-<p>Add the public key to your github account.</p>
+<h2 id="step-3%3A-clear-cache-from-cli">Step 3: clear cache from CLI</h2>
 
-<h4 id="bitbucket-key">bitbucket key</h4>
-
-<pre><code>ben@debian ~ $ ssh-keygen -t rsa -C "benoit.works@gmail.com"
-Generating public/private rsa key pair.
-Enter file in which to save the key (/home/ben/.ssh/id_rsa): /home/ben/.ssh/id_rsa_bitbucket
-Enter passphrase (empty for no passphrase): 
-Enter same passphrase again: 
-Your identification has been saved in /home/ben/.ssh/id_rsa_bitbucket.
-Your public key has been saved in /home/ben/.ssh/id_rsa_bitbucket.pub.
-The key fingerprint is:
-04:75:ba:a3:71:a4:1e:3e:0a:31:f8:a1:b3:70:57:81 benoit.works@gmail.com
-The key's randomart image is:
-+---[RSA 2048]----+
-|      ... .      |
-|     . . o       |
-|    E . +        |
-| .     = .       |
-|. +   = S        |
-| o + + = .       |
-|+ + . =          |
-|.+ o . .         |
-|.   .            |
-+-----------------+
-
-ben@debian ~ $ ssh-add ~/.ssh/id_rsa_bitbucket
-Identity added: /home/ben/.ssh/id_rsa_bitbucket (rsa w/o comment)
+<pre><code>php  moodle/admin/cli/purge_caches.php
 </code></pre>
 
-<p>Add the public key to your bitbucket account.</p>
+<h2 id="step-4%3A-restore-original-settings">Step 4: restore original settings</h2>
 
-<h3 id="ssh-config-file">ssh config file</h3>
-
-<p>Edit <code>~/.ssh/config file</code></p>
-
-<pre><code># Default GitHub user
-Host github.com
- HostName github.com
- PreferredAuthentications publickey
- IdentityFile ~/.ssh/id_rsa_github
-
-# bitbucket account
-Host bitbucket.org
- HostName bitbucket.org
- PreferredAuthentications publickey
- IdentityFile ~/.ssh/id_rsa_bitbucket
+<pre><code>UPDATE mdl_config SET VALUE = 0 WHERE name = 'debug';
+UPDATE mdl_config SET VALUE = 0 WHERE name = 'debugdisplay';
 </code></pre>
 
         </div>
-                    <p class="tags">
-            Tags:
-                        <a href="/blog/tags/debian">debian</a>                        </p>
             </article>
     <nav>
         <ul class="pager">
@@ -301,7 +276,7 @@ Host bitbucket.org
             </div>
         </div>
         <footer class="container">
-            &copy; 2019 benIT&#039;s notebook
+            &copy; 2020 benIT&#039;s notebook
         </footer>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

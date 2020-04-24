@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>linux basics: file permissions 2 - advanced &mdash; benIT&#039;s notebook &mdash; </title>
+        <meta charset="utf-8">
+        <meta name="theme-color" content="#ffffff">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="robots" content="index, follow">
+        <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/style.css" rel="stylesheet" type="text/css" />
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+        <link rel="apple-touch-startup-image" href="/images/jackson/2048x2048.png">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="shortcut icon" sizes="76x76" href="/images/jackson/76x76.png">
+        <link rel="shortcut icon" sizes="120x120" href="/images/jackson/120x120.png">
+        <link rel="shortcut icon" sizes="128x128" href="/images/jackson/128x128.png">
+        <link rel="shortcut icon" sizes="152x152" href="/images/jackson/152x152.png">
+        <link rel="shortcut icon" sizes="196x196" href="/images/jackson/196x196.png">
+        <link rel="shortcut icon" sizes="512x512" href="/images/jackson/512x512.png">
+        <link rel="shortcut icon" sizes="1024x1024" href="/images/jackson/1024x1024.png">
+        <link rel="shortcut icon" sizes="2048x2048" href="/images/jackson/2048x2048.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="/images/jackson/76x76.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="/images/jackson/120x120.png">
+        <link rel="apple-touch-icon" sizes="128x128" href="/images/jackson/128x128.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="/images/jackson/152x152.png">
+        <link rel="apple-touch-icon" sizes="196x196" href="/images/jackson/196x196.png">
+        <link rel="apple-touch-icon" sizes="512x512" href="/images/jackson/512x512.png">
+        <link rel="apple-touch-icon" sizes="1024x1024" href="/images/jackson/1024x1024.png">
+        <link rel="apple-touch-icon" sizes="2048x2048" href="/images/jackson/2048x2048.png">
+
+        <link rel="stylesheet" href="/components/highlightjs/styles/github.css" />
+        <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="benIT&#039;s notebook activity feed" />
+        <style>
+        /** quick fix because bootstrap <pre> has a background-color. */
+        pre code { background-color: inherit; }
+        </style>
+                                    </head>
+    <a href="https://github.com/benIT/github-blog"><img style="z-index:1032;position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
+    <body>
+        <header>
+            <nav class="navbar navbar-inverse navbar-fixed-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/">benIT&#039;s notebook </a>
+                    </div>
+                    <div id="navbar" class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="https://github.com/benIT">Github</a></li>
+                            <li><a href="/blog">Posts Archive</a></li>
+                            <li><a href="/blog/categories">Categories</a></li>
+                            <li><a href="/atom.xml">RSS feed</a></li>
+                            <!--<li><a href="/blog/tags">Tags</a></li>-->
+                            <li><a href="/about">About</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="mainContent container">
+            <div class="row-fluid">
+                <div class="span8">
+                        <article>
+        <header>
+            <h2>linux basics: file permissions 2 - advanced <small>post</small></h2>
+        </header>
+        <div>
+            <h2 id="suid%3A-set-user-identification-permission">SUID: Set-user Identification permission</h2>
+
+<p>usage:</p>
+
+<pre><code>chmod u+s prg.sh
+chmod 4[rwx][rwx][rwx] prg.sh
+</code></pre>
+
+<p>Specfic to executable file.</p>
+
+<p>When a command or script with SUID bit set is run, its effective UID becomes that of the owner of the file, rather than of the user who is running it.</p>
+
+<p>The setuid permission displayed as an “s” in the owner’s execute field.</p>
+
+<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
+When a command or script with SUID bit set is run, its effective UID becomes that of the owner of the file, rather than of the user who is running it.</p>
+
+<pre><code>chmod u+s prg.sh
+chmod 4[rwx][rwx][rwx] prg.sh
+</code></pre>
+
+<p>create a file:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# touch prg.sh
+root@raspbeeerry:/home/pi# ls -l prg.sh 
+-rw-r--r-- 1 root root 0 Apr 16 15:06 prg.sh
+</code></pre>
+
+<p>add execution right for all:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# chmod a+x prg.sh 
+root@raspbeeerry:/home/pi# ls -l prg.sh 
+-rwxr-xr-x 1 root root 0 Apr 16 15:06 prg.sh
+</code></pre>
+
+<p>set SUID, note the lower 's' when X right:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# chmod u+s prg.sh 
+root@raspbeeerry:/home/pi# ls -l prg.sh 
+-rwsr-xr-x 1 root root 0 Apr 16 15:06 prg.sh
+</code></pre>
+
+<p>remove execution right for all, note the upper 'S' when no X right:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# chmod a-x prg.sh 
+root@raspbeeerry:/home/pi# ls -l prg.sh 
+-rwSr--r-- 1 root root 0 Apr 16 15:06 prg.sh
+</code></pre>
+
+<h2 id="sgid%3A-set-group-identification-permission">SGID: Set-group identification permission</h2>
+
+<p>usage:</p>
+
+<pre><code>chmod g+s prg.sh
+chmod 2[rwx][rwx][rwx] prg.sh
+</code></pre>
+
+<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
+When SGID permission is set on a directory, files created in the directory belong to the group of which the directory is a member.
+– For example if a user having write permission in the directory creates a file there, that file is a member of the same group as the directory and not the user’s group.
+– This is very useful in creating shared directories.
+– The setgid permission displays as an “s” in the group’s execute field.</p>
+
+<h2 id="rights-on-folder">Rights on folder</h2>
+
+<p>*r: allow to list
+*w: allow to create/delete files
+*x: allow to traverse</p>
+
+<h2 id="sticky-bit-permission">Sticky bit permission</h2>
+
+<p>usage:</p>
+
+<pre><code>chmod +t folder
+chmod 1[rwx][rwx][rwx] prg.sh
+</code></pre>
+
+<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
+The sticky bit is primarily used on shared directories.
+* without the sticky bit : user with Write permission on a folder can create/delete other users files
+* with the sticky bit : user with Write permission on a folder are allowed to create new files but not to delete files</p>
+
+<p>Example:</p>
+
+<p>as root, create a folder with sticky bit:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# mkdir test-folder
+root@raspbeeerry:/home/pi# chmod a+w test-folder/
+root@raspbeeerry:/home/pi# ls -ld test-folder/
+drwxrwxrwx 2 root root 4096 Apr 16 14:53 test-folder/
+root@raspbeeerry:/home/pi# touch test-folder/a
+root@raspbeeerry:/home/pi# ls -l permissions.txt ^C
+root@raspbeeerry:/home/pi# ^C
+root@raspbeeerry:/home/pi# chmod +t test-folder/
+</code></pre>
+
+<p>as another user, let's try to create/delete file inside the folder with the sticky bit:</p>
+
+<pre><code>pi@raspbeeerry ~ $ touch test-folder/b
+pi@raspbeeerry ~ $ ls -l test-folder/
+total 0
+-rw-r--r-- 1 root root 0 Apr 16 14:58 a
+-rw-r--r-- 1 pi   pi   0 Apr 16 14:59 b
+pi@raspbeeerry ~ $ rm test-folder/a
+rm: remove write-protected regular empty file 'test-folder/a'? 
+</code></pre>
+
+<p>as root, let's remove the sticky bit:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# chmod -t test-folder/
+</code></pre>
+
+<p>as another user, retry to delete file created by another user:</p>
+
+<pre><code>pi@raspbeeerry ~ $ rm -f  test-folder/a
+@raspbeeerry ~ $ ls -l test-folder/
+total 0
+-rw-r--r-- 1 pi pi 0 Apr 16 14:59 b
+</code></pre>
+
+        </div>
+                    <p class="categories">
+            Categories:
+                        <a href="/blog/categories/linux">linux</a>,                         <a href="/blog/categories/linux%20basics">linux basics</a>                        </p>
+                
+                    <nav class="article">
+                <ul>
+                                            <li>Next: <a class="next" href="/blog/2020/04/17/linux-file-permissions-3" title="linux basics: file permissions 3 - ACL"><span class="title">linux basics: file permissions 3 - ACL</span></a></li>
+                                                                <li>Previous: <a class="previous" href="/blog/2020/04/17/linux-file-permissions-1" title="linux basics: file permissions 1 - POSIX rights"><span class="title">linux basics: file permissions 1 - POSIX rights</span></a></li>
+                                    </ul>
+            </nav>
+            </article>
+
+
+
+                </div>
+                <!--<div class="span4 sidebar">-->
+                    <!--<div class="well">-->
+                        <!--<h4>benIT&#039;s notebook</h4>-->
+                    <!--</div>-->
+                    <!--<div class="well sidebar-nav">-->
+                        <!--<h4>Links</h4>-->
+                        <!--<ul class="nav">-->
+                            <!--<li><a href="http://sculpin.io">sculpin.io</a></li>-->
+                            <!--<li><a href="http://twitter.com/getsculpin">@getsculpin</a></li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                <!--</div>-->
+            </div>
+        </div>
+        <footer class="container">
+            &copy; 2020 benIT&#039;s notebook
+        </footer>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="/components/jquery/jquery.min.js"><\/script>')</script>
+        <script src="/components/bootstrap/js/bootstrap.min.js"></script>
+                
+                <script src="/components/highlightjs/highlight.pack.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+
+                    </body>
+</html>

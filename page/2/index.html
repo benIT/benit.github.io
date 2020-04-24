@@ -72,271 +72,171 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2019/09/19/run-multiple-php-versions-same-server-with-fpm">Run multiple php versions on the same server with PHP-FPM and apache2</a></h2>
+            <h2><a href="/blog/2020/04/17/linux-file-permissions-1">linux basics: file permissions 1 - POSIX rights</a></h2>
         </header>
         <div>
-            <h2 id="purpose">Purpose</h2>
+            <h2 id="file-ownership">file ownership</h2>
 
-<p>The aim of this post is to run several php versions on the same server.</p>
+<p>File ownership is managed by a user owner and a group owner.
+See <code>ls -l</code> or <code>ls -n</code></p>
 
-<p>This installation has been performed on debian 9 stretch.</p>
+<p>Examples:</p>
 
-<p>This post has been mainly inspired <a href="https://tecadmin.net/install-multiple-php-version-apache-ubuntu/">from this source</a></p>
-
-<h2 id="about-%60php-fpm%60">About <code>php-fpm</code></h2>
-
-<p>PHP-FPM (FastCGI Process Manager) allows communication between a webserver and a PHP process based on FastCGI protocol.</p>
-
-<p>In this post, PHP-FPM listen to a socket file to communicate with apache.</p>
-
-<h2 id="add-%60sury%60-repo-to-get-both-%60php-5.6%60-and-%60php7.x%60-packages">Add <code>sury</code> repo to get both <code>php-5.6</code> and <code>php7.x</code> packages</h2>
-
-<p>Since debian strech did not have php5 packages, we have to add an extra repo to our apt sources.list to get those packages (<a href="https://stackoverflow.com/questions/46378017/install-php5-6-in-debian-9">source here</a>):</p>
-
-<pre><code>apt-get install apt-transport-https lsb-release ca-certificates
-wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg --no-check-certificate
-echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" &gt; /etc/apt/sources.list.d/php.list
-apt-get update
+<pre><code>chown user:group file #change owner and group
+chown user file # change only owner
+chown :group file #change only group, same as chgrp command
 </code></pre>
 
-<h2 id="about-the-apache2-library-that-communicates-with-php-fpm-process">About the apache2 library that communicates with php fpm process</h2>
+<h2 id="linux-posix-rights">Linux POSIX rights</h2>
 
-<p>These libs are not required anymore: <code>libapache2-mod-fastcgi</code>, <code>libapache2-mod-fcgid</code> since there are now <code>proxy_fcgi</code> and <code>proxy</code> apache modules.</p>
+<p>POSIX is a standard.</p>
 
-<h3 id="apache2-modules">Apache2 modules</h3>
+<h2 id="list-rights">List rights</h2>
 
-<pre><code>a2enmod actions alias proxy_fcgi
+<pre><code>ls -l
 </code></pre>
 
-<h2 id="install-php-fpm-module-for-php-5.6">Install php fpm module for php 5.6</h2>
+<p>Type codes:</p>
 
-<pre><code>apt-get install php5.6-fpm
-</code></pre>
+<ul>
+<li>-: file</li>
+<li>d: folder</li>
+<li>l: symlink</li>
+<li>p: pipe. used to make 2 programs communicate</li>
+<li>s: socket. used to make 2 programs communicate + network management + bidirectional</li>
+<li>b: block device, ie write block by block</li>
+<li>c: character device, ie write char by char</li>
+</ul>
 
-<p>Checkout in <code>/etc/php/5.6/fpm/pool.d/www.conf</code> the directive that contains the socket path where php-fpm is listening:</p>
+<p>9 bits: 3 User + 3 Group + 3 Other</p>
 
-<pre><code>listen = /run/php/php5.6-fpm.sock
-</code></pre>
+<h2 id="chmod">chmod</h2>
 
-<h2 id="install-php-fpm-module-for-php-7.1">Install php fpm module for php 7.1</h2>
+<ul>
+<li>u: for user</li>
+<li>g: for group</li>
+<li>o: for others</li>
+<li><p>a: for all</p></li>
+<li><p>+: add right</p></li>
+<li>-: remove right</li>
+<li><p>=: set right</p></li>
+<li><p>r: read. 2^2 => 4</p></li>
+<li>w: write.2^1 => 2</li>
+<li><p>x: execute.2^0 => 1</p>
 
-<pre><code>apt-get install php7.1-fpm
-</code></pre>
-
-<p>Checkout in <code>/etc/php/7.1/fpm/pool.d/www.conf</code> the directive that contains the socket path where php-fpm is listening:</p>
-
-<pre><code>listen = /run/php/php7.1-fpm.sock
-</code></pre>
-
-<h2 id="test">Test</h2>
-
-<h3 id="create-test-apps">Create test apps</h3>
-
-<pre><code>mkdir -p /var/www/html/php5.6 /var/www/html/php7.1
-echo "&lt;?php phpinfo(); ?&gt;" &gt; /var/www/php56/index.php
-echo "&lt;?php phpinfo(); ?&gt;" &gt; /var/www/php71/index.php
-</code></pre>
-
-<h3 id="virtual-hosts">Virtual hosts</h3>
-
-<pre><code>a2dissite 000-default.conf    
-</code></pre>
-
-<h3 id="edit-local-dns-file">Edit local DNS file</h3>
-
-<p>Edit <code>/etc/hosts</code>:</p>
-
-<pre><code>10.11.12.13 php56.test
-10.11.12.13 php71.test
-</code></pre>
-
-<h4 id="php-5.6-virtual-host">PHP 5.6 virtual host</h4>
-
-<pre><code>cp 000-default.conf php56.conf 
-a2ensite php56.conf
-</code></pre>
-
-<p>Edit <code>/etc/apache2/sites-available/php56.conf</code>:</p>
-
-<pre><code>&lt;VirtualHost *:80&gt;
-    ServerName php56.test
-    DocumentRoot /var/www/php56
-    &lt;Directory /var/www/php56&gt;
-        Options -Indexes +FollowSymLinks +MultiViews
-        AllowOverride All
-        Require all granted
-    &lt;/Directory&gt;
-    &lt;FilesMatch \.php$&gt;
-        # Apache 2.4.10+ can proxy to unix socket
-        SetHandler "proxy:unix:/var/run/php/php5.6-fpm.sock|fcgi://localhost/"
-    &lt;/FilesMatch&gt;
-    ErrorLog ${APACHE_LOG_DIR}/php56-error.log
-    CustomLog ${APACHE_LOG_DIR}/php56-access.log combined
-&lt;/VirtualHost&gt;
-</code></pre>
-
-<p>Reload :</p>
-
-<pre><code>systemctl reload apache2    
-</code></pre>
-
-<p>Check with your browser:</p>
-
-<p><img src="/images/multiple-php-versions/56.png" alt="screenshot" /></p>
-
-<h4 id="php-7.1-virtual-host">PHP 7.1 virtual host</h4>
-
-<pre><code>cp 000-default.conf php71.conf
-a2ensite php71.conf
-</code></pre>
-
-<p>Edit <code>/etc/apache2/sites-available/php71.conf</code>:</p>
-
-<pre><code>&lt;VirtualHost *:80&gt;
-    ServerName php56.test
-    DocumentRoot /var/www/php56
-    &lt;Directory /var/www/php56&gt;
-        Options -Indexes +FollowSymLinks +MultiViews
-        AllowOverride All
-        Require all granted
-    &lt;/Directory&gt;
-    &lt;FilesMatch \.php$&gt;
-        # Apache 2.4.10+ can proxy to unix socket
-        SetHandler "proxy:unix:/var/run/php/php7.1-fpm.sock|fcgi://localhost/"
-    &lt;/FilesMatch&gt;
-    ErrorLog ${APACHE_LOG_DIR}/php71-error.log
-    CustomLog ${APACHE_LOG_DIR}/php71-access.log combined
-&lt;/VirtualHost&gt;    
-</code></pre>
-
-<p>Reload :</p>
-
-<pre><code>systemctl reload apache2    
-</code></pre>
-
-<p>Check with your browser:</p>
-
-<p><img src="/images/multiple-php-versions/71.png" alt="screenshot" /></p>
+<p>chmod u+r,g-r file.txt
+chmod a=rwx file.txt
+chmod 740 file.txt</p></li>
+</ul>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2019/07/12/php-survival-sheet">PHP survival sheet</a></h2>
+            <h2><a href="/blog/2020/04/13/linux-basics-material-10">linux basics: material 10 -  File System Summary</a></h2>
         </header>
         <div>
-            <h2 id="identify-different-%60php.ini%60-files">Identify different <code>php.ini</code> files</h2>
-
-<p>This <code>find</code> command:</p>
-
-<pre><code>find /etc -name php.ini 
-</code></pre>
-
-<p>returns:</p>
-
-<pre><code>/etc/php/7.1/apache2/php.ini
-/etc/php/7.1/cli/php.ini
-</code></pre>
-
-<h2 id="identify-loaded-php.ini-files-from-command-line">Identify loaded php.ini files from command line</h2>
-
-<p>This command:</p>
-
-<pre><code>php --ini
-</code></pre>
-
-<p>returns:</p>
-
-<pre><code>Configuration File (php.ini) Path: /etc/php/7.1/cli
-Loaded Configuration File:         /etc/php/7.1/cli/php.ini
-Scan for additional .ini files in: /etc/php/7.1/cli/conf.d
-Additional .ini files parsed:      /etc/php/7.1/cli/conf.d/10-mysqlnd.ini,
-/etc/php/7.1/cli/conf.d/10-opcache.ini,
-/etc/php/7.1/cli/conf.d/10-pdo.ini,
-/etc/php/7.1/cli/conf.d/15-xml.ini,
-...
-</code></pre>
-
-<h2 id="get-configuration-values-from-the-command-line">Get configuration values from the command line</h2>
-
-<p>This command returns:</p>
-
-<pre><code>php -i | grep upload_max_filesize
-</code></pre>
-
-<p>returns:</p>
-
-<pre><code>upload_max_filesize =&gt; 2M =&gt; 2M
-</code></pre>
-
-<p>Common configuration to change in <code>php.ini</code> files:</p>
-
-<pre><code>memory_limit
-max_execution_time
-max_input_time
-post_max_size
-upload_max_filesize
-
-display_errors
-html_errors
-</code></pre>
+            <ul>
+<li>partitioning a disk means divide it into several spaces: see <code>fdisk</code> or <code>parted</code> </li>
+<li>formatting means creating a FS on partition: see <code>mkfs</code></li>
+<li>FS can  be analysed with <code>dumpe2fs</code>, tuned with <code>tune2fs</code> </li>
+<li>FS can  be checked with <code>fsck</code> </li>
+<li>mount means attaching a device in a particular folder of the linux tree with <code>mount</code></li>
+<li>FS mount can be automated with <code>/etc/fstab</code> file</li>
+</ul>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2019/07/10/use-your-own-fork-with-composer">Use your own fork with composer</a></h2>
+            <h2><a href="/blog/2020/04/13/linux-basics-material-9">linux basics: material 9 - mount FS</a></h2>
         </header>
         <div>
-            <p>Resources:</p>
+            <h3 id="mount">mount</h3>
+
+<p>mounting a FS means associate it to the linux tree, in a particular folder.</p>
+
+<p>From man:</p>
+
+<p>All files accessible in a Unix system are arranged in one big tree, the
+file hierarchy, rooted at /.  These files can be spread out  over  sev‐
+eral  devices.  The mount command serves to attach the filesystem found
+on some device to the big file tree.</p>
+
+<pre><code> mkdir -p /mnt/test
+ mount /dev/sdb1 /mnt/test
+ cd /mnt/test/
+ touch f1 f2 f3
+ umount /mnt/test 
+ mount /dev/sdb1 /mnt/test
+ ls /mnt/test/
+
+
+mount -a: mount all FS /etc/fstab 
+</code></pre>
 
 <ul>
-<li>https://getcomposer.org/doc/04-schema.md#minimum-stability</li>
-<li>https://stackoverflow.com/a/13500676/1632809</li>
+<li>-r: ro</li>
+<li>-t ext4: specify FS ext type</li>
+<li>-L alabel: mount the FS matching the given label</li>
+<li>-U aUUID: mount the FS matching the given UUID</li>
 </ul>
 
-<h2 id="context">Context</h2>
+<h3 id="list-mounted-fs">list mounted FS</h3>
+
+<pre><code>mount -l 
+</code></pre>
+
+<h3 id="mount-options">mount options</h3>
+
+<pre><code>mount -o auto
+</code></pre>
 
 <ul>
-<li><p>Original project: <a href="https://github.com/KnpLabs/KnpGaufretteBundle">https://github.com/KnpLabs/KnpGaufretteBundle</a></p></li>
-<li><p>My fork: <a href="https://github.com/benIT/KnpGaufretteBundle.git">https://github.com/benIT/KnpGaufretteBundle.git</a></p></li>
-<li><p>My branch name: <code>benIT-gaufrette-1.0</code>. This one contains my commits.</p></li>
+<li>remount    </li>
+<li>ro</li>
+<li>rw</li>
+<li>loop: for loopback block device    </li>
+<li>auto/noauto: auto mount the FS at startup or mount -a</li>
+<li>user: specify user allowed to mount/unmount the FS</li>
 </ul>
 
-<h2 id="composer">Composer</h2>
+<p>mount FS in RO mode:</p>
 
-<p>My <code>composer.json</code> file that tracks my fork with ly branch.</p>
-
-<p>Note: branch must be prefixed bt <code>dev-</code>. In this case: <code>dev-benIT-gaufrette-1.0</code>:</p>
-
-<pre><code>{
-  "name": "root/test-composer",
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/benIT/KnpGaufretteBundle.git"
-    }
-  ],
-  "require": {
-    "knplabs/knp-gaufrette-bundle": "dev-benIT-gaufrette-1.0"
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
-}
+<pre><code> mount -o ro /dev/sdb1 /mnt/test/
+ ls /mnt/test/
+ f1  f2 f3  lost+found
+ date &gt;&gt; /mnt/test/f1
+ -su: /mnt/test/f1: Read-only file system
 </code></pre>
 
-<p>The following directive :</p>
+<p>remount it in RW mode (without unmount!):</p>
 
-<pre><code>"minimum-stability": "dev",
-"prefer-stable": true
+<pre><code> mount -o rw,remount /dev/sdb1 /mnt/test/
+ date &gt;&gt; /mnt/test/f1
 </code></pre>
 
-<p>prevents this kind of error related to minimum stability:</p>
+<h2 id="umount">umount</h2>
 
-<pre><code>  Problem 1
-    - Installation request for knplabs/knp-gaufrette-bundle dev-benIT-gaufrette-1.0 -&gt; satisfiable by knplabs/knp-gaufrette-bundle[dev-benIT-gaufrette-1.0].
-    - knplabs/knp-gaufrette-bundle dev-benIT-gaufrette-1.0 requires knplabs/gaufrette ^1.0 -&gt; satisfiable by knplabs/gaufrette[1.x-dev] but these conflict with your requirements or minimum-stability.
+<pre><code>umount /dev/sdb1
 </code></pre>
+
+<p>or</p>
+
+<pre><code>umount /mnt/test
+</code></pre>
+
+<ul>
+<li>-a: all</li>
+<li>-f: forcee</li>
+<li>-r: if fails, remount in ro</li>
+</ul>
+
+<hr />
+
+<h3 id="fstab">fstab</h3>
+
+<p>/etc/fstab is used to automount FS</p>
 
         </div>
             </article>
@@ -360,7 +260,7 @@ html_errors
             </div>
         </div>
         <footer class="container">
-            &copy; 2019 benIT&#039;s notebook
+            &copy; 2020 benIT&#039;s notebook
         </footer>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

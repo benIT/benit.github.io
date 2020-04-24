@@ -72,408 +72,398 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2019/03/25/git-rebase">GIT rebase</a></h2>
+            <h2><a href="/blog/2020/04/13/linux-basics-material-2">linux basics: material 2 - Linux hard drives naming</a></h2>
         </header>
         <div>
-            <p>The aim of this post is to understand and get confortable with the git rebase command.</p>
-
-<p><a href="https://www.atlassian.com/git/tutorials/rewriting-history/git-rebase">Definition</a>:</p>
-
-<blockquote>
-  <p>Rebasing is the process of moving or combining a sequence of commits to a new base commit. Rebasing is most useful and easily visualized in the context of a feature branching workflow.</p>
-</blockquote>
-
-<h2 id="create-a-git-repo">Create a git repo</h2>
-
-<pre><code>mkdir rebase-test &amp;&amp; cd rebase-test
-git init
-</code></pre>
-
-<p>output:</p>
-
-<pre><code>Initialized empty Git repository in /home/bmn/rebase-test/.git/
-</code></pre>
-
-<h2 id="create-one-commit-on-%60master%60-branch">Create one commit on <code>master</code> branch</h2>
-
-<pre><code>echo "first content from master" &gt;&gt; README.md
-git add README.md 
-git commit -m "first commit"
-</code></pre>
-
-<p>output:</p>
-
-<pre><code>[master (root-commit) dc5f8d2] first commit
-1 file changed, 1 insertion(+)
-create mode 100644 README.md
-</code></pre>
-
-<h2 id="create-a-%60feature%60-branch-from-that-commit">Create a <code>feature</code> branch from that commit</h2>
-
-<pre><code>git checkout -b feature
-Switched to a new branch 'feature'
-</code></pre>
-
-<h2 id="create-one-commit-on-the-%60feature%60-branch">Create one commit on the <code>feature</code> branch</h2>
-
-<pre><code>echo "introducing a new feature" &gt;&gt; README.md
-</code></pre>
-
-<p>Check file:</p>
-
-<pre><code>cat README.md
-</code></pre>
-
-<p>output:</p>
-
-<pre><code>first content from master
-introducing a new feature
-
-
-git commit -am "add feature line"
-</code></pre>
-
-<p>output:</p>
-
-<pre><code>[feature 2212653] add feature line
-1 file changed, 1 insertion(+)
-</code></pre>
-
-<h2 id="check-repo-graph">Check repo graph</h2>
-
-<pre><code>nohup gitg &amp;
-</code></pre>
-
-<p><img src="/images/git-rebase/graph1.png" alt="screenshot" /></p>
-
-<h2 id="create-a-new-commit-on-master-branch">Create a new commit on master branch</h2>
-
-<pre><code>git checkout master 
-Switched to branch 'master'
-</code></pre>
-
-<p>Check file:</p>
-
-<pre><code>cat README.md 
-first content from master
-
-vim README.md # add a title line for example
-cat README.md
-</code></pre>
-
-<p>output:</p>
-
-<pre><code># Master title
-first content from master
-</code></pre>
-
-<p>Commit that:</p>
-
-<pre><code>git commit -am "add master title"
-</code></pre>
-
-<p>output:</p>
-
-<pre><code>[master ec82793] add master title
- 1 file changed, 1 insertion(+)
-</code></pre>
-
-<blockquote>
-  <p>Let's say that <code>master</code> branch has a new commit because work on master has been delivered. Let's rebase the <code>feature</code> branch to this new commit, to get the new content from <code>master</code> and play the commit from <code>feature</code> branch.</p>
-</blockquote>
-
-<h2 id="let%27s-rebase-the-%60feature%60-branch-on-the-%60master%60-branch">Let's rebase the <code>feature</code> branch on the <code>master</code> branch</h2>
-
-<p>Let's move on our <code>feature</code> branch:</p>
-
-<pre><code>git checkout feature 
-</code></pre>
-
-<p>output:</p>
-
-<pre><code>Switched to branch 'feature'
-</code></pre>
-
-<p>And now the rebase operation itself:</p>
-
-<pre><code>git rebase -i master 
-</code></pre>
-
-<p><img src="/images/git-rebase/rebase.png" alt="screenshot" /></p>
-
-<p>output:</p>
-
-<pre><code>Successfully rebased and updated refs/heads/feature.
-</code></pre>
-
-<p><em>Our <code>feature</code> branch starts now from <code>master</code> head commit and now git is replaying all the commit from our <code>feature</code> branch from this point.</em></p>
-
-<p>The result is the following:</p>
-
-<p>The file <code>README.ms</code> now contains the commits from <code>master</code> + the commit from <code>feature</code>.</p>
-
-<h2 id="let%27s-check-feature-branch-content">Let's check feature branch content</h2>
-
-<pre><code>cat README.md 
-</code></pre>
-
-<p>output:</p>
-
-<pre><code># Master title
-first content from master
-introducing a new feature
-</code></pre>
-
-<h2 id="let%27s-check-%60master%60-branch-content">Let's check <code>master</code> branch content</h2>
-
-<pre><code>git checkout master 
-</code></pre>
-
-<p>output:</p>
-
-<pre><code>Switched to branch 'master'
-
-
-cat README.md
-</code></pre>
-
-<p>output:</p>
-
-<pre><code># Master title
-first content from master
-</code></pre>
-
-<h2 id="check-repo-graph">Check repo graph</h2>
-
-<pre><code>nohup gitg &amp;
-</code></pre>
-
-<p><img src="/images/git-rebase/graph2.png" alt="screenshot" /></p>
-
-<h2 id="usage%3A-getting-changes-from-origin%2Fbranch-on-branch">Usage: getting changes from origin/branch on branch</h2>
-
-<p>Retrieve changes from origin:</p>
-
-<pre><code>git fetch
-</code></pre>
-
-<p>apply commit from that:</p>
-
-<pre><code>git checkout master
-git rebase origin/master
-</code></pre>
+            <h2 id="linux-hard-drives-naming">Linux hard drives naming</h2>
+
+<ul>
+<li>floppy: <code>/dev/fdX</code></li>
+<li>fake hd: <code>/dev/loopX</code></li>
+<li>CD,DVD: <code>/dev/srX</code></li>
+<li>IDE: <code>/dev/hdX</code></li>
+<li>SATA: same as SCSI</li>
+<li>SCSI: <code>/dev/sdX</code></li>
+</ul>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2019/02/22/phpstorm-search-and-replace-regexp">PHPSTORM search &amp; replace with regexp</a></h2>
+            <h2><a href="/blog/2020/04/13/linux-basics-material-1">linux basics: material 1 - command &amp; kernel</a></h2>
         </header>
         <div>
-            <h2 id="context">Context</h2>
+            <h2 id="linux-material-command">Linux material command</h2>
 
-<p>I have a list of 10K of #ID,and need to add a <code>,</code> at the end of each line to process them in a SQL query.</p>
+<ul>
+<li><code>free</code>: for memory information</li>
+<li><code>uname</code>: material information</li>
+</ul>
 
-<h2 id="data-input">data input</h2>
+<p>see dedicated virtual FS such as : /dev, /proc...</p>
 
-<pre><code>1
+<h2 id="special-pseudo-drives">Special pseudo drives</h2>
+
+<ul>
+<li><code>/dev/null</code>: black hole</li>
+<li><code>/dev/zero</code>: returns zeros</li>
+<li><code>/dev/full</code>: emulate a full  hard drive</li>
+</ul>
+
+<h2 id="about-linux-kernel">About linux kernel</h2>
+
+<p>The kernel gives a material abstraction layer to software layer.</p>
+
+<h2 id="about-linux-kernel-modules">About linux kernel modules</h2>
+
+<p>The linux kernel is monolithic but some modules can be loaded/unloaded such as driver</p>
+
+<ul>
+<li><code>lsmod</code> : list kernel modules</li>
+<li><code>modprobe</code>: load/unload/manage kernel modules</li>
+</ul>
+
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2019/10/15/bash-scripting-course-note">Bash scripting course notes</a></h2>
+        </header>
+        <div>
+            <h1 id="shell%2Fbash-course">Shell/bash course</h1>
+
+<p>https://urfist.unistra.fr/uploads/media/command_memento_fr.pdf</p>
+
+<ul>
+<li>BSD: berkely univsersity. public/research</li>
+<li>system V: private, constructors: DEC, SUN</li>
+<li>POSIX: standard on all system</li>
+</ul>
+
+<h2 id="change-shell">Change shell</h2>
+
+<pre><code>usermod -s /bin/bash formation
+chsh
+
+[root@localhost ~]# useradd ben
+[root@localhost ~]# passwd ben
+Changement de mot de passe pour l'utilisateur ben.
+Nouveau mot de passe : 
+MOT DE PASSE INCORRECT : Le mot de passe comporte moins de 8 caractères
+Retapez le nouveau mot de passe : 
+passwd : mise à jour réussie de tous les jetons d'authentification.
+[root@localhost ~]# usermod -s /bin/ksh ben
+[root@localhost ~]# tail -4 /etc/passwd
+tcpdump:x:72:72::/:/sbin/nologin
+formation:x:1000:1000:Formation:/home/formation:/bin/bash
+vboxadd:x:988:1::/var/run/vboxadd:/bin/false
+ben:x:1001:1001::/home/ben:/bin/ksh
+</code></pre>
+
+<h3 id="switch-user%3A-su">Switch user: su</h3>
+
+<p>Make use of the <code>-</code> to get user env
+    [root@localhost ~]# su - ben
+    Dernière connexion : lundi  7 octobre 2019 à 09:46:27 CEST sur pts/0</p>
+
+<h2 id="text-shell">Text shell</h2>
+
+<pre><code>ctrl + alt + F1 =&gt; graphical shell mode
+ctrl + alt + F[2-6] =&gt; text shell mode
+</code></pre>
+
+<h2 id="file-type">File type</h2>
+
+<pre><code>- file
+d directory
+l link
+c char I/O hardware
+b block I/O hardware
+p pipe : inter process (local)
+s socket : inter process (network)
+</code></pre>
+
+<h2 id="tty">tty</h2>
+
+<p>terminal teletype</p>
+
+<pre><code>[formation@localhost ~]$ tty
+/dev/pts/0
+[formation@localhost ~]$ echo "hello"
+hello
+[formation@localhost ~]$ echo "hello" &gt; /dev/pts/1
+</code></pre>
+
+<h2 id="env-var">Env var</h2>
+
+<p>available in:</p>
+
+<ul>
+<li>new window</li>
+<li>new shell</li>
+<li>new script</li>
+</ul>
+
+<p>env: list env var
+set: env + pre param shell</p>
+
+<h2 id="file-command">File command</h2>
+
+<pre><code>[formation@localhost ~]$ file /bin/ls
+/bin/ls: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.32, BuildID[sha1]=c5ad78cfc1de12b9bb6829207cececb990b3e987, stripped
+[formation@localhost ~]$ file foo.pdf 
+foo.pdf: ASCII text
+[formation@localhost ~]$ mv foo.pdf foo.md
+[formation@localhost ~]$ file foo.md 
+foo.md: ASCII text
+</code></pre>
+
+<h2 id="special-bits">special bits</h2>
+
+<h3 id="setuid">setuid</h3>
+
+<p>when present on an executable file, the programm is executed with the identity of the file owner</p>
+
+<pre><code>[formation@localhost ~]$ which passwd 
+/usr/bin/passwd
+[formation@localhost ~]$ ls -l /usr/bin/passwd 
+-rwsr-xr-x. 1 root root 27832 10 juin   2014 /usr/bin/passwd
+
+chmod 4555 prog.sh 
+[formation@localhost ~]$ ls -l prog.sh 
+-r-sr-xr-x. 1 formation formation 0  7 oct.  10:56 prog.sh
+</code></pre>
+
+<h3 id="setgid">setgid</h3>
+
+<p>idem for group</p>
+
+<h3 id="sticky-bit%3A-t">sticky bit: t</h3>
+
+<p>only owner can destroy folder (add resistance to destruction).</p>
+
+<pre><code>ls -ld /tmp/
+drwxrwxrwt. 15 root root 4096  7 oct.  10:59 /tmp/
+</code></pre>
+
+<h2 id="groups">Groups</h2>
+
+<p>create first group
+then create user, and assign group</p>
+
+<pre><code>groupadd friends
+groupadd painters
+
+useradd foo -g firends -G painters
+</code></pre>
+
+<h2 id="%24path">$PATH</h2>
+
+<p>contains paths of executables path</p>
+
+<pre><code>PATH=$PATH:/new/location/exec
+</code></pre>
+
+<h2 id="find-command">find command</h2>
+
+<pre><code>find /dev - type l -name "*or*" -exec file {} \;
+</code></pre>
+
+<h2 id="locate-command">locate command</h2>
+
+<p>locate file2Search
+updatedb</p>
+
+<h2 id="command-io">Command IO</h2>
+
+<ul>
+<li>stdin: &lt;1</li>
+<li>stdout: >1</li>
+<li>stderr: >2</li>
+</ul>
+
+<p>2>&amp;1: recirect stderr to stdout
+1>&amp;2: redirect stdout to stderr</p>
+
+<pre><code>ls -l file 1&gt; out
+ls -l file doesNotExist 2&gt; error 1&gt;out
+ls -l file &amp;&gt; out
+</code></pre>
+
+<h2 id="tree">tree</h2>
+
+<p>tree of files</p>
+
+<h2 id="pstree">pstree</h2>
+
+<p>tree of ps</p>
+
+<pre><code>ps clax
+ps -ef
+</code></pre>
+
+<h2 id="bash-debug-mode">bash debug mode</h2>
+
+<p>bash -vx script.sh</p>
+
+<h2 id="command-return-code">command return code</h2>
+
+<p>$? == 0 ok
+$? != 0 ko</p>
+
+<h2 id="logical-operators">logical operators</h2>
+
+<h3 id="and-%26%26">AND &amp;&amp;</h3>
+
+<p>if left part is OK</p>
+
+<pre><code>ls &amp;&amp; echo "ls done"
+</code></pre>
+
+<h3 id="or-%7C%7C">OR ||</h3>
+
+<p>if left part fails</p>
+
+<pre><code>ls -l inexistant || echo "inexistant file does not exist"
+</code></pre>
+
+<h3 id="together">Together</h3>
+
+<p>concatenate if exists,else copy</p>
+
+<pre><code>ls -l mypasswd &amp;&amp; cat /etc/passwd &gt;&gt; mypasswd || cp /etc/passwd mypasswd
+
+
+
+cut -d":" -f1,3 /etc/passwd | tr ':' ' ' &gt; users-id
+</code></pre>
+
+<p>cat /etc/group | cut -d":" -f1,3 | sort | nl
+cut -d: -f1,3 /etc/group|sort -t: -n -k2 | nl</p>
+
+<h2 id="terminal-movement-utilities">Terminal movement utilities</h2>
+
+<p>ctrl+a
+ctrl+e
+alt+d</p>
+
+<h2 id="vim">Vim</h2>
+
+<p>filetype  indent plugin on
+gg=G => indent all file</p>
+
+<h2 id="source-vs-.%2F">source VS ./</h2>
+
+<p>source script: execute in current shell
+./script: execute in a child shell</p>
+
+<h2 id="nohut">nohut</h2>
+
+<p>run a script whithout deconnexion
+nohup ./script.sh &amp;</p>
+
+<h2 id="exec-command">exec command</h2>
+
+<p>exec date
+print date and kill exit current process</p>
+
+<h2 id="signals">signals</h2>
+
+<ul>
+<li>ctrl + c: </li>
+<li>ctrl + z:</li>
+<li>ctrl + d:
+When killing a parent process with child process, children are adopted by systemd PID #1.
+example
+eyes &amp;
+ctrl+d
+ps aux
+eyes has PPID=1</li>
+</ul>
+
+<h2 id="jobs-command">jobs command</h2>
+
+<h3 id="foreground-%2B-ctrl-c">foreground + ctrl-c</h3>
+
+<pre><code>[formation@localhost ~]$ xeyes &amp;
+[1] 19078
+[formation@localhost ~]$ jobs
+[1]+  En cours d'exécution   xeyes &amp;
+[formation@localhost ~]$ fg %1
+xeyes
+^C
+[formation@localhost ~]$ 
+</code></pre>
+
+<h3 id="kill-it">kill it</h3>
+
+<pre><code>[formation@localhost ~]$ xeyes &amp;
+[1] 19207
+[formation@localhost ~]$ kill %1
+[1]+  Complété              xeyes
+</code></pre>
+
+<h2 id="trap">trap</h2>
+
+<pre><code>[root@localhost ~]# trap -l
+ 1) SIGHUP   2) SIGINT   3) SIGQUIT  4) SIGILL   5) SIGTRAP
+ 6) SIGABRT  7) SIGBUS   8) SIGFPE   9) SIGKILL 10) SIGUSR1
+11) SIGSEGV 12) SIGUSR2 13) SIGPIPE 14) SIGALRM 15) SIGTERM
+16) SIGSTKFLT   17) SIGCHLD 18) SIGCONT 19) SIGSTOP 20) SIGTSTP
+21) SIGTTIN 22) SIGTTOU 23) SIGURG  24) SIGXCPU 25) SIGXFSZ
+26) SIGVTALRM   27) SIGPROF 28) SIGWINCH    29) SIGIO   30) SIGPWR
+31) SIGSYS  34) SIGRTMIN    35) SIGRTMIN+1  36) SIGRTMIN+2  37) SIGRTMIN+3
+38) SIGRTMIN+4  39) SIGRTMIN+5  40) SIGRTMIN+6  41) SIGRTMIN+7  42) SIGRTMIN+8
+43) SIGRTMIN+9  44) SIGRTMIN+10 45) SIGRTMIN+11 46) SIGRTMIN+12 47) SIGRTMIN+13
+48) SIGRTMIN+14 49) SIGRTMIN+15 50) SIGRTMAX-14 51) SIGRTMAX-13 52) SIGRTMAX-12
+53) SIGRTMAX-11 54) SIGRTMAX-10 55) SIGRTMAX-9  56) SIGRTMAX-8  57) SIGRTMAX-7
+58) SIGRTMAX-6  59) SIGRTMAX-5  60) SIGRTMAX-4  61) SIGRTMAX-3  62) SIGRTMAX-2
+63) SIGRTMAX-1  64) SIGRTMAX    
+</code></pre>
+
+<h2 id="loop">Loop</h2>
+
+<h3 id="sequence-command">sequence command</h3>
+
+<pre><code>seq 5
+1
 2
 3
 4
 5
-6
-7
-8
-9
-10
-...
+
+for i in $(seq 5); do echo $i; done
 </code></pre>
 
-<h2 id="the-trick">the trick</h2>
+<h2 id="return-code">Return code</h2>
 
-<p>Hit <code>ctrl+R</code> to launch the <code>search &amp; replace action</code>.</p>
+<p>$?
+value ok: 0</p>
 
-<p>Search the following pattern:</p>
+<p>shift: process &amp; remove first value of array parameter
+shift.sh</p>
 
-<pre><code>(.*)$
+<pre><code>#!/bin/bash
+while test $# -ne 0
+do
+    echo "current paramater: $1 - nb remaning paramter "$#
+    shift 1
+done
 </code></pre>
 
-<p>And replace it with:</p>
+<p>bash shift.sh aa bb cc</p>
 
-<pre><code>$1,
+<pre><code>current paramater: aa - nb remaning paramter 3
+current paramater: bb - nb remaning paramter 2
+current paramater: cc - nb remaning paramter 1
 </code></pre>
 
-<p><img src="/images/phpstorm/search-replace-regexp.png" alt="screenshot" /></p>
+<h2 id="arithmetic-expression-%3A--expr-">arithmetic expression : (( expr ))</h2>
 
-<h2 id="data-output">data output</h2>
+<pre><code>echo $(( 2+2+6+6 ))
+16
 
-<pre><code>1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-...,
-</code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/02/20/openstack-resize-volume">Openstack: resize volume and partition size on a running instance</a></h2>
-        </header>
-        <div>
-            <h2 id="context">Context</h2>
-
-<p>This post deals with how to increase a volume attached to a server instance on openstack. <a href="https://docs.openstack.org/cinder/rocky/cli/cli-manage-volumes.html#">See openstack volume ressource</a>.</p>
-
-<h2 id="test-database">Test database</h2>
-
-<p>To test everything goes well, a test database is setup:</p>
-
-<pre><code>sudo -u postgres
-sudo -u postgres psql -c "create database webapp";
-sudo -u postgres psql -d webapp -c "CREATE TABLE account(user_id serial PRIMARY KEY,username VARCHAR (50) UNIQUE NOT NULL,created_on TIMESTAMP NOT NULL);" ;
-sudo -u postgres psql -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('foo','2019-01-01') ;" ;
-sudo -u postgres psql -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('bar','2019-01-02') ;" ;
-</code></pre>
-
-<p>Check command:</p>
-
-<pre><code>sudo -u postgres psql -d webapp -c "SELECT * FROM account" ;
-</code></pre>
-
-<p>returns:</p>
-
-<pre><code> user_id | username |     created_on      
----------+----------+---------------------
-       1 | foo      | 2019-01-01 00:00:00
-       2 | bar      | 2019-01-02 00:00:00
-(2 rows)
-</code></pre>
-
-<h2 id="switch-off-automatic-volume-mount-in-%60%2Fetc%2Ffstab-%60">Switch off automatic volume mount in <code>/etc/fstab</code></h2>
-
-<pre><code>ssh demo
-</code></pre>
-
-<p>Comment lines in <code>/etc/fstab</code> that concern the volume you want to increase:</p>
-
-<pre><code>sudo vim /etc/fstab 
-
-#/dev/vdb1 /data ext4 defaults 0 0
-#/data/pgsql /var/lib/postgresql none bind 0 0
-
-sudo reboot
-</code></pre>
-
-<h2 id="check">Check</h2>
-
-<pre><code>ssh demo
-</code></pre>
-
-<p>Check that they are no more mount point that depend on the volume we are going to manipulate.</p>
-
-<pre><code>df -h
-Filesystem      Size  Used Avail Use% Mounted on
-udev            992M     0  992M   0% /dev
-tmpfs           201M  4,5M  197M   3% /run
-/dev/vda1       4,9G  1,9G  2,9G  40% /
-tmpfs          1003M  8,0K 1003M   1% /dev/shm
-tmpfs           5,0M     0  5,0M   0% /run/lock
-tmpfs          1003M     0 1003M   0% /sys/fs/cgroup
-</code></pre>
-
-<h2 id="stop-your-applications-if-needed">Stop your applications if needed</h2>
-
-<pre><code>sudo service apache2 stop
-sudo service postgresql stop
-</code></pre>
-
-<h2 id="increase-our-volume-size">Increase our volume size</h2>
-
-<p>identify your target server and target volume with <code>openstack volume list</code> and <code>openstack server list</code></p>
-
-<pre><code>TARGET_SERVER=ed864066-ed73-46e0-b551-5bfca9873af6
-TARGET_VOLUME=1be3646a-3bb5-40fc-b9eb-6ab803b60d2c
-VOLUME_SIZE=25
-</code></pre>
-
-<h2 id="detach-volume-from-server">Detach volume from server</h2>
-
-<pre><code>openstack server remove volume $TARGET_SERVER $TARGET_VOLUME
-</code></pre>
-
-<p><em>At this point, the device should NOT be visible when you execute: <code>ls -l /dev/vd*</code></em>.</p>
-
-<h2 id="increase-volume-size">Increase volume size</h2>
-
-<pre><code>openstack volume set $TARGET_VOLUME --size $VOLUME_SIZE
-</code></pre>
-
-<h2 id="attach-volume-to-server">Attach volume to server</h2>
-
-<pre><code>openstack server add volume $TARGET_SERVER $TARGET_VOLUME --device /dev/vdb
-</code></pre>
-
-<p><em>At this point, the device should BE visible when you execute: <code>ls -l /dev/vd*</code></em>.</p>
-
-<h2 id="manage-partition-on-your-openstack-server">Manage partition on your openstack server</h2>
-
-<p>Let's configure the partition to use all the volume space.</p>
-
-<pre><code>ssh demo
-sudo parted /dev/vdb resizepart 1 100%
-sudo e2fsck -f /dev/vdb1
-sudo resize2fs /dev/vdb1
-</code></pre>
-
-<h2 id="restore-%60%2Fetc%2Ffstab%60">Restore <code>/etc/fstab</code></h2>
-
-<p>uncomment the lines:</p>
-
-<pre><code>/dev/vdb1 /data ext4 defaults 0 0
-/data/pgsql /var/lib/postgresql none bind 0 0
-</code></pre>
-
-<p>reboot: <code>sudo reboot</code></p>
-
-<h2 id="check-your-fs">Check your fs</h2>
-
-<h3 id="check-volume-size-and-partition-size">Check volume size and partition size</h3>
-
-<pre><code>sudo fdisk -l
-
-Disk /dev/vdb: 25 GiB, 26843545600 bytes, 52428800 sectors
-Units: sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disklabel type: dos
-Disk identifier: 0x0e1b27a4
-
-Device     Boot Start      End  Sectors Size Id Type
-/dev/vdb1        2048 52428799 52426752  25G 83 Linux
-</code></pre>
-
-<h3 id="check-database">Check database</h3>
-
-<p>Use our test command to check our database:</p>
-
-<pre><code>ssh demo
-sudo -u postgres psql -d webapp -c "SELECT * FROM account" ;
-</code></pre>
-
-<p>check data are ok:</p>
-
-<pre><code> user_id | username |     created_on      
----------+----------+---------------------
-       1 | foo      | 2019-01-01 00:00:00
-       2 | bar      | 2019-01-02 00:00:00
-(2 rows)
+((i=i+1))
 </code></pre>
 
         </div>
@@ -498,7 +488,7 @@ sudo -u postgres psql -d webapp -c "SELECT * FROM account" ;
             </div>
         </div>
         <footer class="container">
-            &copy; 2019 benIT&#039;s notebook
+            &copy; 2020 benIT&#039;s notebook
         </footer>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

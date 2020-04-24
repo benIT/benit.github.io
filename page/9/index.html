@@ -72,211 +72,436 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2018/02/23/keepass-kee-linux">Install keepass and kee on linux</a></h2>
+            <h2><a href="/blog/2019/05/06/john-the-ripper-rip-archive">RIP a password protected archive with John the Ripper</a></h2>
         </header>
         <div>
-            <h2 id="install-keepass2">install keepass2</h2>
+            <h2 id="install-kali">Install KALI</h2>
 
-<pre><code>sudo add-apt-repository ppa:jtaylor/keepass
-sudo apt-get update &amp;&amp; sudo apt-get install keepass2
+<p>First, <a href="https://www.kali.org/news/announcing-kali-for-vagrant/">intall a kali headless VM with vagrant</a>.</p>
+
+<p>Grant large CPUs and RAM resources to the VM. For instance, in <code>Vagrantfile</code>:</p>
+
+<pre><code># Create a forwarded port
+config.vm.network "forwarded_port", guest: 80, host: 8080
+
+# Create a private network. In VirtualBox, this is a Host-Only network
+config.vm.network "private_network", ip: "192.168.33.101"
+
+# VirtualBox specific settings
+config.vm.provider "virtualbox" do |vb|
+# Hide the VirtualBox GUI when booting the machine
+vb.gui = false
+
+# Customize the amount of memory on the VM:
+vb.memory = "8192"
+vb.cpus= "5"
+end
+
+# Provision the machine with a shell script
+config.vm.provision "shell", inline: &lt;&lt;-SHELL
+apt-get update
+apt-get install -y crowbar
+SHELL
+end
 </code></pre>
 
-<h2 id="install-firefox-addon-%27kee%27">install firefox addon 'kee'</h2>
+<h2 id="generate-a-test-archive">Generate a test archive</h2>
 
-<ul>
-<li><a href="https://addons.mozilla.org/fr/firefox/addon/keefox/?src=search">download it here</a></li>
-<li><a href="https://github.com/kee-org/KeeFox/wiki/en-|-Getting-started#linux">kee doc here</a> with linux keepass requirement.</li>
-</ul>
-
-<h2 id="download-keepassrpc.plgx-plugin">download KeePassRPC.plgx plugin</h2>
-
-<p><a href="https://github.com/kee-org/keepassrpc/releases">download KeePassRPC.plgx plugin</a></p>
-
-<pre><code>sudo mkdir /usr/lib/keepass2/plugins
-sudo cp 'KeePassRPC.plgx' '/usr/lib/keepass2/plugins/'
-sudo apt-get install mono-complete
+<pre><code>echo "foo bar" &gt; file.txt
+zip -P pass archive.zip file.txt
 </code></pre>
 
-<h2 id="restart-keepass-and-firefox">Restart keepass and firefox</h2>
+<p><strong>Thus, our archive is protected with the password: <code>pass</code></strong></p>
 
-<p>you should be prompt about kee to authorize keepass</p>
+<p>Test password protection:</p>
+
+<pre><code>unzip archive.zip 
+Archive:  archive.zip
+[archive.zip] file.txt password: 
+</code></pre>
+
+<h2 id="rip-archive.zip">RIP archive.zip</h2>
+
+<h3 id="get-password-hash-with-zip2john">Get password hash with zip2john</h3>
+
+<pre><code>zip2john archive.zip &gt; hash.txt
+</code></pre>
+
+<p>Prints :</p>
+
+<pre><code>ver 1.0 efh 5455 efh 7875 archive.zip/file.txt PKZIP Encr: 2b chk, TS_chk, cmplen=20, decmplen=8, crc=13DDB427
+</code></pre>
+
+<h3 id="rip-hash">RIP hash</h3>
+
+<pre><code>john hash.txt
+</code></pre>
+
+<p>Prints:</p>
+
+<pre><code>Using default input encoding: UTF-8
+Loaded 1 password hash (PKZIP [32/64])
+Will run 2 OpenMP threads
+Proceeding with single, rules:Wordlist
+Press 'q' or Ctrl-C to abort, almost any other key for status
+Warning: Only 4 candidates buffered for the current salt, minimum 8
+needed for performance.
+Warning: Only 5 candidates buffered for the current salt, minimum 8
+needed for performance.
+Warning: Only 6 candidates buffered for the current salt, minimum 8
+needed for performance.
+Warning: Only 4 candidates buffered for the current salt, minimum 8
+needed for performance.
+Almost done: Processing the remaining buffered candidate passwords, if any
+Proceeding with wordlist:/usr/share/john/password.lst, rules:Wordlist
+pass             (archive.zip/file.txt)
+1g 0:00:00:00 DONE 2/3 (2019-05-06 09:53) 50.00g/s 2109Kp/s 2109Kc/s 2109KC/s 123456..Peter
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed
+</code></pre>
+
+<h3 id="and-archive-password-is...">And archive password is...</h3>
+
+<pre><code>pass             (archive.zip/file.txt)
+</code></pre>
+
+<h3 id="tips">Tips</h3>
+
+<p>If you run <code>john</code> again, you will get:</p>
+
+<pre><code>john hash.txt
+Using default input encoding: UTF-8
+Loaded 1 password hash (PKZIP [32/64])
+No password hashes left to crack (see FAQ)
+</code></pre>
+
+<p>This means that the password has already been ripped, to print password check <code>.john/john.pot</code> file or use <code>--show</code> option:</p>
+
+<pre><code>john hash.txt --show
+archive.zip/file.txt:pass:file.txt:archive.zip::archive.zip
+
+1 password hash cracked, 0 left
+</code></pre>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2018/01/22/mysql-2-pgsql-conversion">mySQL to postgreSQL schema conversion</a></h2>
+            <h2><a href="/blog/2019/04/08/install-redmine">Install REDMINE 3.4 with PgSQL and Apache2 on debian 9</a></h2>
         </header>
         <div>
-            <h2 id="purpose">Purpose</h2>
+            <h2 id="resources">Resources</h2>
 
-<p>I was looking for a tool that convert a mysql db to a pgsql one.
-<a href="https://github.com/philipsoutham/py-mysql2pgsql">philipsoutham/py-mysql2pgsql</a> does the trick and saved my day!</p>
+<ul>
+<li>http://www.redmine.org/projects/redmine/wiki/howto_install_redmine_on_ubuntu_step_by_step</li>
+<li>http://www.redmine.org/projects/redmine/wiki/redmineinstall</li>
+</ul>
 
-<h2 id="install">Install</h2>
+<h2 id="tested-version">Tested version</h2>
 
-<pre><code>sudo apt-get install python-pip
-pip install py-mysql2pgsql
+<pre><code>pg_config --version
+PostgreSQL 11.2 (Debian 11.2-1.pgdg90+1)
+
+ruby -v
+ruby 2.3.3p222 (2016-11-21) [x86_64-linux-gnu]
 </code></pre>
 
-<h2 id="configure">Configure</h2>
+<h2 id="server-packages">Server packages</h2>
 
-<p>Edit configuration in <code>mysql2pgsql.yml</code></p>
+<h3 id="debian-packages">Debian packages</h3>
 
-<pre><code># if a socket is specified we will use that
-# if tcp is chosen you can use compression
-mysql:
- hostname: localhost
- port: 3306
- socket: /var/run/mysqld/mysqld.sock
- #socket: /tmp/mysql.sock
- username: emedia
- password: emedia
- database: emedia
- compress: false
-destination:
- # if file is given, output goes to file, else postgres
- file: /vagrant/shared/migrationMysql2Pgsql.sql
- postgres:
-  hostname: localhost
-  port: 5432
-  username: mysql2psql
-  password:
-  database: mysql2psql_test
-
-# if tables is given, only the listed tables will be converted.  leave empty to convert all tables.
-only_tables:
-- lti2_consumer
-- lti2_context
-- lti2_nonce
-- lti2_resource_link
-- lti2_share_key
-- lti2_tool_proxy
-- lti2_user_result
-# if exclude_tables is given, exclude the listed tables from the conversion.
-#exclude_tables:
-#- table3
-#- table4
-
-# if supress_data is true, only the schema definition will be exported/migrated, and not the data
-supress_data: true
-
-# if supress_ddl is true, only the data will be exported/imported, and not the schema
-supress_ddl: false
-
-# if force_truncate is true, forces a table truncate before table loading
-force_truncate: false
+<pre><code>sudo apt-get install apache2 libapache2-mod-passenger ruby ruby-dev
+sudo apt install postgresql-server-dev-all
 </code></pre>
+
+<h3 id="ruby-gems">Ruby GEMs</h3>
+
+<pre><code>sudo -E gem install bundler -v 1.17.3
+</code></pre>
+
+<h2 id="database">Database</h2>
+
+<pre><code>CREATE ROLE redmine LOGIN ENCRYPTED PASSWORD 'redmine' NOINHERIT VALID UNTIL 'infinity';
+CREATE DATABASE redmine WITH ENCODING='UTF8' OWNER=redmine;
+</code></pre>
+
+<h2 id="app">App</h2>
+
+<pre><code>tar -xzf redmine-3.4.10.tar.gz
+cd redmine-3.4.10/
+mv config/database.yml.example  config/database.yml
+cd ..
+mv redmine-3.4.10/ /var/www/redmine
+</code></pre>
+
+<p>Edit <code>config/database.yml.example</code> :</p>
+
+<pre><code># PostgreSQL configuration example
+production:
+  adapter: postgresql
+  database: redmine
+  host: localhost
+  username: redmine
+  password: "redmine"
+</code></pre>
+
+<p>And rename it:</p>
+
+<pre><code>mv config/database.yml.example  config/database.yml
+</code></pre>
+
+<h3 id="dependencies">Dependencies</h3>
+
+<pre><code>bundle install --without development test
+</code></pre>
+
+<h3 id="setup">Setup</h3>
+
+<pre><code>bundle exec rake generate_secret_token
+RAILS_ENV=production bundle exec rake db:migrate
+RAILS_ENV=production REDMINE_LANG=fr bundle exec rake redmine:load_default_data
+
+
+mkdir -p tmp tmp/pdf public/plugin_assets
+sudo chown -R www-data: files log tmp public/plugin_assets
+sudo chmod -R 755 files log tmp public/plugin_assets
+</code></pre>
+
+<h2 id="apache2">Apache2</h2>
+
+<h3 id="permissions-%26-ownership">Permissions &amp; ownership</h3>
+
+<pre><code>sudo chown -R www-data: /var/www/
+sudo chmod -R 755 /var/www/
+</code></pre>
+
+<h3 id="%C2%A0configuration-of-passenger.conf"> Configuration of passenger.conf</h3>
+
+<p>Add the following line to <code>/etc/apache2/mods-available/passenger.conf</code>:</p>
+
+<pre><code>PassengerDefaultUser www-data
+</code></pre>
+
+<h3 id="virtual-host">Virtual Host</h3>
+
+<p>Edit <code>/etc/apache2/sites-enabled/000-default.conf</code>:</p>
+
+<pre><code>&lt;VirtualHost *:80&gt;
+    #ServerName www.example.com
+    ServerAdmin webmaster@localhost
+    DocumentRoot /var/www/redmine/public/
+        #MaxRequestLen 20971520
+
+        &lt;Directory "/var/www/redmine/public"&gt;
+                Options Indexes ExecCGI FollowSymLinks
+                Order allow,deny
+                Allow from all
+                AllowOverride all
+        &lt;/Directory&gt;
+
+    ErrorLog ${APACHE_LOG_DIR}/redmine.error.log
+    CustomLog ${APACHE_LOG_DIR}/redmine.access.log combined
+&lt;/VirtualHost&gt;
+</code></pre>
+
+<h2 id="test">Test</h2>
+
+<p>REDMINE should be running, login with <code>admin</code>/<code>admin</code>.</p>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2018/01/11/php7-nginx-memcached-session">Setting up a memcached server with PHP7.X and a NGINX webserver</a></h2>
+            <h2><a href="/blog/2019/03/25/git-rebase">GIT rebase</a></h2>
         </header>
         <div>
-            <h2 id="memcached-server-side">Memcached server side</h2>
+            <p>The aim of this post is to understand and get confortable with the git rebase command.</p>
 
-<p>This server has private @IP : 192.168.33.14</p>
+<p><a href="https://www.atlassian.com/git/tutorials/rewriting-history/git-rebase">Definition</a>:</p>
 
-<h3 id="install-memcached%3A">Install memcached:</h3>
+<blockquote>
+  <p>Rebasing is the process of moving or combining a sequence of commits to a new base commit. Rebasing is most useful and easily visualized in the context of a feature branching workflow.</p>
+</blockquote>
 
-<pre><code>sudo apt-get install memcached
+<h2 id="create-a-git-repo">Create a git repo</h2>
+
+<pre><code>mkdir rebase-test &amp;&amp; cd rebase-test
+git init
 </code></pre>
 
-<p>In <code>/etc/memcached.conf</code>, set up memory to 256 Mo:</p>
+<p>output:</p>
 
-<pre><code>-m 256
+<pre><code>Initialized empty Git repository in /home/bmn/rebase-test/.git/
 </code></pre>
 
-<p>In <code>/etc/memcached.conf</code>, set up listening private @IP of the server:</p>
+<h2 id="create-one-commit-on-%60master%60-branch">Create one commit on <code>master</code> branch</h2>
 
-<pre><code># Specify which IP address to listen on. The default is to listen on all IP addresses
-# This parameter is one of the only security measures that memcached has, so make sure
-# it's listening on a firewalled interface.
-#-l 127.0.0.2
--l 192.168.33.14
+<pre><code>echo "first content from master" &gt;&gt; README.md
+git add README.md 
+git commit -m "first commit"
 </code></pre>
 
-<h2 id="web-server-side">Web server side</h2>
+<p>output:</p>
 
-<p>This server has private @IP : 192.168.33.11</p>
-
-<h3 id="install-php-extension">Install PHP extension</h3>
-
-<p>On the server that hosts nginx + php7.0:</p>
-
-<pre><code>sudo apt-get install -y php-memcached
+<pre><code>[master (root-commit) dc5f8d2] first commit
+1 file changed, 1 insertion(+)
+create mode 100644 README.md
 </code></pre>
 
-<h3 id="configure-php">Configure PHP</h3>
+<h2 id="create-a-%60feature%60-branch-from-that-commit">Create a <code>feature</code> branch from that commit</h2>
 
-<p>In <code>/etc/php/7.0/fpm/php.ini</code>:</p>
-
-<pre><code>[Session]
-; Handler used to store/retrieve data.
-; http://php.net/session.save-handler
-#session.save_handler = files
-session.save_handler = memcached
-session.save_path = 'tcp://192.162.33.14:11211'
+<pre><code>git checkout -b feature
+Switched to a new branch 'feature'
 </code></pre>
 
-<h3 id="restart-services">Restart services</h3>
+<h2 id="create-one-commit-on-the-%60feature%60-branch">Create one commit on the <code>feature</code> branch</h2>
 
-<pre><code>sudo service php7.0-fpm restart &amp;&amp; sudo service nginx restart
+<pre><code>echo "introducing a new feature" &gt;&gt; README.md
 </code></pre>
 
-<h3 id="check-config">Check config</h3>
+<p>Check file:</p>
 
-<p>Create a phpinfo.php that calls <code>phpinfo()</code> and check memcached configuration.</p>
-
-<h3 id="checking">Checking</h3>
-
-<h3 id="checking-sessions-are-well-handled-by-memcached">Checking sessions are well handled by memcached</h3>
-
-<p>Let's write a simple script to check sessions:</p>
-
-<pre><code>session_start();
-if(!isset($_SESSION['visit']))
-{   
-    echo "This is the first time you're visiting this server\n";
-    $_SESSION['visit'] = 0;
-}   
-else
-        echo "Your number of visits: ".$_SESSION['visit'] . "\n";
-
-$_SESSION['visit']++;
-
-echo "Server IP: ".$_SERVER['SERVER_ADDR'] . "\n";
-echo "Client IP: ".$_SERVER['REMOTE_ADDR'] . "\n";
-print_r($_COOKIE);
+<pre><code>cat README.md
 </code></pre>
 
-<h3 id="checking-memcached-key%2Fvalue-server">Checking memcached key/value server</h3>
+<p>output:</p>
 
-<p>Let's write a simple script to key/value access:</p>
+<pre><code>first content from master
+introducing a new feature
 
-<pre><code>$mem = new Memcached();
-$mem-&gt;addServer("192.168.33.14", 11211);
-$result = $mem-&gt;get("blah");
-if ($result) {
-    echo $result;
-} else {
-    echo "No matching key found yet. Let's start adding that now!";
-    $mem-&gt;set("blah", "I am data!  I am held in memcached!") or die("Couldn't save anything to memcached...");
-}   
+
+git commit -am "add feature line"
 </code></pre>
 
-<h3 id="dumping-all-key%2Fvalue-records">Dumping all key/value records</h3>
+<p>output:</p>
 
-<script src="https://gist.github.com/benIT/2e63d3541f4f46d9a47777d467549d2e.js"></script>
+<pre><code>[feature 2212653] add feature line
+1 file changed, 1 insertion(+)
+</code></pre>
 
-<h2 id="sources">Sources</h2>
+<h2 id="check-repo-graph">Check repo graph</h2>
 
-<ul>
-<li>https://www.digitalocean.com/community/tutorials/how-to-share-php-sessions-on-multiple-memcached-servers-on-ubuntu-14-04</li>
-<li>http://www.servermom.org/install-use-memcached-nginx-php-7-ubuntu-16-04/3670/</li>
-</ul>
+<pre><code>nohup gitg &amp;
+</code></pre>
+
+<p><img src="/images/git-rebase/graph1.png" alt="screenshot" /></p>
+
+<h2 id="create-a-new-commit-on-master-branch">Create a new commit on master branch</h2>
+
+<pre><code>git checkout master 
+Switched to branch 'master'
+</code></pre>
+
+<p>Check file:</p>
+
+<pre><code>cat README.md 
+first content from master
+
+vim README.md # add a title line for example
+cat README.md
+</code></pre>
+
+<p>output:</p>
+
+<pre><code># Master title
+first content from master
+</code></pre>
+
+<p>Commit that:</p>
+
+<pre><code>git commit -am "add master title"
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>[master ec82793] add master title
+ 1 file changed, 1 insertion(+)
+</code></pre>
+
+<blockquote>
+  <p>Let's say that <code>master</code> branch has a new commit because work on master has been delivered. Let's rebase the <code>feature</code> branch to this new commit, to get the new content from <code>master</code> and play the commit from <code>feature</code> branch.</p>
+</blockquote>
+
+<h2 id="let%27s-rebase-the-%60feature%60-branch-on-the-%60master%60-branch">Let's rebase the <code>feature</code> branch on the <code>master</code> branch</h2>
+
+<p>Let's move on our <code>feature</code> branch:</p>
+
+<pre><code>git checkout feature 
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>Switched to branch 'feature'
+</code></pre>
+
+<p>And now the rebase operation itself:</p>
+
+<pre><code>git rebase -i master 
+</code></pre>
+
+<p><img src="/images/git-rebase/rebase.png" alt="screenshot" /></p>
+
+<p>output:</p>
+
+<pre><code>Successfully rebased and updated refs/heads/feature.
+</code></pre>
+
+<p><em>Our <code>feature</code> branch starts now from <code>master</code> head commit and now git is replaying all the commit from our <code>feature</code> branch from this point.</em></p>
+
+<p>The result is the following:</p>
+
+<p>The file <code>README.ms</code> now contains the commits from <code>master</code> + the commit from <code>feature</code>.</p>
+
+<h2 id="let%27s-check-feature-branch-content">Let's check feature branch content</h2>
+
+<pre><code>cat README.md 
+</code></pre>
+
+<p>output:</p>
+
+<pre><code># Master title
+first content from master
+introducing a new feature
+</code></pre>
+
+<h2 id="let%27s-check-%60master%60-branch-content">Let's check <code>master</code> branch content</h2>
+
+<pre><code>git checkout master 
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>Switched to branch 'master'
+
+
+cat README.md
+</code></pre>
+
+<p>output:</p>
+
+<pre><code># Master title
+first content from master
+</code></pre>
+
+<h2 id="check-repo-graph">Check repo graph</h2>
+
+<pre><code>nohup gitg &amp;
+</code></pre>
+
+<p><img src="/images/git-rebase/graph2.png" alt="screenshot" /></p>
+
+<h2 id="usage%3A-getting-changes-from-origin%2Fbranch-on-branch">Usage: getting changes from origin/branch on branch</h2>
+
+<p>Retrieve changes from origin:</p>
+
+<pre><code>git fetch
+</code></pre>
+
+<p>apply commit from that:</p>
+
+<pre><code>git checkout master
+git rebase origin/master
+</code></pre>
 
         </div>
             </article>
@@ -300,7 +525,7 @@ if ($result) {
             </div>
         </div>
         <footer class="container">
-            &copy; 2019 benIT&#039;s notebook
+            &copy; 2020 benIT&#039;s notebook
         </footer>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

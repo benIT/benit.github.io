@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>linux basics: material 6 - partitioning with fdisk &mdash; benIT&#039;s notebook &mdash; </title>
+        <meta charset="utf-8">
+        <meta name="theme-color" content="#ffffff">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="robots" content="index, follow">
+        <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/style.css" rel="stylesheet" type="text/css" />
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+        <link rel="apple-touch-startup-image" href="/images/jackson/2048x2048.png">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="shortcut icon" sizes="76x76" href="/images/jackson/76x76.png">
+        <link rel="shortcut icon" sizes="120x120" href="/images/jackson/120x120.png">
+        <link rel="shortcut icon" sizes="128x128" href="/images/jackson/128x128.png">
+        <link rel="shortcut icon" sizes="152x152" href="/images/jackson/152x152.png">
+        <link rel="shortcut icon" sizes="196x196" href="/images/jackson/196x196.png">
+        <link rel="shortcut icon" sizes="512x512" href="/images/jackson/512x512.png">
+        <link rel="shortcut icon" sizes="1024x1024" href="/images/jackson/1024x1024.png">
+        <link rel="shortcut icon" sizes="2048x2048" href="/images/jackson/2048x2048.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="/images/jackson/76x76.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="/images/jackson/120x120.png">
+        <link rel="apple-touch-icon" sizes="128x128" href="/images/jackson/128x128.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="/images/jackson/152x152.png">
+        <link rel="apple-touch-icon" sizes="196x196" href="/images/jackson/196x196.png">
+        <link rel="apple-touch-icon" sizes="512x512" href="/images/jackson/512x512.png">
+        <link rel="apple-touch-icon" sizes="1024x1024" href="/images/jackson/1024x1024.png">
+        <link rel="apple-touch-icon" sizes="2048x2048" href="/images/jackson/2048x2048.png">
+
+        <link rel="stylesheet" href="/components/highlightjs/styles/github.css" />
+        <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="benIT&#039;s notebook activity feed" />
+        <style>
+        /** quick fix because bootstrap <pre> has a background-color. */
+        pre code { background-color: inherit; }
+        </style>
+                                    </head>
+    <a href="https://github.com/benIT/github-blog"><img style="z-index:1032;position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
+    <body>
+        <header>
+            <nav class="navbar navbar-inverse navbar-fixed-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/">benIT&#039;s notebook </a>
+                    </div>
+                    <div id="navbar" class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="https://github.com/benIT">Github</a></li>
+                            <li><a href="/blog">Posts Archive</a></li>
+                            <li><a href="/blog/categories">Categories</a></li>
+                            <li><a href="/atom.xml">RSS feed</a></li>
+                            <!--<li><a href="/blog/tags">Tags</a></li>-->
+                            <li><a href="/about">About</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="mainContent container">
+            <div class="row-fluid">
+                <div class="span8">
+                        <article>
+        <header>
+            <h2>linux basics: material 6 - partitioning with fdisk <small>post</small></h2>
+        </header>
+        <div>
+            <h2 id="fdisk-command">fdisk command</h2>
+
+<p>about partitions:</p>
+
+<ul>
+<li>Primary partition are limited to 4.</li>
+<li>Extended partitions are container for logical partitions.</li>
+</ul>
+
+<p>fdisk "fixed disk" is the traditional linux partitioning utility.
+Take a look at the following interactive output that creates:
+* loop0p1  primary partition of 10M
+* loop0p2  primary partition of 20M
+* loop0p3  primary EXTENDED partition with all remaining space
+* loop0p5  primary partition of 20M</p>
+
+<pre><code>root@raspbeeerry:~# fdisk /dev/loop0 
+
+Welcome to fdisk (util-linux 2.29.2).
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table.
+Created a new DOS disklabel with disk identifier 0xd1d1a072.
+
+Command (m for help): m
+
+Help:
+
+DOS (MBR)
+a   toggle a bootable flag
+b   edit nested BSD disklabel
+c   toggle the dos compatibility flag
+
+Generic
+d   delete a partition
+F   list free unpartitioned space
+l   list known partition types
+n   add a new partition
+p   print the partition table
+t   change a partition type
+v   verify the partition table
+i   print information about a partition
+
+Misc
+m   print this menu
+u   change display/entry units
+x   extra functionality (experts only)
+
+Script
+I   load disk layout from sfdisk script file
+O   dump disk layout to sfdisk script file
+
+Save &amp; Exit
+w   write table to disk and exit
+q   quit without saving changes
+
+Create a new label
+g   create a new empty GPT partition table
+G   create a new empty SGI (IRIX) partition table
+o   create a new empty DOS partition table
+s   create a new empty Sun partition table
+
+Command (m for help): p
+Disk /dev/loop0: 97.7 MiB, 102400000 bytes, 200000 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0xd1d1a072
+
+Command (m for help): n
+Partition type
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended (container for logical partitions)
+Select (default p): p
+Partition number (1-4, default 1): 
+First sector (2048-199999, default 2048): 
+Last sector, +sectors or +size{K,M,G,T,P} (2048-199999, default 199999): +10M
+
+Created a new partition 1 of type 'Linux' and of size 10 MiB.
+
+Command (m for help): p
+Disk /dev/loop0: 97.7 MiB, 102400000 bytes, 200000 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0xd1d1a072
+
+Device       Boot Start   End Sectors Size Id Type
+/dev/loop0p1       2048 22527   20480  10M 83 Linux
+
+Command (m for help): n
+Partition type
+   p   primary (1 primary, 0 extended, 3 free)
+   e   extended (container for logical partitions)
+Select (default p): p
+Partition number (2-4, default 2): 
+First sector (22528-199999, default 22528): 
+Last sector, +sectors or +size{K,M,G,T,P} (22528-199999, default 199999): +20M    
+
+Created a new partition 2 of type 'Linux' and of size 20 MiB.
+
+Command (m for help): p
+Disk /dev/loop0: 97.7 MiB, 102400000 bytes, 200000 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0xd1d1a072
+
+Device       Boot Start   End Sectors Size Id Type
+/dev/loop0p1       2048 22527   20480  10M 83 Linux
+/dev/loop0p2      22528 63487   40960  20M 83 Linux
+
+Command (m for help): w
+The partition table has been altered.
+Calling ioctl() to re-read partition table.
+Re-reading the partition table failed.: Invalid argument
+
+The kernel still uses the old table. The new table will be used at the next reboot or after you run partprobe(8) or kpartx(8).
+
+root@raspbeeerry:~# fdisk /dev/loop0 
+
+Welcome to fdisk (util-linux 2.29.2).
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+
+Command (m for help): p
+Disk /dev/loop0: 97.7 MiB, 102400000 bytes, 200000 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0xd1d1a072
+
+Device       Boot Start   End Sectors Size Id Type
+/dev/loop0p1       2048 22527   20480  10M 83 Linux
+/dev/loop0p2      22528 63487   40960  20M 83 Linux
+
+Command (m for help): n
+Partition type
+   p   primary (2 primary, 0 extended, 2 free)
+   e   extended (container for logical partitions)
+Select (default p): e
+Partition number (3,4, default 3): 
+First sector (63488-199999, default 63488): 
+Last sector, +sectors or +size{K,M,G,T,P} (63488-199999, default 199999): 
+
+Created a new partition 3 of type 'Extended' and of size 66.7 MiB.
+
+Command (m for help): p
+Disk /dev/loop0: 97.7 MiB, 102400000 bytes, 200000 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0xd1d1a072
+
+Device       Boot Start    End Sectors  Size Id Type
+/dev/loop0p1       2048  22527   20480   10M 83 Linux
+/dev/loop0p2      22528  63487   40960   20M 83 Linux
+/dev/loop0p3      63488 199999  136512 66.7M  5 Extended
+
+Command (m for help): n
+All space for primary partitions is in use.
+Adding logical partition 5
+First sector (65536-199999, default 65536): 
+Last sector, +sectors or +size{K,M,G,T,P} (65536-199999, default 199999): +30M
+
+Created a new partition 5 of type 'Linux' and of size 30 MiB.
+
+Command (m for help): p
+Disk /dev/loop0: 97.7 MiB, 102400000 bytes, 200000 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0xd1d1a072
+
+Device       Boot Start    End Sectors  Size Id Type
+/dev/loop0p1       2048  22527   20480   10M 83 Linux
+/dev/loop0p2      22528  63487   40960   20M 83 Linux
+/dev/loop0p3      63488 199999  136512 66.7M  5 Extended
+/dev/loop0p5      65536 126975   61440   30M 83 Linux
+
+Command (m for help): w
+The partition table has been altered.
+Calling ioctl() to re-read partition table.
+Re-reading the partition table failed.: Invalid argument
+
+The kernel still uses the old table. The new table will be used at the next reboot or after you run partprobe(8) or kpartx(8).
+
+root@raspbeeerry:~# fdisk -l
+Disk /dev/sda: 149.1 GiB, 160041885696 bytes, 312581808 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x6484e662
+
+Device     Boot     Start       End   Sectors   Size Id Type
+/dev/sda1  *         2048 310501375 310499328 148.1G 83 Linux
+/dev/sda2       310503422 312580095   2076674  1014M  5 Extended
+/dev/sda5       310503424 312580095   2076672  1014M 82 Linux swap / Solaris
+
+
+Disk /dev/loop0: 97.7 MiB, 102400000 bytes, 200000 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0xd1d1a072
+
+Device       Boot Start    End Sectors  Size Id Type
+/dev/loop0p1       2048  22527   20480   10M 83 Linux
+/dev/loop0p2      22528  63487   40960   20M 83 Linux
+/dev/loop0p3      63488 199999  136512 66.7M  5 Extended
+/dev/loop0p5      65536 126975   61440   30M 83 Linux
+root@raspbeeerry:~# free
+          total        used        free      shared  buff/cache   available
+Mem:        1020528      100940      352364       27400      567224      753912
+Swap:       1140728           0     1140728
+root@raspbeeerry:~# fdisk -l
+Disk /dev/sda: 149.1 GiB, 160041885696 bytes, 312581808 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x6484e662
+
+Device     Boot     Start       End   Sectors   Size Id Type
+/dev/sda1  *         2048 310501375 310499328 148.1G 83 Linux
+/dev/sda2       310503422 312580095   2076674  1014M  5 Extended
+/dev/sda5       310503424 312580095   2076672  1014M 82 Linux swap / Solaris
+
+
+Disk /dev/loop0: 97.7 MiB, 102400000 bytes, 200000 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0xd1d1a072
+
+Device       Boot Start    End Sectors  Size Id Type
+/dev/loop0p1       2048  22527   20480   10M 83 Linux
+/dev/loop0p2      22528  63487   40960   20M 83 Linux
+/dev/loop0p3      63488 199999  136512 66.7M  5 Extended
+/dev/loop0p5      65536 126975   61440   30M 83 Linux
+</code></pre>
+
+<p>todo : see GNU parted that is a most advanced partition editor</p>
+
+        </div>
+                    <p class="categories">
+            Categories:
+                        <a href="/blog/categories/linux">linux</a>,                         <a href="/blog/categories/linux%20basics">linux basics</a>                        </p>
+                
+                    <nav class="article">
+                <ul>
+                                            <li>Next: <a class="next" href="/blog/2020/04/13/linux-basics-material-7" title="linux basics: material 7 - formatting"><span class="title">linux basics: material 7 - formatting</span></a></li>
+                                                                <li>Previous: <a class="previous" href="/blog/2020/04/13/linux-basics-material-5" title="linux basics: material 5 -  File System types"><span class="title">linux basics: material 5 -  File System types</span></a></li>
+                                    </ul>
+            </nav>
+            </article>
+
+
+
+                </div>
+                <!--<div class="span4 sidebar">-->
+                    <!--<div class="well">-->
+                        <!--<h4>benIT&#039;s notebook</h4>-->
+                    <!--</div>-->
+                    <!--<div class="well sidebar-nav">-->
+                        <!--<h4>Links</h4>-->
+                        <!--<ul class="nav">-->
+                            <!--<li><a href="http://sculpin.io">sculpin.io</a></li>-->
+                            <!--<li><a href="http://twitter.com/getsculpin">@getsculpin</a></li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                <!--</div>-->
+            </div>
+        </div>
+        <footer class="container">
+            &copy; 2020 benIT&#039;s notebook
+        </footer>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="/components/jquery/jquery.min.js"><\/script>')</script>
+        <script src="/components/bootstrap/js/bootstrap.min.js"></script>
+                
+                <script src="/components/highlightjs/highlight.pack.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+
+                    </body>
+</html>

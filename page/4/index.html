@@ -72,300 +72,130 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2019/05/06/john-the-ripper-rip-linux-user-password">RIP linux user password with John the Ripper</a></h2>
+            <h2><a href="/blog/2020/04/13/linux-basics-material-5">linux basics: material 5 -  File System types</a></h2>
         </header>
         <div>
-            <h2 id="add-a-new-user">Add a new user</h2>
-
-<pre><code>sudo useradd -r foo
-sudo passwd foo
-Enter new UNIX password: 
-Retype new UNIX password: 
-passwd: password updated successfully
-</code></pre>
-
-<h2 id="password-hash-file">Password hash file</h2>
-
-<p>Linux user password hash are stored here: <code>/etc/shadow</code></p>
-
-<h2 id="rip-it%21">Rip it!</h2>
-
-<pre><code>sudo john /etc/shadow
-Created directory: /root/.john
-Using default input encoding: UTF-8
-Loaded 3 password hashes with 3 different salts (sha512crypt, crypt(3) $6$ [SHA512 256/256 AVX2 4x])
-Cost 1 (iteration count) is 5000 for all loaded hashes
-Will run 5 OpenMP threads
-Proceeding with single, rules:Wordlist
-Press 'q' or Ctrl-C to abort, almost any other key for status
-vagrant          (vagrant)
-Warning: Only 3 candidates buffered for the current salt, minimum 20
-needed for performance.
-toor             (root)
-Warning: Only 14 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 6 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 16 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 17 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 3 candidates buffered for the current salt, minimum 20
-needed for performance.
-Almost done: Processing the remaining buffered candidate passwords, if any
-Warning: Only 15 candidates buffered for the current salt, minimum 20
-needed for performance.
-Proceeding with wordlist:/usr/share/john/password.lst, rules:Wordlist
-foobar           (foo)
-3g 0:00:00:01 DONE 2/3 (2019-05-06 10:39) 1.570g/s 1806p/s 1808c/s 1808C/s 1234qwer..ford
-Use the "--show" option to display all of the cracked passwords reliably
-Session completed
-</code></pre>
-
-<h3 id="and-user-password-is...">And user password is...</h3>
-
-<pre><code>foobar           (foo)
-</code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/05/06/john-the-ripper-rip-archive">RIP a password protected archive with John the Ripper</a></h2>
-        </header>
-        <div>
-            <h2 id="install-kali">Install KALI</h2>
-
-<p>First, <a href="https://www.kali.org/news/announcing-kali-for-vagrant/">intall a kali headless VM with vagrant</a>.</p>
-
-<p>Grant large CPUs and RAM resources to the VM. For instance, in <code>Vagrantfile</code>:</p>
-
-<pre><code># Create a forwarded port
-config.vm.network "forwarded_port", guest: 80, host: 8080
-
-# Create a private network. In VirtualBox, this is a Host-Only network
-config.vm.network "private_network", ip: "192.168.33.101"
-
-# VirtualBox specific settings
-config.vm.provider "virtualbox" do |vb|
-# Hide the VirtualBox GUI when booting the machine
-vb.gui = false
-
-# Customize the amount of memory on the VM:
-vb.memory = "8192"
-vb.cpus= "5"
-end
-
-# Provision the machine with a shell script
-config.vm.provision "shell", inline: &lt;&lt;-SHELL
-apt-get update
-apt-get install -y crowbar
-SHELL
-end
-</code></pre>
-
-<h2 id="generate-a-test-archive">Generate a test archive</h2>
-
-<pre><code>echo "foo bar" &gt; file.txt
-zip -P pass archive.zip file.txt
-</code></pre>
-
-<p><strong>Thus, our archive is protected with the password: <code>pass</code></strong></p>
-
-<p>Test password protection:</p>
-
-<pre><code>unzip archive.zip 
-Archive:  archive.zip
-[archive.zip] file.txt password: 
-</code></pre>
-
-<h2 id="rip-archive.zip">RIP archive.zip</h2>
-
-<h3 id="get-password-hash-with-zip2john">Get password hash with zip2john</h3>
-
-<pre><code>zip2john archive.zip &gt; hash.txt
-</code></pre>
-
-<p>Prints :</p>
-
-<pre><code>ver 1.0 efh 5455 efh 7875 archive.zip/file.txt PKZIP Encr: 2b chk, TS_chk, cmplen=20, decmplen=8, crc=13DDB427
-</code></pre>
-
-<h3 id="rip-hash">RIP hash</h3>
-
-<pre><code>john hash.txt
-</code></pre>
-
-<p>Prints:</p>
-
-<pre><code>Using default input encoding: UTF-8
-Loaded 1 password hash (PKZIP [32/64])
-Will run 2 OpenMP threads
-Proceeding with single, rules:Wordlist
-Press 'q' or Ctrl-C to abort, almost any other key for status
-Warning: Only 4 candidates buffered for the current salt, minimum 8
-needed for performance.
-Warning: Only 5 candidates buffered for the current salt, minimum 8
-needed for performance.
-Warning: Only 6 candidates buffered for the current salt, minimum 8
-needed for performance.
-Warning: Only 4 candidates buffered for the current salt, minimum 8
-needed for performance.
-Almost done: Processing the remaining buffered candidate passwords, if any
-Proceeding with wordlist:/usr/share/john/password.lst, rules:Wordlist
-pass             (archive.zip/file.txt)
-1g 0:00:00:00 DONE 2/3 (2019-05-06 09:53) 50.00g/s 2109Kp/s 2109Kc/s 2109KC/s 123456..Peter
-Use the "--show" option to display all of the cracked passwords reliably
-Session completed
-</code></pre>
-
-<h3 id="and-archive-password-is...">And archive password is...</h3>
-
-<pre><code>pass             (archive.zip/file.txt)
-</code></pre>
-
-<h3 id="tips">Tips</h3>
-
-<p>If you run <code>john</code> again, you will get:</p>
-
-<pre><code>john hash.txt
-Using default input encoding: UTF-8
-Loaded 1 password hash (PKZIP [32/64])
-No password hashes left to crack (see FAQ)
-</code></pre>
-
-<p>This means that the password has already been ripped, to print password check <code>.john/john.pot</code> file or use <code>--show</code> option:</p>
-
-<pre><code>john hash.txt --show
-archive.zip/file.txt:pass:file.txt:archive.zip::archive.zip
-
-1 password hash cracked, 0 left
-</code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/04/08/install-redmine">Install REDMINE 3.4 with PgSQL and Apache2 on debian 9</a></h2>
-        </header>
-        <div>
-            <h2 id="resources">Resources</h2>
+            <h2 id="linux-fs">Linux FS</h2>
 
 <ul>
-<li>http://www.redmine.org/projects/redmine/wiki/howto_install_redmine_on_ubuntu_step_by_step</li>
-<li>http://www.redmine.org/projects/redmine/wiki/redmineinstall</li>
+<li>ext</li>
+<li>ext2: no journal: for small spaces</li>
+<li>ext3: journal</li>
+<li>ext4: last version of ext FS</li>
+<li>reiserfs</li>
+<li>jfs</li>
+<li>xfs</li>
 </ul>
 
-<h2 id="tested-version">Tested version</h2>
+<h2 id="fs-from-others-os">FS from others OS</h2>
 
-<pre><code>pg_config --version
-PostgreSQL 11.2 (Debian 11.2-1.pgdg90+1)
+<ul>
+<li>FAT: legacy from dos/windows 95. file size limited to 4GO. works well with linux, mac, windws</li>
+<li>NTFS: from windows 2000</li>
+<li>HFS: hierarchical FS</li>
+</ul>
 
-ruby -v
-ruby 2.3.3p222 (2016-11-21) [x86_64-linux-gnu]
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2020/04/13/linux-basics-material-4">linux basics: material 4 - Create a fake hard drive with `dd` and `losetup`</a></h2>
+        </header>
+        <div>
+            <ul>
+<li>create a file of the partition size with <code>dd</code> command</li>
+<li>associate it to a loop device with <code>losetup</code> command</li>
+<li>partition it with <code>fdisk</code></li>
+</ul>
+
+<h3 id="dd-command">dd command</h3>
+
+<p>utility to copy files/partition
+create a file named <code>my-hd-file</code></p>
+
+<p>Create a 100Mo file filed with 0 from /dev/zero:</p>
+
+<pre><code>touch my-hd-file
+dd if=/dev/zero of=my-hd-file bs=1024000 count=1
+1+0 records in
+1+0 records out
+1024000 bytes (1.0 MB, 1000 KiB) copied, 0.0318375 s, 32.2 MB/s
+root@raspbeeerry:~# dd if=/dev/zero of=my-hd-file bs=1024000 count=100
+100+0 records in
+100+0 records out
+102400000 bytes (102 MB, 98 MiB) copied, 0.749057 s, 137 MB/s
 </code></pre>
 
-<h2 id="server-packages">Server packages</h2>
+<h3 id="loop-device">Loop device</h3>
 
-<h3 id="debian-packages">Debian packages</h3>
+<p>In Unix-like operating systems, a loop device, vnd (vnode disk), or lofi (loop file interface) is a pseudo-device that makes a file accessible as a block device.</p>
 
-<pre><code>sudo apt-get install apache2 libapache2-mod-passenger ruby ruby-dev
-sudo apt install postgresql-server-dev-all
-</code></pre>
+<ul>
+<li><code>losetup -f</code> to identify next available loop device number  => <code>/dev/loop0</code></li>
+<li><p><code>losetup -a</code>: list all loop devices</p>
 
-<h3 id="ruby-gems">Ruby GEMs</h3>
+<p>root@raspbeeerry:~# losetup -a
+root@raspbeeerry:~# losetup -f
+/dev/loop0
+root@raspbeeerry:~# losetup /dev/loop0 my-hd-file
+root@raspbeeerry:~# losetup -a
+/dev/loop0: [2049]:2752537 (/root/my-hd-file)
+root@raspbeeerry:~#</p></li>
+</ul>
 
-<pre><code>sudo -E gem install bundler -v 1.17.3
-</code></pre>
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2020/04/13/linux-basics-material-3">linux basics: material 3 - FHS: Filesystem Hierarchy Standard</a></h2>
+        </header>
+        <div>
+            <h3 id="programs-folder">Programs folder</h3>
 
-<h2 id="database">Database</h2>
+<ul>
+<li>/bin: exec for all users</li>
+<li>/sbin: exec for admins only</li>
+<li>/lib: lib for programs</li>
+</ul>
 
-<pre><code>CREATE ROLE redmine LOGIN ENCRYPTED PASSWORD 'redmine' NOINHERIT VALID UNTIL 'infinity';
-CREATE DATABASE redmine WITH ENCODING='UTF8' OWNER=redmine;
-</code></pre>
+<h3 id="system-folders">System folders</h3>
 
-<h2 id="app">App</h2>
+<ul>
+<li>/boot: for system boot</li>
+<li>/usr: for all non essential files to system running. example: GUI</li>
+<li>/usr/local: folder that is not impacted when system upgrades. Used to store manually compiled programs</li>
+<li>/opt: optional programs installed by packages</li>
+<li>/etc: editable text configuration. Configuration files</li>
+<li>/srv: should contain services data. not respected</li>
+</ul>
 
-<pre><code>tar -xzf redmine-3.4.10.tar.gz
-cd redmine-3.4.10/
-mv config/database.yml.example  config/database.yml
-cd ..
-mv redmine-3.4.10/ /var/www/redmine
-</code></pre>
+<h3 id="users-data-folder">users data folder</h3>
 
-<p>Edit <code>config/database.yml.example</code> :</p>
+<ul>
+<li>/home/XXX: data for user XXX</li>
+<li>/root: home for root user</li>
+</ul>
 
-<pre><code># PostgreSQL configuration example
-production:
-  adapter: postgresql
-  database: redmine
-  host: localhost
-  username: redmine
-  password: "redmine"
-</code></pre>
+<h3 id="variable-data">Variable data</h3>
 
-<p>And rename it:</p>
+<ul>
+<li>/var: for logs, mail</li>
+<li>/tmp: temp files</li>
+</ul>
 
-<pre><code>mv config/database.yml.example  config/database.yml
-</code></pre>
+<h3 id="mount-folders">Mount folders</h3>
 
-<h3 id="dependencies">Dependencies</h3>
+<ul>
+<li>/mnt : for mounting tempo FS. Example: /mnt/data, /mnt/samba</li>
+<li>/media: mount folder for removable media: USB stick...</li>
+</ul>
 
-<pre><code>bundle install --without development test
-</code></pre>
+<h4 id="virtual-fs">Virtual FS</h4>
 
-<h3 id="setup">Setup</h3>
-
-<pre><code>bundle exec rake generate_secret_token
-RAILS_ENV=production bundle exec rake db:migrate
-RAILS_ENV=production REDMINE_LANG=fr bundle exec rake redmine:load_default_data
-
-
-mkdir -p tmp tmp/pdf public/plugin_assets
-sudo chown -R www-data: files log tmp public/plugin_assets
-sudo chmod -R 755 files log tmp public/plugin_assets
-</code></pre>
-
-<h2 id="apache2">Apache2</h2>
-
-<h3 id="permissions-%26-ownership">Permissions &amp; ownership</h3>
-
-<pre><code>sudo chown -R www-data: /var/www/
-sudo chmod -R 755 /var/www/
-</code></pre>
-
-<h3 id="%C2%A0configuration-of-passenger.conf"> Configuration of passenger.conf</h3>
-
-<p>Add the following line to <code>/etc/apache2/mods-available/passenger.conf</code>:</p>
-
-<pre><code>PassengerDefaultUser www-data
-</code></pre>
-
-<h3 id="virtual-host">Virtual Host</h3>
-
-<p>Edit <code>/etc/apache2/sites-enabled/000-default.conf</code>:</p>
-
-<pre><code>&lt;VirtualHost *:80&gt;
-    #ServerName www.example.com
-    ServerAdmin webmaster@localhost
-    DocumentRoot /var/www/redmine/public/
-        #MaxRequestLen 20971520
-
-        &lt;Directory "/var/www/redmine/public"&gt;
-                Options Indexes ExecCGI FollowSymLinks
-                Order allow,deny
-                Allow from all
-                AllowOverride all
-        &lt;/Directory&gt;
-
-    ErrorLog ${APACHE_LOG_DIR}/redmine.error.log
-    CustomLog ${APACHE_LOG_DIR}/redmine.access.log combined
-&lt;/VirtualHost&gt;
-</code></pre>
-
-<h2 id="test">Test</h2>
-
-<p>REDMINE should be running, login with <code>admin</code>/<code>admin</code>.</p>
+<ul>
+<li>/dev</li>
+<li>/proc</li>
+</ul>
 
         </div>
             </article>
@@ -389,7 +219,7 @@ sudo chmod -R 755 /var/www/
             </div>
         </div>
         <footer class="container">
-            &copy; 2019 benIT&#039;s notebook
+            &copy; 2020 benIT&#039;s notebook
         </footer>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

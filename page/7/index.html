@@ -72,165 +72,167 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2019/01/25/docker-make-a-christmas-garland-with-nginx-apache">How to make a christmas garland with a nginx reverse proxy and 3 apache backends under docker?</a></h2>
+            <h2><a href="/blog/2019/07/12/php-survival-sheet">PHP survival sheet</a></h2>
         </header>
         <div>
-            <h1 id="purpose">Purpose</h1>
+            <h2 id="identify-different-%60php.ini%60-files">Identify different <code>php.ini</code> files</h2>
 
-<p>This posts deals with doing yourself a christmas garland!</p>
+<p>This <code>find</code> command:</p>
 
-<p>We will be using :</p>
+<pre><code>find /etc -name php.ini 
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code>/etc/php/7.1/apache2/php.ini
+/etc/php/7.1/cli/php.ini
+</code></pre>
+
+<h2 id="identify-loaded-php.ini-files-from-command-line">Identify loaded php.ini files from command line</h2>
+
+<p>This command:</p>
+
+<pre><code>php --ini
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code>Configuration File (php.ini) Path: /etc/php/7.1/cli
+Loaded Configuration File:         /etc/php/7.1/cli/php.ini
+Scan for additional .ini files in: /etc/php/7.1/cli/conf.d
+Additional .ini files parsed:      /etc/php/7.1/cli/conf.d/10-mysqlnd.ini,
+/etc/php/7.1/cli/conf.d/10-opcache.ini,
+/etc/php/7.1/cli/conf.d/10-pdo.ini,
+/etc/php/7.1/cli/conf.d/15-xml.ini,
+...
+</code></pre>
+
+<h2 id="get-configuration-values-from-the-command-line">Get configuration values from the command line</h2>
+
+<p>This command returns:</p>
+
+<pre><code>php -i | grep upload_max_filesize
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code>upload_max_filesize =&gt; 2M =&gt; 2M
+</code></pre>
+
+<p>Common configuration to change in <code>php.ini</code> files:</p>
+
+<pre><code>memory_limit
+max_execution_time
+max_input_time
+post_max_size
+upload_max_filesize
+
+display_errors
+html_errors
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2019/07/10/use-your-own-fork-with-composer">Use your own fork with composer</a></h2>
+        </header>
+        <div>
+            <p>Resources:</p>
 
 <ul>
-<li>nginx as a reverse proxy</li>
-<li>apache as a backend</li>
-<li>docker as a plateforme  </li>
+<li>https://getcomposer.org/doc/04-schema.md#minimum-stability</li>
+<li>https://stackoverflow.com/a/13500676/1632809</li>
 </ul>
 
-<h1 id="repository">Repository</h1>
+<h2 id="context">Context</h2>
 
-<p><a href="https://github.com/benIT/docker-nginx-reverse-proxy">You will find a demonstration repository here.</a></p>
+<ul>
+<li><p>Original project: <a href="https://github.com/KnpLabs/KnpGaufretteBundle">https://github.com/KnpLabs/KnpGaufretteBundle</a></p></li>
+<li><p>My fork: <a href="https://github.com/benIT/KnpGaufretteBundle.git">https://github.com/benIT/KnpGaufretteBundle.git</a></p></li>
+<li><p>My branch name: <code>benIT-gaufrette-1.0</code>. This one contains my commits.</p></li>
+</ul>
 
-<h1 id="demo">Demo</h1>
+<h2 id="composer">Composer</h2>
 
-<p><center><video width="640" height="480" controls src="https://benit.github.io/docker-nginx-reverse-proxy/demo.mp4"></video></center></p>
+<p>My <code>composer.json</code> file that tracks my fork with ly branch.</p>
 
-<p>If it does not work, download it from github repo:</p>
+<p>Note: branch must be prefixed bt <code>dev-</code>. In this case: <code>dev-benIT-gaufrette-1.0</code>:</p>
 
-<pre><code>wget https://raw.githubusercontent.com/benIT/docker-nginx-reverse-proxy/master/demo.mp4
-vlc demo.mp4
+<pre><code>{
+  "name": "root/test-composer",
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/benIT/KnpGaufretteBundle.git"
+    }
+  ],
+  "require": {
+    "knplabs/knp-gaufrette-bundle": "dev-benIT-gaufrette-1.0"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
 </code></pre>
 
-<h1 id="conclusion">Conclusion</h1>
+<p>The following directive :</p>
 
-<p>Never forget that computing should always be fun!</p>
+<pre><code>"minimum-stability": "dev",
+"prefer-stable": true
+</code></pre>
+
+<p>prevents this kind of error related to minimum stability:</p>
+
+<pre><code>  Problem 1
+    - Installation request for knplabs/knp-gaufrette-bundle dev-benIT-gaufrette-1.0 -&gt; satisfiable by knplabs/knp-gaufrette-bundle[dev-benIT-gaufrette-1.0].
+    - knplabs/knp-gaufrette-bundle dev-benIT-gaufrette-1.0 requires knplabs/gaufrette ^1.0 -&gt; satisfiable by knplabs/gaufrette[1.x-dev] but these conflict with your requirements or minimum-stability.
+</code></pre>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2019/01/15/docker-docker-compose">Docker 101: docker-compose</a></h2>
+            <h2><a href="/blog/2019/06/24/Apache2-customize-index-options">Apache2 customize index page</a></h2>
         </header>
         <div>
-            <h1 id="docker-compose">Docker compose</h1>
+            <h2 id="customize-the-default-apache2-page-index-page">Customize the default apache2 page index page</h2>
 
-<p>Purpose: compose is a tool designed to create multi-containers app.</p>
+<p>Apache2 index option is highly customizable. <a href="http://httpd.apache.org/docs/2.2/mod/mod_autoindex.html">See this official resource.</a></p>
 
-<h2 id="install">Install</h2>
+<p>With the following code:</p>
 
-<pre><code>sudo apt install python-pip
-pip install docker-compose
+<pre><code>&lt;VirtualHost *:80&gt;
+        DocumentRoot /data/moodle_versions
+    &lt;Directory /&gt;
+        Options FollowSymLinks
+        AllowOverride None
+    &lt;/Directory&gt;
+    &lt;Directory /data/moodle_versions/&gt;
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Require all granted
+        allow from all
+        AddDescription "Installation de moodle 3.5.4 LTS standard" moodle_354
+        AddDescription "Installation de moodle 3.6.4 à des fins de test" moodle_364
+        IndexStyleSheet "style.css"
+        HeaderName header.html
+        ReadmeName footer.html
+        IndexIgnore *.html
+        IndexIgnore *.css
+    &lt;/Directory&gt;
+        ServerAdmin webmaster@localhost
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+&lt;/VirtualHost&gt;
 </code></pre>
 
-<h2 id="docker-compose.yml">docker-compose.yml</h2>
+<p>You can turn the default page:</p>
 
-<p>The magic happens in a file named <code>docker-compose.yml</code></p>
+<p><img src="/images/apache2/default.png" alt="screenshot" /></p>
 
-<h2 id="run">Run</h2>
+<p>to this one:</p>
 
-<pre><code>docker-compose up -d
-</code></pre>
-
-<h2 id="stop">Stop</h2>
-
-<pre><code>docker-compose down -v
-</code></pre>
-
-<h2 id="networking">Networking</h2>
-
-<p><code>docker-compose</code> handles the creation a private network:</p>
-
-<pre><code>Creating network "n-tiers_default" with the default driver
-Creating object-cache ... done
-Creating pgsql        ... done
-Creating web          ... done
-</code></pre>
-
-<h1 id="example">Example</h1>
-
-<p>Better than words, take a look at this <a href="https://github.com/benIT/docker-compose-n-tiers">repo that illustrates a classical n-tiers web app</a></p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/01/14/docker-networking">Docker 101: networking</a></h2>
-        </header>
-        <div>
-            <h1 id="docker-running-containers-inside-a-bridge-network">Docker running containers inside a bridge network</h1>
-
-<p>The purpose of this post is to isolate each tiers of our app into different containers.</p>
-
-<p>We will create a private network and run containers inside this private network.</p>
-
-<p><a href="https://docker-curriculum.com/#webapps-with-docker">This article is largely inspired by this great resource.</a></p>
-
-<h2 id="networking">Networking</h2>
-
-<h3 id="create-an-isolated-private-bridge-network">Create an isolated private bridge network</h3>
-
-<pre><code>docker network create web-net    
-</code></pre>
-
-<h3 id="inspect-the-private-network">Inspect the private network</h3>
-
-<pre><code>docker network inspect web-net
-</code></pre>
-
-<h3 id="run-a-container-inside-the-private-bridge-network-with-%60--net%60-option">Run a container inside the private bridge network with <code>--net</code> option</h3>
-
-<pre><code>docker run --name pgsql-web --rm  -d --net web-net postgres:latest
-docker run --name debian-web --rm -p 80:80 --net web-net -d benit/debian-web:latest
-</code></pre>
-
-<h3 id="inspect-the-private-network-to-get-ips-of-containers-of-the-private-network">Inspect the private network to get IPs of containers of the private network</h3>
-
-<pre><code>docker network inspect web-net
-</code></pre>
-
-<p>gives:</p>
-
-<pre><code> "Containers": {
-            "3729ccbb14e514fd6c8b571ed9c985c28293cb5bfdb10c6c233773f50d6ba763": {
-                "Name": "debian-web",
-                "EndpointID": "c370cab93cdd2ac9f30f568a1709b8c998d2ca36106d5423b484a20aadbff84f",
-                "MacAddress": "02:42:ac:12:00:03",
-                "IPv4Address": "172.18.0.3/16",
-                "IPv6Address": ""
-            },
-            "61bcf5cd9838c8c2e66beef73a04a2704a3be7e2085a5c6b4ad58bd78f12a138": {
-                "Name": "pgsql-web",
-                "EndpointID": "128f50ead4974a725c04551cb284fec2c733a48375a4819096b0b623ff2af4ac",
-                "MacAddress": "02:42:ac:12:00:02",
-                "IPv4Address": "172.18.0.2/16",
-                "IPv6Address": ""
-            }
-        },
-</code></pre>
-
-<h2 id="putting-it-all-together">Putting it all together</h2>
-
-<h3 id="let%27s-create-a-database">Let's create a database</h3>
-
-<pre><code>docker container exec pgsql-web psql -U postgres -c "create database webapp";
-docker container exec pgsql-web psql -U postgres -d webapp -c "CREATE TABLE account(user_id serial PRIMARY KEY,username VARCHAR (50) UNIQUE NOT NULL,created_on TIMESTAMP NOT NULL);" ;
-docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('foo','2019-01-01') ;" ;
-docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('bar','2019-01-02') ;" ;
-</code></pre>
-
-<h3 id="connect-database-container-from-webserver-container">Connect database container from webserver container</h3>
-
-<pre><code>docker container exec -it debian-web  psql -U postgres -h 172.18.0.2 -d webapp -c "select * from account;" ;
-</code></pre>
-
-<p>gives:</p>
-
-<pre><code> user_id | username |     created_on      
----------+----------+---------------------
-       1 | foo      | 2019-01-01 00:00:00
-       2 | bar      | 2019-01-02 00:00:00
-(2 rows)
-</code></pre>
+<p><img src="/images/apache2/custom.png" alt="screenshot" /></p>
 
         </div>
             </article>
@@ -254,7 +256,7 @@ docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO accou
             </div>
         </div>
         <footer class="container">
-            &copy; 2019 benIT&#039;s notebook
+            &copy; 2020 benIT&#039;s notebook
         </footer>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

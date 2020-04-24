@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Home &mdash; benIT&#039;s notebook &mdash; </title>
+        <meta charset="utf-8">
+        <meta name="theme-color" content="#ffffff">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <meta name="robots" content="noindex, follow">
+                <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/style.css" rel="stylesheet" type="text/css" />
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+        <link rel="apple-touch-startup-image" href="/images/jackson/2048x2048.png">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="shortcut icon" sizes="76x76" href="/images/jackson/76x76.png">
+        <link rel="shortcut icon" sizes="120x120" href="/images/jackson/120x120.png">
+        <link rel="shortcut icon" sizes="128x128" href="/images/jackson/128x128.png">
+        <link rel="shortcut icon" sizes="152x152" href="/images/jackson/152x152.png">
+        <link rel="shortcut icon" sizes="196x196" href="/images/jackson/196x196.png">
+        <link rel="shortcut icon" sizes="512x512" href="/images/jackson/512x512.png">
+        <link rel="shortcut icon" sizes="1024x1024" href="/images/jackson/1024x1024.png">
+        <link rel="shortcut icon" sizes="2048x2048" href="/images/jackson/2048x2048.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="/images/jackson/76x76.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="/images/jackson/120x120.png">
+        <link rel="apple-touch-icon" sizes="128x128" href="/images/jackson/128x128.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="/images/jackson/152x152.png">
+        <link rel="apple-touch-icon" sizes="196x196" href="/images/jackson/196x196.png">
+        <link rel="apple-touch-icon" sizes="512x512" href="/images/jackson/512x512.png">
+        <link rel="apple-touch-icon" sizes="1024x1024" href="/images/jackson/1024x1024.png">
+        <link rel="apple-touch-icon" sizes="2048x2048" href="/images/jackson/2048x2048.png">
+
+        <link rel="stylesheet" href="/components/highlightjs/styles/github.css" />
+        <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="benIT&#039;s notebook activity feed" />
+        <style>
+        /** quick fix because bootstrap <pre> has a background-color. */
+        pre code { background-color: inherit; }
+        </style>
+                                    </head>
+    <a href="https://github.com/benIT/github-blog"><img style="z-index:1032;position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
+    <body>
+        <header>
+            <nav class="navbar navbar-inverse navbar-fixed-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/">benIT&#039;s notebook </a>
+                    </div>
+                    <div id="navbar" class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="https://github.com/benIT">Github</a></li>
+                            <li><a href="/blog">Posts Archive</a></li>
+                            <li><a href="/blog/categories">Categories</a></li>
+                            <li><a href="/atom.xml">RSS feed</a></li>
+                            <!--<li><a href="/blog/tags">Tags</a></li>-->
+                            <li><a href="/about">About</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="mainContent container">
+            <div class="row-fluid">
+                <div class="span8">
+                        <article>
+        <header>
+            <h2><a href="/blog/2017/06/15/setup-xdebug-phpstorm-vagrant">Configure xdebug with phpstorm with a vagrant box</a></h2>
+        </header>
+        <div>
+            <p>After loosing a few hours reconfiguring xdebug, phpstorm and vagrant, I found this <a href="https://www.theodo.fr/blog/2016/08/configure-xdebug-phpstorm-vagrant/">great ressource</a>. Here are my notes about it:</p>
+
+<p><em>phpstorm is installed on the hostmachine and the app is running in a vagrant box.</em></p>
+
+<h2 id="vagrant-guest-machine-setup">Vagrant guest machine setup</h2>
+
+<pre><code>sudo apt-get install php5-xdebug
+</code></pre>
+
+<p>Edit <code>/etc/php5/mods-available/xdebug.ini</code> :</p>
+
+<pre><code>xdebug.remote_enable=true
+xdebug.remote_connect_back=true
+xdebug.idekey=MY_AWESOME_KEY
+</code></pre>
+
+<h2 id="phpstorm-setup">Phpstorm setup</h2>
+
+<h3 id="setup-%27php-remote-debug%27-configuration">Setup 'php remote debug' configuration</h3>
+
+<p><img src="/images/xdebug/storm-xdebug-vagrant-1-remote-debug-conf.png" alt="screenshot" /></p>
+
+<h3 id="setup-%27server%27-configuration">Setup 'server' configuration</h3>
+
+<p><img src="/images/xdebug/storm-xdebug-vagrant-2-server-conf.png" alt="screenshot" /></p>
+
+<h2 id="browser-plugin">Browser plugin</h2>
+
+<ul>
+<li>install a browser <a href="https://addons.mozilla.org/en-US/firefox/addon/the-easiest-xdebug/">plugin such as this one</a></li>
+<li>configure the ide key, here: <code>MY_AWESOME_KEY</code></li>
+<li>it is also possible to use <a href="https://www.jetbrains.com/phpstorm/marklets/">bookmarklets</a> </li>
+</ul>
+
+<h2 id="enjoy%21">Enjoy!</h2>
+
+<ul>
+<li>Puts breakpoints </li>
+<li>Enable cookie using web browser extension or bookmarklet
+<img src="/images/xdebug/storm-xdebug-vagrant-3-breakpoints.png" alt="screenshot" /></li>
+<li>Click on the bug icon called 'debug mode'</li>
+<li>You can now enjoy the debugger (inspect variables, control the execution flow)
+<img src="/images/xdebug/storm-xdebug-vagrant-4-debugger-running.png" alt="screenshot" /></li>
+</ul>
+
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2017/06/14/install-a-nextcloudbox">Install a nextcloud box with NextCloudPi</a></h2>
+        </header>
+        <div>
+            <p>Here is exposed steps to setup a nextcloud box on RPI <a href="https://ownyourbits.com/2017/02/13/nextcloud-ready-raspberry-pi-image/">consuming the nextCloudPi image</a> . enjoy ;)</p>
+
+<h2 id="nextcloudbox-setup">Nextcloudbox setup</h2>
+
+<ul>
+<li><p><a href="/blog/2017/06/12/create-a-debian-iso-live-usb-drive">burn a usb drive</a>. <a href="https://ownyourbits.com/2017/02/13/nextcloud-ready-raspberry-pi-image/">NextCloudPi</a> offers a fully configured box.</p></li>
+<li><p>insert sd card and boot. Default credentials are: <code>pi</code>/<code>raspberry</code></p></li>
+<li><p><a href="https://raspberrypi.stackexchange.com/questions/10060/raspbian-keyboard-layout">change keyboard layout</a> if needed before getting crazy:</p>
+
+<ul>
+<li><p>edit the <code>XKBLAYOUT="fr"</code> directive in <code>/etc/default/keyboard</code>:</p></li>
+<li><p>reboot: <code>sudo reboot now</code></p></li>
+</ul></li>
+<li><p>enable usb device automount:</p>
+
+<pre><code>sudo nextcloudpi-config
+</code></pre>
+
+<p>then: <code>nc-automount</code> > <code>active=yes</code></p></li>
+</ul>
+
+<p>Wait a few seconds and check your drive is mounted using:</p>
+
+<pre><code>    sudo fdisk -l
+</code></pre>
+
+<h2 id="test-it%21">Test it!</h2>
+
+<h3 id="locally">Locally</h3>
+
+<ul>
+<li>In order to test it you can <a href="/blog/2017/06/15/connect-to-raspberry-over-ethernet">take a look about connecting to pi over ethernet</a>. <em>That's pretty nice to connect to RPI with a simple ethernet cable.</em></li>
+</ul>
+
+<h3 id="behind-a-router%2Finternet-connection">Behind a router/internet connection</h3>
+
+<ul>
+<li><p>Plug RPI to your router</p></li>
+<li><p>Go to the admin panel</p></li>
+<li><p>Perform port redirection to the RPI: external 443/internal 443.</p></li>
+</ul>
+
+<h3 id="it-works%2C-yeah%21-beer-time%21">It works, yeah! beer time!</h3>
+
+<p>Enter the RPI @IP in your web browser (<code>https://10.42.0.100</code> in my case), after adding a security exception because of self signed certificate, you should see:</p>
+
+<p><img src="/images/nextcloud/nextcloud-login.png" alt="screenshot" /></p>
+
+<p><em>credentials: admin/ownyourbits</em></p>
+
+<h2 id="external-storage-setup">External storage setup</h2>
+
+<ul>
+<li><p>format your usb-drive as <code>ext4</code> and create a <code>msdos</code> partition table if necessary using gparted. The partition must be a linux partition kind to support linux right management.</p></li>
+<li><p>change nc-database to the flashdrive: <code>sudo nextcloudpi-config</code> > <code>nc-database</code></p></li>
+<li><p>change nc-datadir to the flashdrive using: <code>sudo nextcloudpi-config</code> > <code>nc-datadir</code></p></li>
+</ul>
+
+<p>If everything goes well, you should see that data and database are stored in <code>/media/USBdrive/ncdata</code> and <code>/media/USBdrive/ncdatabase</code></p>
+
+<h2 id="enable-and-set-up-wifi">Enable and set up WIFI</h2>
+
+<p>You can enable and select your WIFI connection in:
+        <code>sudo nextcloudpi-config</code> > <code>nc-wifi</code> > <code>ACTIVE=YES</code></p>
+
+<h2 id="enable-ssh">Enable SSH</h2>
+
+<p>SSH is not enabled by default, enable it in: <code>sudo raspi-config</code> > <code>5 Interfacing Options</code> > <code>P2 SSH</code>
+You can now ssh the rpi machine:</p>
+
+<pre><code>    ssh pi@10.42.0.100
+</code></pre>
+
+<p>Default rpi credentials are <em>pi/raspberry</em>, CHANGE IT by running: <code>passwd</code></p>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<h3 id="trusted-domains-issue">Trusted domains issue</h3>
+
+<p>Fix it in editing <code>nexcloud/config/config.php</code>:</p>
+
+<pre><code>    ...
+    'trusted_domains' =&gt;
+    array(
+        ...
+        3 =&gt; '10.42.0.100'
+    )
+    ...
+</code></pre>
+
+<p><img src="/images/nextcloud/nextcloud-trusted-domains.png" alt="screenshot" /></p>
+
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2017/06/14/connect-to-raspberry-over-ethernet">Connect to raspberry pi from linux host using a simple ethernet cable</a></h2>
+        </header>
+        <div>
+            <p>This post describes how to connect a RPI to a linux station with a simple ethernet cable.</p>
+
+<h2 id="on-debian-host-machine">On debian host machine</h2>
+
+<ul>
+<li><p>run <code>gnome-nettool</code>, change the edit the wired connection and edit IPv4 settings.</p>
+
+<ul>
+<li><p>Change the <code>DHCP</code> default method 
+<img src="/images/rpi/ethernet-connection/wired-dhcp.png" alt="network conf" /></p>
+
+<p>to <code>shared with other computer</code>:
+<img src="/images/rpi/ethernet-connection/wired-shared.png" alt="network conf" /></p></li>
+</ul></li>
+<li><p>power off the RPI</p>
+
+<pre><code>sudo halt
+</code></pre></li>
+<li><p>mount the RPI SD card to the host PC</p></li>
+<li><p>identify the PC eth0 @IP adress:</p>
+
+<pre><code>sudo ifconfig
+</code></pre></li>
+</ul>
+
+<p>In my case: <code>10.42.0.1</code></p>
+
+<ul>
+<li><p>edit the <code>cmdline.txt</code> located on the <code>boot</code> partition file adding:</p>
+
+<pre><code>ip=10.42.0.100
+</code></pre></li>
+<li><p><em>The pi and the debian PC must on the same subnetwork ie: <code>10.42.0.XXX</code></em></p></li>
+<li><p>insert SD card and boot RPI</p></li>
+<li><p>check the connectivity:</p>
+
+<pre><code>ping 169.254.6.100
+--- 10.42.0.100 ping statistics ---
+6 packets transmitted, 6 received, 0% packet loss, time 4999ms
+rtt min/avg/max/mdev = 0.326/0.351/0.392/0.028 ms
+</code></pre></li>
+</ul>
+
+<h2 id="on-the-rpi-machine">On the RPI machine</h2>
+
+<ul>
+<li><p>enable ssh:</p>
+
+<pre><code>sudo raspi-config 
+</code></pre></li>
+<li><p><code>Interfacing Options</code> then <code>P2 SSH</code></p></li>
+</ul>
+
+<h2 id="ssh-it-%21">SSH IT !</h2>
+
+<p>From the debian pc:</p>
+
+<pre><code>ssh pi@169.254.6.100
+</code></pre>
+
+<p>That was it! You are now connected over SSH on the RPI:</p>
+
+<pre><code>The authenticity of host '10.42.0.100 (10.42.0.100)' can't be established.
+ECDSA key fingerprint is ca:cc:0c:80:ab:1a:b4:a9:4b:2b:a8:1a:fa:b4:7e:23.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '10.42.0.100' (ECDSA) to the list of known hosts.
+pi@10.42.0.100's password: 
+
+
+
+NextCloudPi v0.12.8 is up to date
+Last login: Fri May 26 18:34:10 2017
+
+SSH is enabled and the default password for the 'pi' user has not been changed.
+This is a security risk - please login as the 'pi' user and type 'passwd' to set a new password.
+pi@raspberrypi:~ $
+</code></pre>
+
+        </div>
+            </article>
+    <nav>
+        <ul class="pager">
+            <li class="next"><a href="/page/20">Older posts<span aria-hidden="true">&rarr;</span></a></li>            <li class="previous"><a href="/page/18"><span aria-hidden="true">&larr;</span> Newer posts</a></li>        </ul>
+    </nav>
+                </div>
+                <!--<div class="span4 sidebar">-->
+                    <!--<div class="well">-->
+                        <!--<h4>benIT&#039;s notebook</h4>-->
+                    <!--</div>-->
+                    <!--<div class="well sidebar-nav">-->
+                        <!--<h4>Links</h4>-->
+                        <!--<ul class="nav">-->
+                            <!--<li><a href="http://sculpin.io">sculpin.io</a></li>-->
+                            <!--<li><a href="http://twitter.com/getsculpin">@getsculpin</a></li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                <!--</div>-->
+            </div>
+        </div>
+        <footer class="container">
+            &copy; 2020 benIT&#039;s notebook
+        </footer>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="/components/jquery/jquery.min.js"><\/script>')</script>
+        <script src="/components/bootstrap/js/bootstrap.min.js"></script>
+                
+                <script src="/components/highlightjs/highlight.pack.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+
+                    </body>
+</html>

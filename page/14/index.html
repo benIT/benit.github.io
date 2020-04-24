@@ -72,201 +72,249 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2017/06/15/moodle-migration-procedure.">Moodle migration procedure</a></h2>
+            <h2><a href="/blog/2018/01/22/mysql-2-pgsql-conversion">mySQL to postgreSQL schema conversion</a></h2>
         </header>
         <div>
-            <p>In this post is described how to export you moodle app and import it on another environment.</p>
+            <h2 id="purpose">Purpose</h2>
 
-<h2 id="export-from-the-source-database">Export from the source database</h2>
+<p>I was looking for a tool that convert a mysql db to a pgsql one.
+<a href="https://github.com/philipsoutham/py-mysql2pgsql">philipsoutham/py-mysql2pgsql</a> does the trick and saved my day!</p>
 
-<pre><code>     sudo -u postgres pg_dump moodle &gt; /vagrant/shared/dump/moodle-database-exported.sql
+<h2 id="install">Install</h2>
+
+<pre><code>sudo apt-get install python-pip
+pip install py-mysql2pgsql
 </code></pre>
 
-<h2 id="migrate-database">Migrate database</h2>
+<h2 id="configure">Configure</h2>
 
-<p>Here I sustitute the string 'moodle-dev' by 'moodle-deploy' from 'moodle-database-exported.sql' and write it to 'database-to-import.sql':</p>
+<p>Edit configuration in <code>mysql2pgsql.yml</code></p>
 
-<pre><code>     sed 's/moodle-dev/moodle-deploy/g' moodle-database-exported.sql &gt; database-to-import.sql
-</code></pre>
+<pre><code># if a socket is specified we will use that
+# if tcp is chosen you can use compression
+mysql:
+ hostname: localhost
+ port: 3306
+ socket: /var/run/mysqld/mysqld.sock
+ #socket: /tmp/mysql.sock
+ username: emedia
+ password: emedia
+ database: emedia
+ compress: false
+destination:
+ # if file is given, output goes to file, else postgres
+ file: /vagrant/shared/migrationMysql2Pgsql.sql
+ postgres:
+  hostname: localhost
+  port: 5432
+  username: mysql2psql
+  password:
+  database: mysql2psql_test
 
-<h2 id="let%27s-tar-db-and-filesystem">Let's tar db and filesystem</h2>
+# if tables is given, only the listed tables will be converted.  leave empty to convert all tables.
+only_tables:
+- lti2_consumer
+- lti2_context
+- lti2_nonce
+- lti2_resource_link
+- lti2_share_key
+- lti2_tool_proxy
+- lti2_user_result
+# if exclude_tables is given, exclude the listed tables from the conversion.
+#exclude_tables:
+#- table3
+#- table4
 
-<pre><code>    tar -cvzf moodle-to-import.tgz database-to-import.sql moodle moodledata/
-    exit
-    mv ~/vagrant/vagrant-moodle/shared/moodle-to-import.tgz ~/vagrant/vagrant-moodle-deploy/shared/
-</code></pre>
+# if supress_data is true, only the schema definition will be exported/migrated, and not the data
+supress_data: true
 
-<h2 id="cleanup-the-target-machine">Cleanup the target machine</h2>
+# if supress_ddl is true, only the data will be exported/imported, and not the schema
+supress_ddl: false
 
-<p>Connect on the target machine. here target database is also named 'moodle':</p>
-
-<pre><code>     cd /vagrant/shared
-     rm -rf moodle moodledata/
-     sudo -u postgres psql -c "DROP DATABASE moodle"
-     sudo -u postgres psql -c "CREATE DATABASE moodle"
-</code></pre>
-
-<h2 id="import-db-and-filesystem-on-the-target-database">Import db and filesystem on the target database</h2>
-
-<pre><code>    sudo tar -xzf moodle-to-import.tgz
-    sudo -u postgres psql --set ON_ERROR_STOP=on moodle &lt; database-to-import.sql
-</code></pre>
-
-<h2 id="migrate-the-config.php-file">Migrate the config.php file</h2>
-
-<pre><code>    sed -i 's/moodle-dev/moodle-deploy/g' moodle/config.php
+# if force_truncate is true, forces a table truncate before table loading
+force_truncate: false
 </code></pre>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2017/06/15/setup-xdebug-phpstorm-vagrant">Configure xdebug with phpstorm with a vagrant box</a></h2>
+            <h2><a href="/blog/2018/01/11/php7-nginx-memcached-session">Setting up a memcached server with PHP7.X and a NGINX webserver</a></h2>
         </header>
         <div>
-            <p>After loosing a few hours reconfiguring xdebug, phpstorm and vagrant, I found this <a href="https://www.theodo.fr/blog/2016/08/configure-xdebug-phpstorm-vagrant/">great ressource</a>. Here are my notes about it:</p>
+            <h2 id="memcached-server-side">Memcached server side</h2>
 
-<p><em>phpstorm is installed on the hostmachine and the app is running in a vagrant box.</em></p>
+<p>This server has private @IP : 192.168.33.14</p>
 
-<h2 id="vagrant-guest-machine-setup">Vagrant guest machine setup</h2>
+<h3 id="install-memcached%3A">Install memcached:</h3>
 
-<pre><code>sudo apt-get install php5-xdebug
+<pre><code>sudo apt-get install memcached
 </code></pre>
 
-<p>Edit <code>/etc/php5/mods-available/xdebug.ini</code> :</p>
+<p>In <code>/etc/memcached.conf</code>, set up memory to 256 Mo:</p>
 
-<pre><code>xdebug.remote_enable=true
-xdebug.remote_connect_back=true
-xdebug.idekey=MY_AWESOME_KEY
+<pre><code>-m 256
 </code></pre>
 
-<h2 id="phpstorm-setup">Phpstorm setup</h2>
+<p>In <code>/etc/memcached.conf</code>, set up listening private @IP of the server:</p>
 
-<h3 id="setup-%27php-remote-debug%27-configuration">Setup 'php remote debug' configuration</h3>
+<pre><code># Specify which IP address to listen on. The default is to listen on all IP addresses
+# This parameter is one of the only security measures that memcached has, so make sure
+# it's listening on a firewalled interface.
+#-l 127.0.0.2
+-l 192.168.33.14
+</code></pre>
 
-<p><img src="/images/xdebug/storm-xdebug-vagrant-1-remote-debug-conf.png" alt="screenshot" /></p>
+<h2 id="web-server-side">Web server side</h2>
 
-<h3 id="setup-%27server%27-configuration">Setup 'server' configuration</h3>
+<p>This server has private @IP : 192.168.33.11</p>
 
-<p><img src="/images/xdebug/storm-xdebug-vagrant-2-server-conf.png" alt="screenshot" /></p>
+<h3 id="install-php-extension">Install PHP extension</h3>
 
-<h2 id="browser-plugin">Browser plugin</h2>
+<p>On the server that hosts nginx + php7.0:</p>
+
+<pre><code>sudo apt-get install -y php-memcached
+</code></pre>
+
+<h3 id="configure-php">Configure PHP</h3>
+
+<p>In <code>/etc/php/7.0/fpm/php.ini</code>:</p>
+
+<pre><code>[Session]
+; Handler used to store/retrieve data.
+; http://php.net/session.save-handler
+#session.save_handler = files
+session.save_handler = memcached
+session.save_path = 'tcp://192.162.33.14:11211'
+</code></pre>
+
+<h3 id="restart-services">Restart services</h3>
+
+<pre><code>sudo service php7.0-fpm restart &amp;&amp; sudo service nginx restart
+</code></pre>
+
+<h3 id="check-config">Check config</h3>
+
+<p>Create a phpinfo.php that calls <code>phpinfo()</code> and check memcached configuration.</p>
+
+<h3 id="checking">Checking</h3>
+
+<h3 id="checking-sessions-are-well-handled-by-memcached">Checking sessions are well handled by memcached</h3>
+
+<p>Let's write a simple script to check sessions:</p>
+
+<pre><code>session_start();
+if(!isset($_SESSION['visit']))
+{   
+    echo "This is the first time you're visiting this server\n";
+    $_SESSION['visit'] = 0;
+}   
+else
+        echo "Your number of visits: ".$_SESSION['visit'] . "\n";
+
+$_SESSION['visit']++;
+
+echo "Server IP: ".$_SERVER['SERVER_ADDR'] . "\n";
+echo "Client IP: ".$_SERVER['REMOTE_ADDR'] . "\n";
+print_r($_COOKIE);
+</code></pre>
+
+<h3 id="checking-memcached-key%2Fvalue-server">Checking memcached key/value server</h3>
+
+<p>Let's write a simple script to key/value access:</p>
+
+<pre><code>$mem = new Memcached();
+$mem-&gt;addServer("192.168.33.14", 11211);
+$result = $mem-&gt;get("blah");
+if ($result) {
+    echo $result;
+} else {
+    echo "No matching key found yet. Let's start adding that now!";
+    $mem-&gt;set("blah", "I am data!  I am held in memcached!") or die("Couldn't save anything to memcached...");
+}   
+</code></pre>
+
+<h3 id="dumping-all-key%2Fvalue-records">Dumping all key/value records</h3>
+
+<script src="https://gist.github.com/benIT/2e63d3541f4f46d9a47777d467549d2e.js"></script>
+
+<h2 id="sources">Sources</h2>
 
 <ul>
-<li>install a browser <a href="https://addons.mozilla.org/en-US/firefox/addon/the-easiest-xdebug/">plugin such as this one</a></li>
-<li>configure the ide key, here: <code>MY_AWESOME_KEY</code></li>
-<li>it is also possible to use <a href="https://www.jetbrains.com/phpstorm/marklets/">bookmarklets</a> </li>
-</ul>
-
-<h2 id="enjoy%21">Enjoy!</h2>
-
-<ul>
-<li>Puts breakpoints </li>
-<li>Enable cookie using web browser extension or bookmarklet
-<img src="/images/xdebug/storm-xdebug-vagrant-3-breakpoints.png" alt="screenshot" /></li>
-<li>Click on the bug icon called 'debug mode'</li>
-<li>You can now enjoy the debugger (inspect variables, control the execution flow)
-<img src="/images/xdebug/storm-xdebug-vagrant-4-debugger-running.png" alt="screenshot" /></li>
+<li>https://www.digitalocean.com/community/tutorials/how-to-share-php-sessions-on-multiple-memcached-servers-on-ubuntu-14-04</li>
+<li>http://www.servermom.org/install-use-memcached-nginx-php-7-ubuntu-16-04/3670/</li>
 </ul>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2017/06/14/install-a-nextcloudbox">Install a nextcloud box with NextCloudPi</a></h2>
+            <h2><a href="/blog/2018/01/11/configure-moodle-session-handling-with-memcached">Configure moodle 3.x session handling with memcached</a></h2>
         </header>
         <div>
-            <p>Here is exposed steps to setup a nextcloud box on RPI <a href="https://ownyourbits.com/2017/02/13/nextcloud-ready-raspberry-pi-image/">consuming the nextCloudPi image</a> . enjoy ;)</p>
+            <p>This procedure has been tested on Moodle <a href="https://github.com/moodle/moodle/commit/7223cd2518ad3b37901b736d6b62e7badd4ecaa1">version 3.0.6+</a> with a dedicated memcached server which @IP:port is 192.168.33.14:11211.</p>
 
-<h2 id="nextcloudbox-setup">Nextcloudbox setup</h2>
+<h2 id="set-up-a--memcached-server">Set up a  memcached server</h2>
 
-<ul>
-<li><p><a href="/blog/2017/06/12/create-a-debian-iso-live-usb-drive">burn a usb drive</a>. <a href="https://ownyourbits.com/2017/02/13/nextcloud-ready-raspberry-pi-image/">NextCloudPi</a> offers a fully configured box.</p></li>
-<li><p>insert sd card and boot. Default credentials are: <code>pi</code>/<code>raspberry</code></p></li>
-<li><p><a href="https://raspberrypi.stackexchange.com/questions/10060/raspbian-keyboard-layout">change keyboard layout</a> if needed before getting crazy:</p>
+<p>see <a href="/blog2018-01-11-php7-nginx-memcached-session">this post</a>.</p>
 
-<ul>
-<li><p>edit the <code>XKBLAYOUT="fr"</code> directive in <code>/etc/default/keyboard</code>:</p></li>
-<li><p>reboot: <code>sudo reboot now</code></p></li>
-</ul></li>
-<li><p>enable usb device automount:</p>
+<h2 id="configure-moodle">Configure moodle</h2>
 
-<pre><code>sudo nextcloudpi-config
+<p>Configure <a href="https://docs.moodle.org/30/en/Session_handling#Memcached">session handling</a> in <code>config.php</code>:</p>
+
+<pre><code>/********************************************/
+//MEMCACHED SETUP
+$CFG-&gt;session_handler_class = '\core\session\memcached';
+$CFG-&gt;session_memcached_save_path = '192.168.33.14:11211';
+$CFG-&gt;session_memcached_prefix = 'memc.sess.key.';
+$CFG-&gt;session_memcached_acquire_lock_timeout = 120;
+$CFG-&gt;session_memcached_lock_expire = 7200;       // Ignored if memcached extension &lt;= 2.1.0
+/********************************************/
 </code></pre>
 
-<p>then: <code>nc-automount</code> > <code>active=yes</code></p></li>
-</ul>
+<h2 id="checkings">Checkings</h2>
 
-<p>Wait a few seconds and check your drive is mounted using:</p>
+<h2 id="moodle-cookie">Moodle cookie</h2>
 
-<pre><code>    sudo fdisk -l
+<p>If you print out your cookie from your debug tool in your bowser, you well see a cookie named <code>MoodleSession</code></p>
+
+<p>In my case it has value <code>4gp94gr17g78jnh97a6mfml0b4</code></p>
+
+<h2 id="moodle-database">Moodle database</h2>
+
+<p>Now let's check if there is still record in DB for your cookie session:</p>
+
+<pre><code>SELECT * FROM mdl_sessions WHERE sid='4gp94gr17g78jnh97a6mfml0b4';
 </code></pre>
 
-<h2 id="test-it%21">Test it!</h2>
+<p>returns:</p>
 
-<h3 id="locally">Locally</h3>
-
-<ul>
-<li>In order to test it you can <a href="/blog/2017/06/15/connect-to-raspberry-over-ethernet">take a look about connecting to pi over ethernet</a>. <em>That's pretty nice to connect to RPI with a simple ethernet cable.</em></li>
-</ul>
-
-<h3 id="behind-a-router%2Finternet-connection">Behind a router/internet connection</h3>
-
-<ul>
-<li><p>Plug RPI to your router</p></li>
-<li><p>Go to the admin panel</p></li>
-<li><p>Perform port redirection to the RPI: external 443/internal 443.</p></li>
-</ul>
-
-<h3 id="it-works%2C-yeah%21-beer-time%21">It works, yeah! beer time!</h3>
-
-<p>Enter the RPI @IP in your web browser (<code>https://10.42.0.100</code> in my case), after adding a security exception because of self signed certificate, you should see:</p>
-
-<p><img src="/images/nextcloud/nextcloud-login.png" alt="screenshot" /></p>
-
-<p><em>credentials: admin/ownyourbits</em></p>
-
-<h2 id="external-storage-setup">External storage setup</h2>
-
-<ul>
-<li><p>format your usb-drive as <code>ext4</code> and create a <code>msdos</code> partition table if necessary using gparted. The partition must be a linux partition kind to support linux right management.</p></li>
-<li><p>change nc-database to the flashdrive: <code>sudo nextcloudpi-config</code> > <code>nc-database</code></p></li>
-<li><p>change nc-datadir to the flashdrive using: <code>sudo nextcloudpi-config</code> > <code>nc-datadir</code></p></li>
-</ul>
-
-<p>If everything goes well, you should see that data and database are stored in <code>/media/USBdrive/ncdata</code> and <code>/media/USBdrive/ncdatabase</code></p>
-
-<h2 id="enable-and-set-up-wifi">Enable and set up WIFI</h2>
-
-<p>You can enable and select your WIFI connection in:
-        <code>sudo nextcloudpi-config</code> > <code>nc-wifi</code> > <code>ACTIVE=YES</code></p>
-
-<h2 id="enable-ssh">Enable SSH</h2>
-
-<p>SSH is not enabled by default, enable it in: <code>sudo raspi-config</code> > <code>5 Interfacing Options</code> > <code>P2 SSH</code>
-You can now ssh the rpi machine:</p>
-
-<pre><code>    ssh pi@10.42.0.100
+<pre><code>2507694 0   4gp94gr17g78jnh97a6mfml0b4  48521       1515679016  1515681908  192.168.33.1    192.168.33.1
 </code></pre>
 
-<p>Default rpi credentials are <em>pi/raspberry</em>, CHANGE IT by running: <code>passwd</code></p>
+<p>What ??? I was expecting to have no more entries in the mdl_sessions table.
+After searching a little bit more, I found the explanation <a href="https://moodle.org/mod/forum/discuss.php?d=326352">here</a>:</p>
 
-<h2 id="troubleshooting">Troubleshooting</h2>
-
-<h3 id="trusted-domains-issue">Trusted domains issue</h3>
-
-<p>Fix it in editing <code>nexcloud/config/config.php</code>:</p>
-
-<pre><code>    ...
-    'trusted_domains' =&gt;
-    array(
-        ...
-        3 =&gt; '10.42.0.100'
-    )
-    ...
+<pre><code>Normally when you have sessions stored in Memcache/d there will still be a record of the session written to mdl_sessions. The session data is not written to the database, it's only written to the memcache/d server itself. The performance gain is seen because the session data is not written every page view for every user, and thus the table rows are not continually being locked and unlocked.
 </code></pre>
 
-<p><img src="/images/nextcloud/nextcloud-trusted-domains.png" alt="screenshot" /></p>
+<h2 id="memcached-server">memcached server</h2>
+
+<p>Let's check if there is a key/value record for ou session:</p>
+
+<script src="https://gist.github.com/benIT/2e63d3541f4f46d9a47777d467549d2e.js"></script>
+
+<p>run it:</p>
+
+<pre><code>php memcached.php | grep 4gp94gr17g78jnh97a6mfml0b4
+</code></pre>
+
+<p>prints:</p>
+
+<pre><code>key: memc.sess.key.4gp94gr17g78jnh97a6mfml0b4
+</code></pre>
+
+<p>which means that our session is written in memcached! That's ok!</p>
 
         </div>
             </article>
@@ -290,7 +338,7 @@ You can now ssh the rpi machine:</p>
             </div>
         </div>
         <footer class="container">
-            &copy; 2019 benIT&#039;s notebook
+            &copy; 2020 benIT&#039;s notebook
         </footer>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
