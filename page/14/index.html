@@ -72,249 +72,145 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2018/01/22/mysql-2-pgsql-conversion">mySQL to postgreSQL schema conversion</a></h2>
+            <h2><a href="/blog/2019/01/15/docker-docker-compose">Docker 101: docker-compose</a></h2>
         </header>
         <div>
-            <h2 id="purpose">Purpose</h2>
+            <h1 id="docker-compose">Docker compose</h1>
 
-<p>I was looking for a tool that convert a mysql db to a pgsql one.
-<a href="https://github.com/philipsoutham/py-mysql2pgsql">philipsoutham/py-mysql2pgsql</a> does the trick and saved my day!</p>
+<p>Purpose: compose is a tool designed to create multi-containers app.</p>
 
 <h2 id="install">Install</h2>
 
-<pre><code>sudo apt-get install python-pip
-pip install py-mysql2pgsql
+<pre><code>sudo apt install python-pip
+pip install docker-compose
 </code></pre>
 
-<h2 id="configure">Configure</h2>
+<h2 id="docker-compose.yml">docker-compose.yml</h2>
 
-<p>Edit configuration in <code>mysql2pgsql.yml</code></p>
+<p>The magic happens in a file named <code>docker-compose.yml</code></p>
 
-<pre><code># if a socket is specified we will use that
-# if tcp is chosen you can use compression
-mysql:
- hostname: localhost
- port: 3306
- socket: /var/run/mysqld/mysqld.sock
- #socket: /tmp/mysql.sock
- username: emedia
- password: emedia
- database: emedia
- compress: false
-destination:
- # if file is given, output goes to file, else postgres
- file: /vagrant/shared/migrationMysql2Pgsql.sql
- postgres:
-  hostname: localhost
-  port: 5432
-  username: mysql2psql
-  password:
-  database: mysql2psql_test
+<h2 id="run">Run</h2>
 
-# if tables is given, only the listed tables will be converted.  leave empty to convert all tables.
-only_tables:
-- lti2_consumer
-- lti2_context
-- lti2_nonce
-- lti2_resource_link
-- lti2_share_key
-- lti2_tool_proxy
-- lti2_user_result
-# if exclude_tables is given, exclude the listed tables from the conversion.
-#exclude_tables:
-#- table3
-#- table4
+<pre><code>docker-compose up -d
+</code></pre>
 
-# if supress_data is true, only the schema definition will be exported/migrated, and not the data
-supress_data: true
+<h2 id="stop">Stop</h2>
 
-# if supress_ddl is true, only the data will be exported/imported, and not the schema
-supress_ddl: false
+<pre><code>docker-compose down -v
+</code></pre>
 
-# if force_truncate is true, forces a table truncate before table loading
-force_truncate: false
+<h2 id="networking">Networking</h2>
+
+<p><code>docker-compose</code> handles the creation a private network:</p>
+
+<pre><code>Creating network "n-tiers_default" with the default driver
+Creating object-cache ... done
+Creating pgsql        ... done
+Creating web          ... done
+</code></pre>
+
+<h1 id="example">Example</h1>
+
+<p>Better than words, take a look at this <a href="https://github.com/benIT/docker-compose-n-tiers">repo that illustrates a classical n-tiers web app</a></p>
+
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2019/01/14/docker-networking">Docker 101: networking</a></h2>
+        </header>
+        <div>
+            <h1 id="docker-running-containers-inside-a-bridge-network">Docker running containers inside a bridge network</h1>
+
+<p>The purpose of this post is to isolate each tiers of our app into different containers.</p>
+
+<p>We will create a private network and run containers inside this private network.</p>
+
+<p><a href="https://docker-curriculum.com/#webapps-with-docker">This article is largely inspired by this great resource.</a></p>
+
+<h2 id="networking">Networking</h2>
+
+<h3 id="create-an-isolated-private-bridge-network">Create an isolated private bridge network</h3>
+
+<pre><code>docker network create web-net    
+</code></pre>
+
+<h3 id="inspect-the-private-network">Inspect the private network</h3>
+
+<pre><code>docker network inspect web-net
+</code></pre>
+
+<h3 id="run-a-container-inside-the-private-bridge-network-with-%60--net%60-option">Run a container inside the private bridge network with <code>--net</code> option</h3>
+
+<pre><code>docker run --name pgsql-web --rm  -d --net web-net postgres:latest
+docker run --name debian-web --rm -p 80:80 --net web-net -d benit/debian-web:latest
+</code></pre>
+
+<h3 id="inspect-the-private-network-to-get-ips-of-containers-of-the-private-network">Inspect the private network to get IPs of containers of the private network</h3>
+
+<pre><code>docker network inspect web-net
+</code></pre>
+
+<p>gives:</p>
+
+<pre><code> "Containers": {
+            "3729ccbb14e514fd6c8b571ed9c985c28293cb5bfdb10c6c233773f50d6ba763": {
+                "Name": "debian-web",
+                "EndpointID": "c370cab93cdd2ac9f30f568a1709b8c998d2ca36106d5423b484a20aadbff84f",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            },
+            "61bcf5cd9838c8c2e66beef73a04a2704a3be7e2085a5c6b4ad58bd78f12a138": {
+                "Name": "pgsql-web",
+                "EndpointID": "128f50ead4974a725c04551cb284fec2c733a48375a4819096b0b623ff2af4ac",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            }
+        },
+</code></pre>
+
+<h2 id="putting-it-all-together">Putting it all together</h2>
+
+<h3 id="let%27s-create-a-database">Let's create a database</h3>
+
+<pre><code>docker container exec pgsql-web psql -U postgres -c "create database webapp";
+docker container exec pgsql-web psql -U postgres -d webapp -c "CREATE TABLE account(user_id serial PRIMARY KEY,username VARCHAR (50) UNIQUE NOT NULL,created_on TIMESTAMP NOT NULL);" ;
+docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('foo','2019-01-01') ;" ;
+docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('bar','2019-01-02') ;" ;
+</code></pre>
+
+<h3 id="connect-database-container-from-webserver-container">Connect database container from webserver container</h3>
+
+<pre><code>docker container exec -it debian-web  psql -U postgres -h 172.18.0.2 -d webapp -c "select * from account;" ;
+</code></pre>
+
+<p>gives:</p>
+
+<pre><code> user_id | username |     created_on      
+---------+----------+---------------------
+       1 | foo      | 2019-01-01 00:00:00
+       2 | bar      | 2019-01-02 00:00:00
+(2 rows)
 </code></pre>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2018/01/11/php7-nginx-memcached-session">Setting up a memcached server with PHP7.X and a NGINX webserver</a></h2>
+            <h2><a href="/blog/2019/01/14/docker-dockerfile">Docker 101: Dockerfile</a></h2>
         </header>
         <div>
-            <h2 id="memcached-server-side">Memcached server side</h2>
+            <h1 id="dockerfile">Dockerfile</h1>
 
-<p>This server has private @IP : 192.168.33.14</p>
+<p>A <code>Dockerfile</code> is a text document that contains all the commands a user could call on the command line to assemble an image.</p>
 
-<h3 id="install-memcached%3A">Install memcached:</h3>
+<h2 id="example">Example</h2>
 
-<pre><code>sudo apt-get install memcached
-</code></pre>
+<p>You will find <a href="https://github.com/benIT/debian-web">in this repo</a> a running <code>Dockerfile</code>  based on a debian image that runs an Apache webserver.</p>
 
-<p>In <code>/etc/memcached.conf</code>, set up memory to 256 Mo:</p>
-
-<pre><code>-m 256
-</code></pre>
-
-<p>In <code>/etc/memcached.conf</code>, set up listening private @IP of the server:</p>
-
-<pre><code># Specify which IP address to listen on. The default is to listen on all IP addresses
-# This parameter is one of the only security measures that memcached has, so make sure
-# it's listening on a firewalled interface.
-#-l 127.0.0.2
--l 192.168.33.14
-</code></pre>
-
-<h2 id="web-server-side">Web server side</h2>
-
-<p>This server has private @IP : 192.168.33.11</p>
-
-<h3 id="install-php-extension">Install PHP extension</h3>
-
-<p>On the server that hosts nginx + php7.0:</p>
-
-<pre><code>sudo apt-get install -y php-memcached
-</code></pre>
-
-<h3 id="configure-php">Configure PHP</h3>
-
-<p>In <code>/etc/php/7.0/fpm/php.ini</code>:</p>
-
-<pre><code>[Session]
-; Handler used to store/retrieve data.
-; http://php.net/session.save-handler
-#session.save_handler = files
-session.save_handler = memcached
-session.save_path = 'tcp://192.162.33.14:11211'
-</code></pre>
-
-<h3 id="restart-services">Restart services</h3>
-
-<pre><code>sudo service php7.0-fpm restart &amp;&amp; sudo service nginx restart
-</code></pre>
-
-<h3 id="check-config">Check config</h3>
-
-<p>Create a phpinfo.php that calls <code>phpinfo()</code> and check memcached configuration.</p>
-
-<h3 id="checking">Checking</h3>
-
-<h3 id="checking-sessions-are-well-handled-by-memcached">Checking sessions are well handled by memcached</h3>
-
-<p>Let's write a simple script to check sessions:</p>
-
-<pre><code>session_start();
-if(!isset($_SESSION['visit']))
-{   
-    echo "This is the first time you're visiting this server\n";
-    $_SESSION['visit'] = 0;
-}   
-else
-        echo "Your number of visits: ".$_SESSION['visit'] . "\n";
-
-$_SESSION['visit']++;
-
-echo "Server IP: ".$_SERVER['SERVER_ADDR'] . "\n";
-echo "Client IP: ".$_SERVER['REMOTE_ADDR'] . "\n";
-print_r($_COOKIE);
-</code></pre>
-
-<h3 id="checking-memcached-key%2Fvalue-server">Checking memcached key/value server</h3>
-
-<p>Let's write a simple script to key/value access:</p>
-
-<pre><code>$mem = new Memcached();
-$mem-&gt;addServer("192.168.33.14", 11211);
-$result = $mem-&gt;get("blah");
-if ($result) {
-    echo $result;
-} else {
-    echo "No matching key found yet. Let's start adding that now!";
-    $mem-&gt;set("blah", "I am data!  I am held in memcached!") or die("Couldn't save anything to memcached...");
-}   
-</code></pre>
-
-<h3 id="dumping-all-key%2Fvalue-records">Dumping all key/value records</h3>
-
-<script src="https://gist.github.com/benIT/2e63d3541f4f46d9a47777d467549d2e.js"></script>
-
-<h2 id="sources">Sources</h2>
-
-<ul>
-<li>https://www.digitalocean.com/community/tutorials/how-to-share-php-sessions-on-multiple-memcached-servers-on-ubuntu-14-04</li>
-<li>http://www.servermom.org/install-use-memcached-nginx-php-7-ubuntu-16-04/3670/</li>
-</ul>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2018/01/11/configure-moodle-session-handling-with-memcached">Configure moodle 3.x session handling with memcached</a></h2>
-        </header>
-        <div>
-            <p>This procedure has been tested on Moodle <a href="https://github.com/moodle/moodle/commit/7223cd2518ad3b37901b736d6b62e7badd4ecaa1">version 3.0.6+</a> with a dedicated memcached server which @IP:port is 192.168.33.14:11211.</p>
-
-<h2 id="set-up-a--memcached-server">Set up a  memcached server</h2>
-
-<p>see <a href="/blog2018-01-11-php7-nginx-memcached-session">this post</a>.</p>
-
-<h2 id="configure-moodle">Configure moodle</h2>
-
-<p>Configure <a href="https://docs.moodle.org/30/en/Session_handling#Memcached">session handling</a> in <code>config.php</code>:</p>
-
-<pre><code>/********************************************/
-//MEMCACHED SETUP
-$CFG-&gt;session_handler_class = '\core\session\memcached';
-$CFG-&gt;session_memcached_save_path = '192.168.33.14:11211';
-$CFG-&gt;session_memcached_prefix = 'memc.sess.key.';
-$CFG-&gt;session_memcached_acquire_lock_timeout = 120;
-$CFG-&gt;session_memcached_lock_expire = 7200;       // Ignored if memcached extension &lt;= 2.1.0
-/********************************************/
-</code></pre>
-
-<h2 id="checkings">Checkings</h2>
-
-<h2 id="moodle-cookie">Moodle cookie</h2>
-
-<p>If you print out your cookie from your debug tool in your bowser, you well see a cookie named <code>MoodleSession</code></p>
-
-<p>In my case it has value <code>4gp94gr17g78jnh97a6mfml0b4</code></p>
-
-<h2 id="moodle-database">Moodle database</h2>
-
-<p>Now let's check if there is still record in DB for your cookie session:</p>
-
-<pre><code>SELECT * FROM mdl_sessions WHERE sid='4gp94gr17g78jnh97a6mfml0b4';
-</code></pre>
-
-<p>returns:</p>
-
-<pre><code>2507694 0   4gp94gr17g78jnh97a6mfml0b4  48521       1515679016  1515681908  192.168.33.1    192.168.33.1
-</code></pre>
-
-<p>What ??? I was expecting to have no more entries in the mdl_sessions table.
-After searching a little bit more, I found the explanation <a href="https://moodle.org/mod/forum/discuss.php?d=326352">here</a>:</p>
-
-<pre><code>Normally when you have sessions stored in Memcache/d there will still be a record of the session written to mdl_sessions. The session data is not written to the database, it's only written to the memcache/d server itself. The performance gain is seen because the session data is not written every page view for every user, and thus the table rows are not continually being locked and unlocked.
-</code></pre>
-
-<h2 id="memcached-server">memcached server</h2>
-
-<p>Let's check if there is a key/value record for ou session:</p>
-
-<script src="https://gist.github.com/benIT/2e63d3541f4f46d9a47777d467549d2e.js"></script>
-
-<p>run it:</p>
-
-<pre><code>php memcached.php | grep 4gp94gr17g78jnh97a6mfml0b4
-</code></pre>
-
-<p>prints:</p>
-
-<pre><code>key: memc.sess.key.4gp94gr17g78jnh97a6mfml0b4
-</code></pre>
-
-<p>which means that our session is written in memcached! That's ok!</p>
+<p>You will find <a href="https://github.com/benIT/debian-web/blob/master/README.md">in this file</a> all the base commands to manage a <code>Dockerfile</code> .</p>
 
         </div>
             </article>

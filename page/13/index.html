@@ -72,114 +72,234 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2019/01/10/docker-installation">Install Docker on ubuntu 16.04</a></h2>
+            <h2><a href="/blog/2019/02/15/linux-multiusb-live">Linux multiusb live</a></h2>
         </header>
         <div>
-            <h2 id="install-docker-ce-for-ubuntu">Install Docker CE for Ubuntu</h2>
+            <h2 id="purpose">Purpose</h2>
 
-<p>See <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/">official documentation</a>.</p>
+<p>This post deals with creating a multi linux iso live usb drive. <a href="https://itsfoss.com/multiple-linux-one-usb/">source</a></p>
 
-<h2 id="run-docker-as-a-non-root-user">Run docker as a non-root user</h2>
-
-<p>See <a href="https://docs.docker.com/install/linux/linux-postinstall/">official documentation</a>.</p>
-
-<h2 id="configure-docker-to-be-used-behind-a-http-proxy">Configure docker to be used behind a http proxy</h2>
-
-<p>Create the following file <code>/etc/systemd/system/docker.service.d/http-proxy.conf</code> and edit it:</p>
-
-<pre><code>[Service]
-Environment=http_proxy=http://user:pass@ip:port
-Environment=https_proxy=http://user:pass@ip:port
-</code></pre>
-
-<h2 id="test">Test</h2>
-
-<pre><code>docker run hello-world
-</code></pre>
-
-<h2 id="install-docker-compose">Install docker-compose</h2>
-
-<p>See <a href="https://docs.docker.com/compose/install/">official documentation</a>.</p>
-
-<p>currently, I use docker-compose <code>v1.23.2</code></p>
-
-<pre><code>sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-docker-compose --version
-</code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2018/04/27/wordpress-migration-procedure">Wordpress migration procedure</a></h2>
-        </header>
-        <div>
-            <h2 id="extract-source-site-filesystem">Extract source site filesystem</h2>
-
-<pre><code>tar -czf mySite.tgz /var/www/mySite
-</code></pre>
-
-<h2 id="extract-source-site-database">Extract source site database</h2>
-
-<pre><code>mysqldump -u mySite -p mySite &gt; mySite.sql
-</code></pre>
-
-<h2 id="transfert-source-fs-and-db-to-target-site">Transfert source fs and db to target site</h2>
+<h2 id="procedure">Procedure</h2>
 
 <ul>
-<li><p>Extract tar archive</p>
-
-<pre><code>tar -czf mySite.tgz
-</code></pre></li>
-<li><p>Import database</p></li>
-</ul>
-
-<h2 id="migrate-database">Migrate database</h2>
-
-<p>Wordpress stores url in database, some of them can be serialized so wa can't just replace them with a bash script.</p>
-
-<p>The best and easier way is to use this project <a href="https://github.com/interconnectit/Search-Replace-DB">interconnectit/Search-Replace-DB</a> :</p>
-
-<ul>
-<li>download it</li>
-<li>upload it to the wordpress root</li>
-<li>open a browser at the matching url</li>
-<li>fill the form to migrate your database</li>
+<li>format your drive to fat32</li>
+<li><a href="https://github.com/mbusb/multibootusb/releases/download/v8.8.0/python3-multibootusb_8.8.0-1_all.deb">download MultiBootUsb</a></li>
+<li>install it : <code>dpkg -i python3-multibootusb_8.8.0-1_all.deb</code></li>
+<li>check if all python dependencies are satisfied, if not try install missing with <code>sudo apt install python3-pyqt5 p7zip-full python3-pyudev</code></li>
+<li>enjoy : you can now burn several iso using the GUI. Great tool!</li>
 </ul>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2018/02/23/keepass-kee-linux">Install keepass and kee on linux</a></h2>
+            <h2><a href="/blog/2019/02/11/linux-mastering-logs">Linux logs</a></h2>
         </header>
         <div>
-            <h2 id="install-keepass2">install keepass2</h2>
+            <h2 id="purpose">Purpose</h2>
 
-<pre><code>sudo add-apt-repository ppa:jtaylor/keepass
-sudo apt-get update &amp;&amp; sudo apt-get install keepass2
+<p>The aim of is post is to manipulate linux system logs.</p>
+
+<p>Logging is an important part of IT system and must be understand.</p>
+
+<h2 id="test-program">Test program</h2>
+
+<p>The following program named <code>program.sh</code> is used to test log services:</p>
+
+<pre><code>echo I am $(whoami) and up from  $(uptime)
 </code></pre>
 
-<h2 id="install-firefox-addon-%27kee%27">install firefox addon 'kee'</h2>
+<h2 id="logs">Logs</h2>
+
+<p>Logs are managed with a service named <code>rsyslog</code></p>
+
+<pre><code>sudo service rsyslog status
+</code></pre>
+
+<h2 id="activate-cron-log">Activate cron log</h2>
+
+<p>In <code>sudo vim /etc/rsyslog.conf</code>, uncomment this line:</p>
+
+<pre><code>cron.*                          /var/log/cron.log
+</code></pre>
+
+<p>Restart <code>systemctl</code>:</p>
+
+<pre><code>sudo systemctl restart rsyslog
+</code></pre>
+
+<p>This doesn't log your program output, but logs your cron information.</p>
+
+<p>Considering the following crontab that runs every minute:</p>
+
+<pre><code>* * * * * /home/debian/prog.sh
+</code></pre>
+
+<p>Let's check <code>cron.log</code> details:</p>
+
+<pre><code>sudo tail -f /var/log/cron.log
+
+Feb 11 10:09:01 sandbox CRON[25182]: (root) CMD (  [ -x /usr/lib/php/sessionclean ] &amp;&amp; if [ ! -d /run/systemd/system ]; then /usr/lib/php/sessionclean; fi)
+Feb 11 10:09:01 sandbox CRON[25183]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:10:01 sandbox CRON[25243]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:11:01 sandbox CRON[25373]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:12:01 sandbox CRON[25396]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:13:01 sandbox CRON[25405]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:14:01 sandbox CRON[25415]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:15:01 sandbox CRON[25439]: (root) CMD (command -v debian-sa1 &gt; /dev/null &amp;&amp; debian-sa1 1 1)
+Feb 11 10:15:01 sandbox CRON[25441]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:16:02 sandbox CRON[25459]: (debian) CMD (/home/debian/prog.sh)
+</code></pre>
+
+<h2 id="log-rotation">Log rotation</h2>
+
+<p>Log rotation is managed with a service named <code>logrotate</code></p>
+
+<pre><code>cat /var/lib/logrotate/status | grep apache
+
+"/var/log/apache2/access.log" 2019-2-8-6:25:2
+"/var/log/apache2/other_vhosts_access.log" 2018-5-29-6:0:0
+"/var/log/apache2/error.log" 2019-2-11-6:25:1
+</code></pre>
+
+<p>Let's check apache2 webserver log rotation configuration :</p>
+
+<pre><code>cat /etc/logrotate.d/apache2 
+/var/log/apache2/*.log {
+    daily
+    missingok
+    rotate 14
+    compress
+    delaycompress
+    notifempty
+    create 640 root adm
+    sharedscripts
+    postrotate
+            if /etc/init.d/apache2 status &gt; /dev/null ; then \
+                /etc/init.d/apache2 reload &gt; /dev/null; \
+            fi;
+    endscript
+    prerotate
+        if [ -d /etc/logrotate.d/httpd-prerotate ]; then \
+            run-parts /etc/logrotate.d/httpd-prerotate; \
+        fi; \
+    endscript
+}
+</code></pre>
+
+<h2 id="example-with-%60program.sh%60">Example with <code>program.sh</code></h2>
+
+<h3 id="program-log-location">Program log location</h3>
+
+<p>We will tell our program to write here: <code>/var/log/prog.sh/log</code>. Let's create this file with the right permissions:</p>
+
+<pre><code>sudo mkdir /var/log/prog.sh/
+sudo touch /var/log/prog.sh/log
+sudo chmod ugo+rw /var/log/prog.sh/log
+</code></pre>
+
+<h3 id="program-crontab">Program crontab</h3>
+
+<pre><code>* * * * * /home/debian/prog.sh &gt;&gt; /var/log/prog.sh/log
+</code></pre>
+
+<h3 id="program-log-rotation">Program log rotation</h3>
+
+<p>Edit <code>/etc/logrotate.d/program.sh</code> :</p>
+
+<pre><code>/var/log/program.sh/*.log {
+        daily
+        missingok
+        rotate 5
+        compress
+        delaycompress
+        notifempty
+        create 644 root root
+}
+</code></pre>
+
+<p><a href="https://doc.ubuntu-fr.org/logrotate#exemple">Great doc here</a>.</p>
+
+<h3 id="check-log-rotation">Check log rotation</h3>
+
+<pre><code>ls /var/log/prog.sh/
+</code></pre>
+
+<h2 id="another-example-with-a-cronjob-from-a-webapp-named-%60moodle%60">Another example with a cronjob from a webapp named <code>moodle</code></h2>
+
+<h3 id="moodle-log-location">Moodle log location</h3>
+
+<pre><code>sudo mkdir /var/log/moodle
+sudo touch /var/log/moodle/cron.log
+sudo chmod -R ug+rw /var/log/moodle/
+</code></pre>
+
+<h3 id="moodle-crontab">Moodle crontab</h3>
+
+<p>This job must be run from <code>www-data</code> user, so we need the crontab too to be run from <code>www-data</code> user:</p>
+
+<pre><code>sudo crontab -u www-data -e
+</code></pre>
+
+<p>edit as follow:</p>
+
+<pre><code>#run moodle cron every hour
+0 * * * * php /data/moodle/admin/cli/cron.php &gt;&gt; /var/log/moodle/cron.log 2&gt;&amp;1
+</code></pre>
+
+<p><strong>Important stderr has been redirected to stdout with <code>2&amp;1</code></strong> and all that is printed in a file.</p>
+
+<h3 id="moodle-log-rotation">Moodle log rotation</h3>
+
+<p>Edit <code>/etc/logrotate.d/moodle</code> :</p>
+
+<pre><code>/var/log/moodle/*.log {
+        daily
+        missingok
+        rotate 5
+        compress
+        delaycompress
+        notifempty
+        create 640 www-data www-data
+}    
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2019/01/25/docker-make-a-christmas-garland-with-nginx-apache">How to make a christmas garland with a nginx reverse proxy and 3 apache backends under docker?</a></h2>
+        </header>
+        <div>
+            <h1 id="purpose">Purpose</h1>
+
+<p>This posts deals with doing yourself a christmas garland!</p>
+
+<p>We will be using :</p>
 
 <ul>
-<li><a href="https://addons.mozilla.org/fr/firefox/addon/keefox/?src=search">download it here</a></li>
-<li><a href="https://github.com/kee-org/KeeFox/wiki/en-|-Getting-started#linux">kee doc here</a> with linux keepass requirement.</li>
+<li>nginx as a reverse proxy</li>
+<li>apache as a backend</li>
+<li>docker as a plateforme  </li>
 </ul>
 
-<h2 id="download-keepassrpc.plgx-plugin">download KeePassRPC.plgx plugin</h2>
+<h1 id="repository">Repository</h1>
 
-<p><a href="https://github.com/kee-org/keepassrpc/releases">download KeePassRPC.plgx plugin</a></p>
+<p><a href="https://github.com/benIT/docker-nginx-reverse-proxy">You will find a demonstration repository here.</a></p>
 
-<pre><code>sudo mkdir /usr/lib/keepass2/plugins
-sudo cp 'KeePassRPC.plgx' '/usr/lib/keepass2/plugins/'
-sudo apt-get install mono-complete
+<h1 id="demo">Demo</h1>
+
+<p><center><video width="640" height="480" controls src="https://benit.github.io/docker-nginx-reverse-proxy/demo.mp4"></video></center></p>
+
+<p>If it does not work, download it from github repo:</p>
+
+<pre><code>wget https://raw.githubusercontent.com/benIT/docker-nginx-reverse-proxy/master/demo.mp4
+vlc demo.mp4
 </code></pre>
 
-<h2 id="restart-keepass-and-firefox">Restart keepass and firefox</h2>
+<h1 id="conclusion">Conclusion</h1>
 
-<p>you should be prompt about kee to authorize keepass</p>
+<p>Never forget that computing should always be fun!</p>
 
         </div>
             </article>

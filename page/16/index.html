@@ -72,236 +72,249 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2017/11/06/ssh-key-authentication">SSH key authentication</a></h2>
+            <h2><a href="/blog/2018/01/22/mysql-2-pgsql-conversion">mySQL to postgreSQL schema conversion</a></h2>
         </header>
         <div>
-            <p>Access your server using ssh key authentication.</p>
+            <h2 id="purpose">Purpose</h2>
 
-<p>If you loose your time, typing password, this is for you:</p>
+<p>I was looking for a tool that convert a mysql db to a pgsql one.
+<a href="https://github.com/philipsoutham/py-mysql2pgsql">philipsoutham/py-mysql2pgsql</a> does the trick and saved my day!</p>
 
-<h2 id="generate-ssh-authentication-keys-on-the-client-side">Generate ssh authentication keys on the client side</h2>
+<h2 id="install">Install</h2>
 
-<pre><code>ssh-keygen -t rsa
+<pre><code>sudo apt-get install python-pip
+pip install py-mysql2pgsql
 </code></pre>
 
-<h2 id="create-a-.ssh-folder-on-the-server">Create a .ssh folder on the server</h2>
+<h2 id="configure">Configure</h2>
 
-<pre><code>ssh pi@192.168.1.84 mkdir -p .ssh
+<p>Edit configuration in <code>mysql2pgsql.yml</code></p>
+
+<pre><code># if a socket is specified we will use that
+# if tcp is chosen you can use compression
+mysql:
+ hostname: localhost
+ port: 3306
+ socket: /var/run/mysqld/mysqld.sock
+ #socket: /tmp/mysql.sock
+ username: emedia
+ password: emedia
+ database: emedia
+ compress: false
+destination:
+ # if file is given, output goes to file, else postgres
+ file: /vagrant/shared/migrationMysql2Pgsql.sql
+ postgres:
+  hostname: localhost
+  port: 5432
+  username: mysql2psql
+  password:
+  database: mysql2psql_test
+
+# if tables is given, only the listed tables will be converted.  leave empty to convert all tables.
+only_tables:
+- lti2_consumer
+- lti2_context
+- lti2_nonce
+- lti2_resource_link
+- lti2_share_key
+- lti2_tool_proxy
+- lti2_user_result
+# if exclude_tables is given, exclude the listed tables from the conversion.
+#exclude_tables:
+#- table3
+#- table4
+
+# if supress_data is true, only the schema definition will be exported/migrated, and not the data
+supress_data: true
+
+# if supress_ddl is true, only the data will be exported/imported, and not the schema
+supress_ddl: false
+
+# if force_truncate is true, forces a table truncate before table loading
+force_truncate: false
 </code></pre>
-
-<h2 id="grant-the-client-to-access-to-the-server-using-public-key">Grant the client to access to the server using public key</h2>
-
-<pre><code>cat .ssh/id_local.pub | ssh pi@192.168.1.84 'cat &gt;&gt; .ssh/authorized_keys'
-</code></pre>
-
-<h2 id="connect-to-server-without-password">Connect to server without password</h2>
-
-<pre><code>ssh pi@192.168.1.84
-</code></pre>
-
-<p>That's it, you can now access your server whithout typing your password!</p>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2017/10/16/nginx-survival-sheet">Nginx survival sheet</a></h2>
+            <h2><a href="/blog/2018/01/11/php7-nginx-memcached-session">Setting up a memcached server with PHP7.X and a NGINX webserver</a></h2>
         </header>
         <div>
-            <p>In this post, the most common Nginx commands that I use are listed. This is not really interesting but I'm bored of asking google for it every week!</p>
+            <h2 id="memcached-server-side">Memcached server side</h2>
 
-<p><a href="https://www.geek17.com/fr/content/debian-9-stretch-installer-et-configurer-la-derniere-version-de-nginx-et-php-7-fpm-63">source</a></p>
+<p>This server has private @IP : 192.168.33.14</p>
 
-<pre><code>sudo apt-get install -y nginx
+<h3 id="install-memcached%3A">Install memcached:</h3>
 
-sudo apt-get install -y php7.0-fpm
-
-sudo apt-get install -y php7.0-gd php7.0-mysql php7.0-cli php7.0-common php7.0-curl php7.0-opcache php7.0-json php7.0-imap php7.0-mbstring php7.0-xml php7-pgsql php7.0-sqlite
+<pre><code>sudo apt-get install memcached
 </code></pre>
 
-<h2 id="vagrant-tips-for-dev-env">Vagrant tips for dev env</h2>
+<p>In <code>/etc/memcached.conf</code>, set up memory to 256 Mo:</p>
 
-<p>In the following files change <code>www-data</code> to <code>vagrant</code>:</p>
+<pre><code>-m 256
+</code></pre>
+
+<p>In <code>/etc/memcached.conf</code>, set up listening private @IP of the server:</p>
+
+<pre><code># Specify which IP address to listen on. The default is to listen on all IP addresses
+# This parameter is one of the only security measures that memcached has, so make sure
+# it's listening on a firewalled interface.
+#-l 127.0.0.2
+-l 192.168.33.14
+</code></pre>
+
+<h2 id="web-server-side">Web server side</h2>
+
+<p>This server has private @IP : 192.168.33.11</p>
+
+<h3 id="install-php-extension">Install PHP extension</h3>
+
+<p>On the server that hosts nginx + php7.0:</p>
+
+<pre><code>sudo apt-get install -y php-memcached
+</code></pre>
+
+<h3 id="configure-php">Configure PHP</h3>
+
+<p>In <code>/etc/php/7.0/fpm/php.ini</code>:</p>
+
+<pre><code>[Session]
+; Handler used to store/retrieve data.
+; http://php.net/session.save-handler
+#session.save_handler = files
+session.save_handler = memcached
+session.save_path = 'tcp://192.162.33.14:11211'
+</code></pre>
+
+<h3 id="restart-services">Restart services</h3>
+
+<pre><code>sudo service php7.0-fpm restart &amp;&amp; sudo service nginx restart
+</code></pre>
+
+<h3 id="check-config">Check config</h3>
+
+<p>Create a phpinfo.php that calls <code>phpinfo()</code> and check memcached configuration.</p>
+
+<h3 id="checking">Checking</h3>
+
+<h3 id="checking-sessions-are-well-handled-by-memcached">Checking sessions are well handled by memcached</h3>
+
+<p>Let's write a simple script to check sessions:</p>
+
+<pre><code>session_start();
+if(!isset($_SESSION['visit']))
+{   
+    echo "This is the first time you're visiting this server\n";
+    $_SESSION['visit'] = 0;
+}   
+else
+        echo "Your number of visits: ".$_SESSION['visit'] . "\n";
+
+$_SESSION['visit']++;
+
+echo "Server IP: ".$_SERVER['SERVER_ADDR'] . "\n";
+echo "Client IP: ".$_SERVER['REMOTE_ADDR'] . "\n";
+print_r($_COOKIE);
+</code></pre>
+
+<h3 id="checking-memcached-key%2Fvalue-server">Checking memcached key/value server</h3>
+
+<p>Let's write a simple script to key/value access:</p>
+
+<pre><code>$mem = new Memcached();
+$mem-&gt;addServer("192.168.33.14", 11211);
+$result = $mem-&gt;get("blah");
+if ($result) {
+    echo $result;
+} else {
+    echo "No matching key found yet. Let's start adding that now!";
+    $mem-&gt;set("blah", "I am data!  I am held in memcached!") or die("Couldn't save anything to memcached...");
+}   
+</code></pre>
+
+<h3 id="dumping-all-key%2Fvalue-records">Dumping all key/value records</h3>
+
+<script src="https://gist.github.com/benIT/2e63d3541f4f46d9a47777d467549d2e.js"></script>
+
+<h2 id="sources">Sources</h2>
 
 <ul>
-<li>/etc/php/7.0/fpm/php-fpm.conf</li>
-<li>/etc/php/7.0/fpm/pool.d/www.conf</li>
+<li>https://www.digitalocean.com/community/tutorials/how-to-share-php-sessions-on-multiple-memcached-servers-on-ubuntu-14-04</li>
+<li>http://www.servermom.org/install-use-memcached-nginx-php-7-ubuntu-16-04/3670/</li>
 </ul>
-
-<h2 id="restart-services">Restart services</h2>
-
-<pre><code>sudo service nginx restart &amp;&amp; sudo service php7.0-fpm restart
-</code></pre>
-
-<h2 id="vhost">Vhost</h2>
-
-<h3 id="create-a-vhost-file">Create a vhost file</h3>
-
-<p>In <code>/etc/nginx/sites-available/default</code> file:</p>
-
-<pre><code>server {
-    listen 80;
-    listen [::]:80;
-    server_name www.massonweb.fr;
-    # enforce https
-    return 301 https://$server_name$request_uri;
-}
-
-server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
-    server_name massonweb.fr;
-
-    ssl_certificate /etc/letsencrypt/live/massonweb.fr/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/massonweb.fr/privkey.pem;
-
-    root /var/www/html;
-
-    index index.php index.html;
-
-    access_log /var/log/nginx/default-access_log;
-    error_log /var/log/nginx/default-error_log;
-
-    location / {
-        try_files $uri $uri/ /index.php?$args;
-    }
-
-    location ~ \.php$ {
-        try_files $uri =404;
-        fastcgi_index index.php;
-        fastcgi_pass unix:/run/php/php7.0-fpm.sock;
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        include /etc/nginx/fastcgi_params;
-    }
-}
-</code></pre>
-
-<h3 id="enable--vhost">Enable  vhost</h3>
-
-<pre><code>sudo ln -s /etc/nginx/sites-available/default  /etc/nginx/sites-enabled/default    
-sudo service nginx restart
-</code></pre>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2017/10/02/apache2-survival-sheet">Apache2 survival sheet</a></h2>
+            <h2><a href="/blog/2018/01/11/configure-moodle-session-handling-with-memcached">Configure moodle 3.x session handling with memcached</a></h2>
         </header>
         <div>
-            <h2 id="virtual-hosts">Virtual hosts</h2>
+            <p>This procedure has been tested on Moodle <a href="https://github.com/moodle/moodle/commit/7223cd2518ad3b37901b736d6b62e7badd4ecaa1">version 3.0.6+</a> with a dedicated memcached server which @IP:port is 192.168.33.14:11211.</p>
 
-<p>Virtual hosts allow to run several sites on the same server.</p>
+<h2 id="set-up-a--memcached-server">Set up a  memcached server</h2>
 
-<h3 id="several-sites-on-the-same-machine">Several sites on the same machine</h3>
+<p>see <a href="/blog/2018-01-11-php7-nginx-memcached-session">this post</a>.</p>
 
-<p>Make use of the <code>ServerName</code> directive to match the right site.</p>
+<h2 id="configure-moodle">Configure moodle</h2>
 
-<p>In <code>/etc/apache2/sites-enabled/foo.conf</code>:</p>
+<p>Configure <a href="https://docs.moodle.org/30/en/Session_handling#Memcached">session handling</a> in <code>config.php</code>:</p>
 
-<pre><code>    &lt;VirtualHost *:80&gt; 
-            ServerName foo.local
-            ServerAdmin webmaster@localhost
-            DocumentRoot /home/pi/projects/foo/
-            ErrorLog /foo.log
-            CustomLog /access-foo.log combined
-    &lt;/VirtualHost&gt;
+<pre><code>/********************************************/
+//MEMCACHED SETUP
+$CFG-&gt;session_handler_class = '\core\session\memcached';
+$CFG-&gt;session_memcached_save_path = '192.168.33.14:11211';
+$CFG-&gt;session_memcached_prefix = 'memc.sess.key.';
+$CFG-&gt;session_memcached_acquire_lock_timeout = 120;
+$CFG-&gt;session_memcached_lock_expire = 7200;       // Ignored if memcached extension &lt;= 2.1.0
+/********************************************/
 </code></pre>
 
-<p>In <code>/etc/apache2/sites-enabled/bar.conf</code>:</p>
+<h2 id="checkings">Checkings</h2>
 
-<pre><code>    &lt;VirtualHost *:80&gt; 
-            ServerName bar.local
-            ServerAdmin webmaster@localhost
-            DocumentRoot /home/pi/projects/bar/
-            ErrorLog /bar.log
-            CustomLog /access-bar.log combined
-    &lt;/VirtualHost&gt; 
+<h2 id="moodle-cookie">Moodle cookie</h2>
+
+<p>If you print out your cookie from your debug tool in your bowser, you well see a cookie named <code>MoodleSession</code></p>
+
+<p>In my case it has value <code>4gp94gr17g78jnh97a6mfml0b4</code></p>
+
+<h2 id="moodle-database">Moodle database</h2>
+
+<p>Now let's check if there is still record in DB for your cookie session:</p>
+
+<pre><code>SELECT * FROM mdl_sessions WHERE sid='4gp94gr17g78jnh97a6mfml0b4';
 </code></pre>
 
-<p>When an http request corresponding to the <code>ServerName</code> value is received, the right answer is served according to the vhost.conf.</p>
+<p>returns:</p>
 
-<h3 id="enable-a-vhost">Enable a vhost</h3>
-
-<pre><code>a2ensite video-app
+<pre><code>2507694 0   4gp94gr17g78jnh97a6mfml0b4  48521       1515679016  1515681908  192.168.33.1    192.168.33.1
 </code></pre>
 
-<h3 id="disable--a-vhost">Disable  a vhost</h3>
+<p>What ??? I was expecting to have no more entries in the mdl_sessions table.
+After searching a little bit more, I found the explanation <a href="https://moodle.org/mod/forum/discuss.php?d=326352">here</a>:</p>
 
-<pre><code>a2dissite video-app
+<pre><code>Normally when you have sessions stored in Memcache/d there will still be a record of the session written to mdl_sessions. The session data is not written to the database, it's only written to the memcache/d server itself. The performance gain is seen because the session data is not written every page view for every user, and thus the table rows are not continually being locked and unlocked.
 </code></pre>
 
-<h2 id="modules">Modules</h2>
+<h2 id="memcached-server">memcached server</h2>
 
-<h3 id="list-enables%2Floaded-modules">List enables/loaded modules</h3>
+<p>Let's check if there is a key/value record for ou session:</p>
 
-<pre><code>apache2ctl -M
+<script src="https://gist.github.com/benIT/2e63d3541f4f46d9a47777d467549d2e.js"></script>
+
+<p>run it:</p>
+
+<pre><code>php memcached.php | grep 4gp94gr17g78jnh97a6mfml0b4
 </code></pre>
 
-<h3 id="enable-a-module">Enable a module</h3>
+<p>prints:</p>
 
-<pre><code>sudo a2enmod rewrite
+<pre><code>key: memc.sess.key.4gp94gr17g78jnh97a6mfml0b4
 </code></pre>
 
-<h2 id="server-status">Server status</h2>
-
-<pre><code>apache2ctl status
-</code></pre>
-
-<h2 id="security">Security</h2>
-
-<h3 id="hide-server-version">Hide server version</h3>
-
-<p>In <code>/etc/apache2/conf-available/security.conf</code>:</p>
-
-<pre><code>ServerTokens Prod
-ServerSignature Off
-</code></pre>
-
-<h3 id="prevent-site-encapsulation-in-an-external-iframe">Prevent site encapsulation in an external iframe</h3>
-
-<p>In <code>/etc/apache2/conf-available/security.conf</code>:</p>
-
-<pre><code>Leader set X-Frame-Options: "sameorigin" 
-</code></pre>
-
-<h3 id="secure-a-vhost-with-a-basic-authentication">Secure a vhost with a basic authentication</h3>
-
-<p>install utils:</p>
-
-<pre><code>apt-get install apache2 apache2-utils
-</code></pre>
-
-<p>Generate password for user ben:</p>
-
-<pre><code>htpasswd -c /etc/apache2/.htpasswd ben
-
-cat /etc/apache2/.htpasswd
-</code></pre>
-
-<p>output:</p>
-
-<pre><code> ben:$apr1$ULdWsbYp$eawlgBJZvKhr7L8V1NWGD/
-</code></pre>
-
-<p>Secure your vhost:</p>
-
-<pre><code>    LISTEN 10000 
-    &lt;VirtualHost *:10000&gt; 
-            ServerAdmin webmaster@localhost
-            DocumentRoot /home/pi/projects/videoapp/web/
-             &lt;Directory /home/pi/projects/videoapp&gt;
-                    Options Indexes FollowSymLinks
-                    AllowOverride All
-                    AuthType Basic
-                    AuthName "Restricted Content"
-                    AuthUserFile /etc/apache2/.htpasswd
-                    Require valid-user
-            &lt;/Directory&gt;
-            ErrorLog /error-videoapp.log
-            CustomLog /access-videoapp.log combined
-    &lt;/VirtualHost&gt;
-</code></pre>
+<p>which means that our session is written in memcached! That's ok!</p>
 
         </div>
             </article>

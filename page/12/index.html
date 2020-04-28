@@ -72,121 +72,207 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2019/01/15/docker-docker-compose">Docker 101: docker-compose</a></h2>
+            <h2><a href="/blog/2019/02/22/phpstorm-search-and-replace-regexp">PHPSTORM search &amp; replace with regexp</a></h2>
         </header>
         <div>
-            <h1 id="docker-compose">Docker compose</h1>
+            <h2 id="context">Context</h2>
 
-<p>Purpose: compose is a tool designed to create multi-containers app.</p>
+<p>I have a list of 10K of #ID,and need to add a <code>,</code> at the end of each line to process them in a SQL query.</p>
 
-<h2 id="install">Install</h2>
+<h2 id="data-input">data input</h2>
 
-<pre><code>sudo apt install python-pip
-pip install docker-compose
+<pre><code>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+...
 </code></pre>
 
-<h2 id="docker-compose.yml">docker-compose.yml</h2>
+<h2 id="the-trick">the trick</h2>
 
-<p>The magic happens in a file named <code>docker-compose.yml</code></p>
+<p>Hit <code>ctrl+R</code> to launch the <code>search &amp; replace action</code>.</p>
 
-<h2 id="run">Run</h2>
+<p>Search the following pattern:</p>
 
-<pre><code>docker-compose up -d
+<pre><code>(.*)$
 </code></pre>
 
-<h2 id="stop">Stop</h2>
+<p>And replace it with:</p>
 
-<pre><code>docker-compose down -v
+<pre><code>$1,
 </code></pre>
 
-<h2 id="networking">Networking</h2>
+<p><img src="/images/phpstorm/search-replace-regexp.png" alt="screenshot" /></p>
 
-<p><code>docker-compose</code> handles the creation a private network:</p>
+<h2 id="data-output">data output</h2>
 
-<pre><code>Creating network "n-tiers_default" with the default driver
-Creating object-cache ... done
-Creating pgsql        ... done
-Creating web          ... done
+<pre><code>1,
+2,
+3,
+4,
+5,
+6,
+7,
+8,
+9,
+10,
+...,
 </code></pre>
-
-<h1 id="example">Example</h1>
-
-<p>Better than words, take a look at this <a href="https://github.com/benIT/docker-compose-n-tiers">repo that illustrates a classical n-tiers web app</a></p>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2019/01/14/docker-networking">Docker 101: networking</a></h2>
+            <h2><a href="/blog/2019/02/20/openstack-resize-volume">Openstack: resize volume and partition size on a running instance</a></h2>
         </header>
         <div>
-            <h1 id="docker-running-containers-inside-a-bridge-network">Docker running containers inside a bridge network</h1>
+            <h2 id="context">Context</h2>
 
-<p>The purpose of this post is to isolate each tiers of our app into different containers.</p>
+<p>This post deals with how to increase a volume attached to a server instance on openstack. <a href="https://docs.openstack.org/cinder/rocky/cli/cli-manage-volumes.html#">See openstack volume ressource</a>.</p>
 
-<p>We will create a private network and run containers inside this private network.</p>
+<h2 id="test-database">Test database</h2>
 
-<p><a href="https://docker-curriculum.com/#webapps-with-docker">This article is largely inspired by this great resource.</a></p>
+<p>To test everything goes well, a test database is setup:</p>
 
-<h2 id="networking">Networking</h2>
-
-<h3 id="create-an-isolated-private-bridge-network">Create an isolated private bridge network</h3>
-
-<pre><code>docker network create web-net    
+<pre><code>sudo -u postgres
+sudo -u postgres psql -c "create database webapp";
+sudo -u postgres psql -d webapp -c "CREATE TABLE account(user_id serial PRIMARY KEY,username VARCHAR (50) UNIQUE NOT NULL,created_on TIMESTAMP NOT NULL);" ;
+sudo -u postgres psql -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('foo','2019-01-01') ;" ;
+sudo -u postgres psql -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('bar','2019-01-02') ;" ;
 </code></pre>
 
-<h3 id="inspect-the-private-network">Inspect the private network</h3>
+<p>Check command:</p>
 
-<pre><code>docker network inspect web-net
+<pre><code>sudo -u postgres psql -d webapp -c "SELECT * FROM account" ;
 </code></pre>
 
-<h3 id="run-a-container-inside-the-private-bridge-network-with-%60--net%60-option">Run a container inside the private bridge network with <code>--net</code> option</h3>
+<p>returns:</p>
 
-<pre><code>docker run --name pgsql-web --rm  -d --net web-net postgres:latest
-docker run --name debian-web --rm -p 80:80 --net web-net -d benit/debian-web:latest
+<pre><code> user_id | username |     created_on      
+---------+----------+---------------------
+       1 | foo      | 2019-01-01 00:00:00
+       2 | bar      | 2019-01-02 00:00:00
+(2 rows)
 </code></pre>
 
-<h3 id="inspect-the-private-network-to-get-ips-of-containers-of-the-private-network">Inspect the private network to get IPs of containers of the private network</h3>
+<h2 id="switch-off-automatic-volume-mount-in-%60%2Fetc%2Ffstab-%60">Switch off automatic volume mount in <code>/etc/fstab</code></h2>
 
-<pre><code>docker network inspect web-net
+<pre><code>ssh demo
 </code></pre>
 
-<p>gives:</p>
+<p>Comment lines in <code>/etc/fstab</code> that concern the volume you want to increase:</p>
 
-<pre><code> "Containers": {
-            "3729ccbb14e514fd6c8b571ed9c985c28293cb5bfdb10c6c233773f50d6ba763": {
-                "Name": "debian-web",
-                "EndpointID": "c370cab93cdd2ac9f30f568a1709b8c998d2ca36106d5423b484a20aadbff84f",
-                "MacAddress": "02:42:ac:12:00:03",
-                "IPv4Address": "172.18.0.3/16",
-                "IPv6Address": ""
-            },
-            "61bcf5cd9838c8c2e66beef73a04a2704a3be7e2085a5c6b4ad58bd78f12a138": {
-                "Name": "pgsql-web",
-                "EndpointID": "128f50ead4974a725c04551cb284fec2c733a48375a4819096b0b623ff2af4ac",
-                "MacAddress": "02:42:ac:12:00:02",
-                "IPv4Address": "172.18.0.2/16",
-                "IPv6Address": ""
-            }
-        },
+<pre><code>sudo vim /etc/fstab 
+
+#/dev/vdb1 /data ext4 defaults 0 0
+#/data/pgsql /var/lib/postgresql none bind 0 0
+
+sudo reboot
 </code></pre>
 
-<h2 id="putting-it-all-together">Putting it all together</h2>
+<h2 id="check">Check</h2>
 
-<h3 id="let%27s-create-a-database">Let's create a database</h3>
-
-<pre><code>docker container exec pgsql-web psql -U postgres -c "create database webapp";
-docker container exec pgsql-web psql -U postgres -d webapp -c "CREATE TABLE account(user_id serial PRIMARY KEY,username VARCHAR (50) UNIQUE NOT NULL,created_on TIMESTAMP NOT NULL);" ;
-docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('foo','2019-01-01') ;" ;
-docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('bar','2019-01-02') ;" ;
+<pre><code>ssh demo
 </code></pre>
 
-<h3 id="connect-database-container-from-webserver-container">Connect database container from webserver container</h3>
+<p>Check that they are no more mount point that depend on the volume we are going to manipulate.</p>
 
-<pre><code>docker container exec -it debian-web  psql -U postgres -h 172.18.0.2 -d webapp -c "select * from account;" ;
+<pre><code>df -h
+Filesystem      Size  Used Avail Use% Mounted on
+udev            992M     0  992M   0% /dev
+tmpfs           201M  4,5M  197M   3% /run
+/dev/vda1       4,9G  1,9G  2,9G  40% /
+tmpfs          1003M  8,0K 1003M   1% /dev/shm
+tmpfs           5,0M     0  5,0M   0% /run/lock
+tmpfs          1003M     0 1003M   0% /sys/fs/cgroup
 </code></pre>
 
-<p>gives:</p>
+<h2 id="stop-your-applications-if-needed">Stop your applications if needed</h2>
+
+<pre><code>sudo service apache2 stop
+sudo service postgresql stop
+</code></pre>
+
+<h2 id="increase-our-volume-size">Increase our volume size</h2>
+
+<p>identify your target server and target volume with <code>openstack volume list</code> and <code>openstack server list</code></p>
+
+<pre><code>TARGET_SERVER=ed864066-ed73-46e0-b551-5bfca9873af6
+TARGET_VOLUME=1be3646a-3bb5-40fc-b9eb-6ab803b60d2c
+VOLUME_SIZE=25
+</code></pre>
+
+<h2 id="detach-volume-from-server">Detach volume from server</h2>
+
+<pre><code>openstack server remove volume $TARGET_SERVER $TARGET_VOLUME
+</code></pre>
+
+<p><em>At this point, the device should NOT be visible when you execute: <code>ls -l /dev/vd*</code></em>.</p>
+
+<h2 id="increase-volume-size">Increase volume size</h2>
+
+<pre><code>openstack volume set $TARGET_VOLUME --size $VOLUME_SIZE
+</code></pre>
+
+<h2 id="attach-volume-to-server">Attach volume to server</h2>
+
+<pre><code>openstack server add volume $TARGET_SERVER $TARGET_VOLUME --device /dev/vdb
+</code></pre>
+
+<p><em>At this point, the device should BE visible when you execute: <code>ls -l /dev/vd*</code></em>.</p>
+
+<h2 id="manage-partition-on-your-openstack-server">Manage partition on your openstack server</h2>
+
+<p>Let's configure the partition to use all the volume space.</p>
+
+<pre><code>ssh demo
+sudo parted /dev/vdb resizepart 1 100%
+sudo e2fsck -f /dev/vdb1
+sudo resize2fs /dev/vdb1
+</code></pre>
+
+<h2 id="restore-%60%2Fetc%2Ffstab%60">Restore <code>/etc/fstab</code></h2>
+
+<p>uncomment the lines:</p>
+
+<pre><code>/dev/vdb1 /data ext4 defaults 0 0
+/data/pgsql /var/lib/postgresql none bind 0 0
+</code></pre>
+
+<p>reboot: <code>sudo reboot</code></p>
+
+<h2 id="check-your-fs">Check your fs</h2>
+
+<h3 id="check-volume-size-and-partition-size">Check volume size and partition size</h3>
+
+<pre><code>sudo fdisk -l
+
+Disk /dev/vdb: 25 GiB, 26843545600 bytes, 52428800 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x0e1b27a4
+
+Device     Boot Start      End  Sectors Size Id Type
+/dev/vdb1        2048 52428799 52426752  25G 83 Linux
+</code></pre>
+
+<h3 id="check-database">Check database</h3>
+
+<p>Use our test command to check our database:</p>
+
+<pre><code>ssh demo
+sudo -u postgres psql -d webapp -c "SELECT * FROM account" ;
+</code></pre>
+
+<p>check data are ok:</p>
 
 <pre><code> user_id | username |     created_on      
 ---------+----------+---------------------
@@ -199,18 +285,67 @@ docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO accou
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2019/01/14/docker-dockerfile">Docker 101: Dockerfile</a></h2>
+            <h2><a href="/blog/2019/02/15/ssh-x11-docker">SSH X11 &amp; docker</a></h2>
         </header>
         <div>
-            <h1 id="dockerfile">Dockerfile</h1>
+            <h2 id="purpose">Purpose</h2>
 
-<p>A <code>Dockerfile</code> is a text document that contains all the commands a user could call on the command line to assemble an image.</p>
+<p>Run GUI application inside a docker container using X11Forwarding.</p>
 
-<h2 id="example">Example</h2>
+<p><a href="https://gist.github.com/udkyo/c20935c7577c71d634f0090ef6fa8393">source from github.</a></p>
 
-<p>You will find <a href="https://github.com/benIT/debian-web">in this repo</a> a running <code>Dockerfile</code>  based on a debian image that runs an Apache webserver.</p>
+<h2 id="create-a-container">Create a container</h2>
 
-<p>You will find <a href="https://github.com/benIT/debian-web/blob/master/README.md">in this file</a> all the base commands to manage a <code>Dockerfile</code> .</p>
+<h3 id="dockerfile">DockerFile</h3>
+
+<pre><code>FROM ubuntu
+RUN apt update \
+    &amp;&amp; apt install -y firefox \
+                      openssh-server \
+                      xauth \
+                      emacs \
+    &amp;&amp; mkdir /var/run/sshd \
+    &amp;&amp; mkdir /root/.ssh \
+    &amp;&amp; chmod 700 /root/.ssh \
+    &amp;&amp; ssh-keygen -A \
+    &amp;&amp; sed -i "s/^.*PasswordAuthentication.*$/PasswordAuthentication no/" /etc/ssh/sshd_config \
+    &amp;&amp; sed -i "s/^.*X11Forwarding.*$/X11Forwarding yes/" /etc/ssh/sshd_config \
+    &amp;&amp; sed -i "s/^.*X11UseLocalhost.*$/X11UseLocalhost no/" /etc/ssh/sshd_config \
+    &amp;&amp; grep "^X11UseLocalhost" /etc/ssh/sshd_config || echo "X11UseLocalhost no" &gt;&gt; /etc/ssh/sshd_config
+
+RUN echo "CONTENT_OF_ID_RSA_PUB_KEY_HERE" &gt;&gt; /root/.ssh/authorized_keys
+</code></pre>
+
+<h3 id="build-it">Build it</h3>
+
+<pre><code>docker build -t benit/ubuntu-x11 . --build-arg http_proxy=$http_proxy
+</code></pre>
+
+<h2 id="run-container">Run Container</h2>
+
+<pre><code>docker run --name ubuntu-x11 --rm -d -p 2150:22 benit/ubuntu-x11
+</code></pre>
+
+<h2 id="ssh-client-configuration">SSH client configuration</h2>
+
+<p>Edit <code>~/.ssh/config</code> on the client, here my workstation is named <code>lxdev</code>:</p>
+
+<pre><code>Host ubuntuX11
+     Hostname lxdev
+     Port 2150
+     user root
+     ForwardX11 yes
+     ForwardX11Trusted yes
+</code></pre>
+
+<h2 id="use-it%21">Use it!</h2>
+
+<pre><code>ssh -X ubuntu-x11 emacs     
+</code></pre>
+
+<h2 id="enjoy%21">Enjoy!</h2>
+
+<p><img src="/images/docker/docker-ssh-x11-emacs.png" alt="screenshot" /></p>
 
         </div>
             </article>

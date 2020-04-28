@@ -72,280 +72,193 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2019/02/22/phpstorm-search-and-replace-regexp">PHPSTORM search &amp; replace with regexp</a></h2>
+            <h2><a href="/blog/2019/05/22/john-the-ripper-rip-md5-hash">RIP a md5 hash with john the ripper</a></h2>
         </header>
         <div>
-            <h2 id="context">Context</h2>
+            <h2 id="rip-a-md5-hash">RIP a md5 hash</h2>
 
-<p>I have a list of 10K of #ID,and need to add a <code>,</code> at the end of each line to process them in a SQL query.</p>
-
-<h2 id="data-input">data input</h2>
-
-<pre><code>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-...
-</code></pre>
-
-<h2 id="the-trick">the trick</h2>
-
-<p>Hit <code>ctrl+R</code> to launch the <code>search &amp; replace action</code>.</p>
-
-<p>Search the following pattern:</p>
-
-<pre><code>(.*)$
-</code></pre>
-
-<p>And replace it with:</p>
-
-<pre><code>$1,
-</code></pre>
-
-<p><img src="/images/phpstorm/search-replace-regexp.png" alt="screenshot" /></p>
-
-<h2 id="data-output">data output</h2>
-
-<pre><code>1,
-2,
-3,
-4,
-5,
-6,
-7,
-8,
-9,
-10,
-...,
-</code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/02/20/openstack-resize-volume">Openstack: resize volume and partition size on a running instance</a></h2>
-        </header>
-        <div>
-            <h2 id="context">Context</h2>
-
-<p>This post deals with how to increase a volume attached to a server instance on openstack. <a href="https://docs.openstack.org/cinder/rocky/cli/cli-manage-volumes.html#">See openstack volume ressource</a>.</p>
-
-<h2 id="test-database">Test database</h2>
-
-<p>To test everything goes well, a test database is setup:</p>
-
-<pre><code>sudo -u postgres
-sudo -u postgres psql -c "create database webapp";
-sudo -u postgres psql -d webapp -c "CREATE TABLE account(user_id serial PRIMARY KEY,username VARCHAR (50) UNIQUE NOT NULL,created_on TIMESTAMP NOT NULL);" ;
-sudo -u postgres psql -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('foo','2019-01-01') ;" ;
-sudo -u postgres psql -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('bar','2019-01-02') ;" ;
-</code></pre>
-
-<p>Check command:</p>
-
-<pre><code>sudo -u postgres psql -d webapp -c "SELECT * FROM account" ;
+<pre><code>echo "ca50dfb151104b1ee005d68fa9a970ce" &gt; md5-to-crack
+john --format=raw-md5 md5-to-crack --show
 </code></pre>
 
 <p>returns:</p>
 
-<pre><code> user_id | username |     created_on      
----------+----------+---------------------
-       1 | foo      | 2019-01-01 00:00:00
-       2 | bar      | 2019-01-02 00:00:00
-(2 rows)
+<pre><code>john --format=raw-md5 md5-to-crack --show
+?:dolorem
+
+1 password hash cracked, 0 left
 </code></pre>
 
-<h2 id="switch-off-automatic-volume-mount-in-%60%2Fetc%2Ffstab-%60">Switch off automatic volume mount in <code>/etc/fstab</code></h2>
+<p>Password for hash <code>ca50dfb151104b1ee005d68fa9a970ce</code> is <code>dolorem</code></p>
 
-<pre><code>ssh demo
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2019/05/07/python-keylogger">Python keylogger</a></h2>
+        </header>
+        <div>
+            <h2 id="python-keylogger-package">Python keylogger package</h2>
+
+<p>The job is already done and packaged with <a href="https://pypi.org/project/keylogger/">that Python package</a>.</p>
+
+<h2 id="installation">Installation</h2>
+
+<h3 id="python-3">Python 3</h3>
+
+<p>This package works with Python 3, make sure you are using it:</p>
+
+<pre><code>python --version
 </code></pre>
 
-<p>Comment lines in <code>/etc/fstab</code> that concern the volume you want to increase:</p>
+<p>If python2 is set by default:</p>
 
-<pre><code>sudo vim /etc/fstab 
-
-#/dev/vdb1 /data ext4 defaults 0 0
-#/data/pgsql /var/lib/postgresql none bind 0 0
-
-sudo reboot
+<pre><code>sudo apt-get install python3-pip
 </code></pre>
 
-<h2 id="check">Check</h2>
+<h3 id="package">Package</h3>
 
-<pre><code>ssh demo
+<pre><code>pip install keylogger
 </code></pre>
 
-<p>Check that they are no more mount point that depend on the volume we are going to manipulate.</p>
+<p>If python2 is set by default:</p>
 
-<pre><code>df -h
-Filesystem      Size  Used Avail Use% Mounted on
-udev            992M     0  992M   0% /dev
-tmpfs           201M  4,5M  197M   3% /run
-/dev/vda1       4,9G  1,9G  2,9G  40% /
-tmpfs          1003M  8,0K 1003M   1% /dev/shm
-tmpfs           5,0M     0  5,0M   0% /run/lock
-tmpfs          1003M     0 1003M   0% /sys/fs/cgroup
+<pre><code>sudo -E pip3 install keylogger
 </code></pre>
 
-<h2 id="stop-your-applications-if-needed">Stop your applications if needed</h2>
+<h2 id="set-up-log-file">Set up log file</h2>
 
-<pre><code>sudo service apache2 stop
-sudo service postgresql stop
+<pre><code>sudo touch /var/log/keylogger.log
 </code></pre>
 
-<h2 id="increase-our-volume-size">Increase our volume size</h2>
+<h2 id="group-%26-ownership-for-log-file">Group &amp; ownership for log file</h2>
 
-<p>identify your target server and target volume with <code>openstack volume list</code> and <code>openstack server list</code></p>
-
-<pre><code>TARGET_SERVER=ed864066-ed73-46e0-b551-5bfca9873af6
-TARGET_VOLUME=1be3646a-3bb5-40fc-b9eb-6ab803b60d2c
-VOLUME_SIZE=25
+<pre><code>sudo groupadd spy
+sudo usermod -a -G spy vagrant    
+sudo chown root:spy /var/log/keylogger.log
+sudo chmod 660 /var/log/keylogger.log
 </code></pre>
 
-<h2 id="detach-volume-from-server">Detach volume from server</h2>
+<h2 id="usage">Usage</h2>
 
-<pre><code>openstack server remove volume $TARGET_SERVER $TARGET_VOLUME
+<pre><code>/home/vagrant/.local/bin/keylogger --log-file /var/log/keylogger.log --clean-file &amp;
 </code></pre>
 
-<p><em>At this point, the device should NOT be visible when you execute: <code>ls -l /dev/vd*</code></em>.</p>
+<h2 id="watch-log">Watch log</h2>
 
-<h2 id="increase-volume-size">Increase volume size</h2>
-
-<pre><code>openstack volume set $TARGET_VOLUME --size $VOLUME_SIZE
+<pre><code>tail -f /var/log/keylogger.log 
 </code></pre>
 
-<h2 id="attach-volume-to-server">Attach volume to server</h2>
+<p>Below the log generated by typing in firefox: <code>gmail.com</code> ang logging with <code>thisismymail@gmail.com</code>/<code>mypassword</code>:</p>
 
-<pre><code>openstack server add volume $TARGET_SERVER $TARGET_VOLUME --device /dev/vdb
-</code></pre>
-
-<p><em>At this point, the device should BE visible when you execute: <code>ls -l /dev/vd*</code></em>.</p>
-
-<h2 id="manage-partition-on-your-openstack-server">Manage partition on your openstack server</h2>
-
-<p>Let's configure the partition to use all the volume space.</p>
-
-<pre><code>ssh demo
-sudo parted /dev/vdb resizepart 1 100%
-sudo e2fsck -f /dev/vdb1
-sudo resize2fs /dev/vdb1
-</code></pre>
-
-<h2 id="restore-%60%2Fetc%2Ffstab%60">Restore <code>/etc/fstab</code></h2>
-
-<p>uncomment the lines:</p>
-
-<pre><code>/dev/vdb1 /data ext4 defaults 0 0
-/data/pgsql /var/lib/postgresql none bind 0 0
-</code></pre>
-
-<p>reboot: <code>sudo reboot</code></p>
-
-<h2 id="check-your-fs">Check your fs</h2>
-
-<h3 id="check-volume-size-and-partition-size">Check volume size and partition size</h3>
-
-<pre><code>sudo fdisk -l
-
-Disk /dev/vdb: 25 GiB, 26843545600 bytes, 52428800 sectors
-Units: sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disklabel type: dos
-Disk identifier: 0x0e1b27a4
-
-Device     Boot Start      End  Sectors Size Id Type
-/dev/vdb1        2048 52428799 52426752  25G 83 Linux
-</code></pre>
-
-<h3 id="check-database">Check database</h3>
-
-<p>Use our test command to check our database:</p>
-
-<pre><code>ssh demo
-sudo -u postgres psql -d webapp -c "SELECT * FROM account" ;
-</code></pre>
-
-<p>check data are ok:</p>
-
-<pre><code> user_id | username |     created_on      
----------+----------+---------------------
-       1 | foo      | 2019-01-01 00:00:00
-       2 | bar      | 2019-01-02 00:00:00
-(2 rows)
+<pre><code>g
+m
+a
+i
+l
+Shift_L
+period
+c
+o
+m
+Return
+t
+h
+i
+s
+i
+s
+m
+y
+m
+a
+i
+l
+Shift_L
+Shift_L
+Shift_L
+[65027]
+agrave
+g
+m
+a
+i
+l
+Shift_L
+period
+c
+o
+m
+m
+y
+p
+a
+s
+s
+w
+o
+r
+d
 </code></pre>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2019/02/15/ssh-x11-docker">SSH X11 &amp; docker</a></h2>
+            <h2><a href="/blog/2019/05/06/john-the-ripper-rip-linux-user-password">RIP linux user password with John the Ripper</a></h2>
         </header>
         <div>
-            <h2 id="purpose">Purpose</h2>
+            <h2 id="add-a-new-user">Add a new user</h2>
 
-<p>Run GUI application inside a docker container using X11Forwarding.</p>
-
-<p><a href="https://gist.github.com/udkyo/c20935c7577c71d634f0090ef6fa8393">source from github.</a></p>
-
-<h2 id="create-a-container">Create a container</h2>
-
-<h3 id="dockerfile">DockerFile</h3>
-
-<pre><code>FROM ubuntu
-RUN apt update \
-    &amp;&amp; apt install -y firefox \
-                      openssh-server \
-                      xauth \
-                      emacs \
-    &amp;&amp; mkdir /var/run/sshd \
-    &amp;&amp; mkdir /root/.ssh \
-    &amp;&amp; chmod 700 /root/.ssh \
-    &amp;&amp; ssh-keygen -A \
-    &amp;&amp; sed -i "s/^.*PasswordAuthentication.*$/PasswordAuthentication no/" /etc/ssh/sshd_config \
-    &amp;&amp; sed -i "s/^.*X11Forwarding.*$/X11Forwarding yes/" /etc/ssh/sshd_config \
-    &amp;&amp; sed -i "s/^.*X11UseLocalhost.*$/X11UseLocalhost no/" /etc/ssh/sshd_config \
-    &amp;&amp; grep "^X11UseLocalhost" /etc/ssh/sshd_config || echo "X11UseLocalhost no" &gt;&gt; /etc/ssh/sshd_config
-
-RUN echo "CONTENT_OF_ID_RSA_PUB_KEY_HERE" &gt;&gt; /root/.ssh/authorized_keys
+<pre><code>sudo useradd -r foo
+sudo passwd foo
+Enter new UNIX password: 
+Retype new UNIX password: 
+passwd: password updated successfully
 </code></pre>
 
-<h3 id="build-it">Build it</h3>
+<h2 id="password-hash-file">Password hash file</h2>
 
-<pre><code>docker build -t benit/ubuntu-x11 . --build-arg http_proxy=$http_proxy
+<p>Linux user password hash are stored here: <code>/etc/shadow</code></p>
+
+<h2 id="rip-it%21">Rip it!</h2>
+
+<pre><code>sudo john /etc/shadow
+Created directory: /root/.john
+Using default input encoding: UTF-8
+Loaded 3 password hashes with 3 different salts (sha512crypt, crypt(3) $6$ [SHA512 256/256 AVX2 4x])
+Cost 1 (iteration count) is 5000 for all loaded hashes
+Will run 5 OpenMP threads
+Proceeding with single, rules:Wordlist
+Press 'q' or Ctrl-C to abort, almost any other key for status
+vagrant          (vagrant)
+Warning: Only 3 candidates buffered for the current salt, minimum 20
+needed for performance.
+toor             (root)
+Warning: Only 14 candidates buffered for the current salt, minimum 20
+needed for performance.
+Warning: Only 6 candidates buffered for the current salt, minimum 20
+needed for performance.
+Warning: Only 16 candidates buffered for the current salt, minimum 20
+needed for performance.
+Warning: Only 17 candidates buffered for the current salt, minimum 20
+needed for performance.
+Warning: Only 3 candidates buffered for the current salt, minimum 20
+needed for performance.
+Almost done: Processing the remaining buffered candidate passwords, if any
+Warning: Only 15 candidates buffered for the current salt, minimum 20
+needed for performance.
+Proceeding with wordlist:/usr/share/john/password.lst, rules:Wordlist
+foobar           (foo)
+3g 0:00:00:01 DONE 2/3 (2019-05-06 10:39) 1.570g/s 1806p/s 1808c/s 1808C/s 1234qwer..ford
+Use the "--show" option to display all of the cracked passwords reliably
+Session completed
 </code></pre>
 
-<h2 id="run-container">Run Container</h2>
+<h3 id="and-user-password-is...">And user password is...</h3>
 
-<pre><code>docker run --name ubuntu-x11 --rm -d -p 2150:22 benit/ubuntu-x11
+<pre><code>foobar           (foo)
 </code></pre>
-
-<h2 id="ssh-client-configuration">SSH client configuration</h2>
-
-<p>Edit <code>~/.ssh/config</code> on the client, here my workstation is named <code>lxdev</code>:</p>
-
-<pre><code>Host ubuntuX11
-     Hostname lxdev
-     Port 2150
-     user root
-     ForwardX11 yes
-     ForwardX11Trusted yes
-</code></pre>
-
-<h2 id="use-it%21">Use it!</h2>
-
-<pre><code>ssh -X ubuntu-x11 emacs     
-</code></pre>
-
-<h2 id="enjoy%21">Enjoy!</h2>
-
-<p><img src="/images/docker/docker-ssh-x11-emacs.png" alt="screenshot" /></p>
 
         </div>
             </article>

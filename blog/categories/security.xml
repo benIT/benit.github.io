@@ -3,9 +3,126 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/security.xml" rel="self"/>
     <link href="/"/>
-    <updated>2020-04-24T12:58:37+00:00</updated>
+    <updated>2020-04-28T13:09:25+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[rpi dev 6 - System logs]]></title>
+            <link href="/blog/2020/04/01/rpi-dev-system-logs"/>
+            <updated>2020-04-01T00:00:00+00:00</updated>
+            <id>/blog/2020/04/01/rpi-dev-system-logs</id>
+            <content type="html"><![CDATA[<h2 id="interesting-logs">interesting logs</h2>
+
+<ul>
+<li>/var/log/auth.log</li>
+<li>/var/log/ufw.log</li>
+<li>/var/log/apache2/*access.log</li>
+<li>/var/log/apache2/*error.log</li>
+</ul>
+
+<h2 id="tools">tools</h2>
+
+<h3 id="lnav---ncurses-based-log-file-viewer">lnav - ncurses-based log file viewer</h3>
+
+<p>From man: The  log  file navigator, lnav, is an enhanced log file viewer that takes advantage of any semantic information that can be gleaned from the files being viewed, such as timestamps and log levels</p>
+
+<pre><code>apt install -y lnav
+
+lnav /var/log/auth.log /var/log/ufw.log /var/log/apache2/*access.log
+</code></pre>
+
+<h3 id="ezservermonitor">ezservermonitor</h3>
+
+<p>Install webapp:</p>
+
+<pre><code>wget https://www.ezservermonitor.com/esm-web/downloads/version/2.5 -O ezservermonitor.zip
+</code></pre>
+
+<p>Configure in <code>conf/esm.config.json</code></p>
+]]></content>
+        </entry>
+            <entry>
+            <title type="html"><![CDATA[rpi dev 4 - UFW]]></title>
+            <link href="/blog/2020/04/01/rpi-dev-ufw"/>
+            <updated>2020-04-01T00:00:00+00:00</updated>
+            <id>/blog/2020/04/01/rpi-dev-ufw</id>
+            <content type="html"><![CDATA[<h2 id="enable%2Fdisable">enable/disable</h2>
+
+<pre><code>ufw logging on
+ufw disable
+ufw enable
+</code></pre>
+
+<h2 id="log-file">log file</h2>
+
+<pre><code>tail -f /var/log/ufw.log
+</code></pre>
+
+<h2 id="print-fw-rules">Print FW rules</h2>
+
+<pre><code>ufw status verbose
+ufw status numbered
+</code></pre>
+
+<h2 id="common-rules">Common rules</h2>
+
+<h3 id="block-all-incoming-%26-outgoing-trafic">Block all INcoming &amp; outgoing trafic</h3>
+
+<pre><code>ufw default deny incoming
+ufw default deny outgoing
+</code></pre>
+
+<h3 id="allow-common-services">Allow common services</h3>
+
+<pre><code>ufw allow out 53 comment 'DNS'
+ufw allow out 465 comment 'SMTP'
+ufw allow ntp
+</code></pre>
+
+<h3 id="allow-all-incomming-requests-on-all-ports-from-an-%40ip-range">Allow all INcomming requests on all ports from an @IP range</h3>
+
+<pre><code>ufw allow from 192.168.1.0/24
+</code></pre>
+
+<h3 id="allow-all-incomming-requests-on-all-ports-from-an-%40ip">Allow all INcomming requests on all ports from an @IP</h3>
+
+<pre><code>ufw allow from XXX.XXX.XXX.XXX
+</code></pre>
+
+<h3 id="allow-incomming-requests-on-specific-port-from-an-%40ip">Allow INcomming requests on specific port from an @IP</h3>
+
+<pre><code>ufw allow from XXX.XXX.XXX.XXX to any port 80
+ufw allow from XXX.XXX.XXX.XXX to any port 3000
+</code></pre>
+
+<h3 id="for-apt-and-software-installation">For apt and software installation</h3>
+
+<p>use that to allow apt, for instance <code>apt install -y lnav</code>:</p>
+
+<pre><code>ufw allow out 80/tcp comment 'allow OUT 80 temporary for apt' &amp;&amp; ufw allow out 443/tcp comment 'allow OUT 443 temporary for apt'
+</code></pre>
+
+<p>remove:</p>
+
+<pre><code>ufw delete allow out 80/tcp &amp;&amp; ufw delete allow out 443/tcp
+</code></pre>
+
+<p>OR:</p>
+
+<pre><code>ufw default allow outgoing
+</code></pre>
+
+<p>remove:</p>
+
+<pre><code>ufw default deny outgoing
+</code></pre>
+
+<h2 id="%C2%A0reset-all-rules"> Reset all rules</h2>
+
+<pre><code>ufw reset
+</code></pre>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Installing Nextcloud on RPI device]]></title>
             <link href="/blog/2017/07/04/rpi-nexcloud"/>

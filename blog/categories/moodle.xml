@@ -3,7 +3,7 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/moodle.xml" rel="self"/>
     <link href="/"/>
-    <updated>2020-04-24T12:58:37+00:00</updated>
+    <updated>2020-04-28T13:09:25+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -15,7 +15,7 @@
 
 <h2 id="set-up-a--memcached-server">Set up a  memcached server</h2>
 
-<p>see <a href="/blog2018-01-11-php7-nginx-memcached-session">this post</a>.</p>
+<p>see <a href="/blog/2018-01-11-php7-nginx-memcached-session">this post</a>.</p>
 
 <h2 id="configure-moodle">Configure moodle</h2>
 
