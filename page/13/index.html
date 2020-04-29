@@ -72,6 +72,72 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2019/02/15/ssh-x11-docker">SSH X11 &amp; docker</a></h2>
+        </header>
+        <div>
+            <h2 id="purpose">Purpose</h2>
+
+<p>Run GUI application inside a docker container using X11Forwarding.</p>
+
+<p><a href="https://gist.github.com/udkyo/c20935c7577c71d634f0090ef6fa8393">source from github.</a></p>
+
+<h2 id="create-a-container">Create a container</h2>
+
+<h3 id="dockerfile">DockerFile</h3>
+
+<pre><code>FROM ubuntu
+RUN apt update \
+    &amp;&amp; apt install -y firefox \
+                      openssh-server \
+                      xauth \
+                      emacs \
+    &amp;&amp; mkdir /var/run/sshd \
+    &amp;&amp; mkdir /root/.ssh \
+    &amp;&amp; chmod 700 /root/.ssh \
+    &amp;&amp; ssh-keygen -A \
+    &amp;&amp; sed -i "s/^.*PasswordAuthentication.*$/PasswordAuthentication no/" /etc/ssh/sshd_config \
+    &amp;&amp; sed -i "s/^.*X11Forwarding.*$/X11Forwarding yes/" /etc/ssh/sshd_config \
+    &amp;&amp; sed -i "s/^.*X11UseLocalhost.*$/X11UseLocalhost no/" /etc/ssh/sshd_config \
+    &amp;&amp; grep "^X11UseLocalhost" /etc/ssh/sshd_config || echo "X11UseLocalhost no" &gt;&gt; /etc/ssh/sshd_config
+
+RUN echo "CONTENT_OF_ID_RSA_PUB_KEY_HERE" &gt;&gt; /root/.ssh/authorized_keys
+</code></pre>
+
+<h3 id="build-it">Build it</h3>
+
+<pre><code>docker build -t benit/ubuntu-x11 . --build-arg http_proxy=$http_proxy
+</code></pre>
+
+<h2 id="run-container">Run Container</h2>
+
+<pre><code>docker run --name ubuntu-x11 --rm -d -p 2150:22 benit/ubuntu-x11
+</code></pre>
+
+<h2 id="ssh-client-configuration">SSH client configuration</h2>
+
+<p>Edit <code>~/.ssh/config</code> on the client, here my workstation is named <code>lxdev</code>:</p>
+
+<pre><code>Host ubuntuX11
+     Hostname lxdev
+     Port 2150
+     user root
+     ForwardX11 yes
+     ForwardX11Trusted yes
+</code></pre>
+
+<h2 id="use-it%21">Use it!</h2>
+
+<pre><code>ssh -X ubuntu-x11 emacs     
+</code></pre>
+
+<h2 id="enjoy%21">Enjoy!</h2>
+
+<p><img src="/images/docker/docker-ssh-x11-emacs.png" alt="screenshot" /></p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2019/02/15/linux-multiusb-live">Linux multiusb live</a></h2>
         </header>
         <div>
@@ -263,43 +329,6 @@ sudo chmod -R ug+rw /var/log/moodle/
         create 640 www-data www-data
 }    
 </code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/01/25/docker-make-a-christmas-garland-with-nginx-apache">How to make a christmas garland with a nginx reverse proxy and 3 apache backends under docker?</a></h2>
-        </header>
-        <div>
-            <h1 id="purpose">Purpose</h1>
-
-<p>This posts deals with doing yourself a christmas garland!</p>
-
-<p>We will be using :</p>
-
-<ul>
-<li>nginx as a reverse proxy</li>
-<li>apache as a backend</li>
-<li>docker as a plateforme  </li>
-</ul>
-
-<h1 id="repository">Repository</h1>
-
-<p><a href="https://github.com/benIT/docker-nginx-reverse-proxy">You will find a demonstration repository here.</a></p>
-
-<h1 id="demo">Demo</h1>
-
-<p><center><video width="640" height="480" controls src="https://benit.github.io/docker-nginx-reverse-proxy/demo.mp4"></video></center></p>
-
-<p>If it does not work, download it from github repo:</p>
-
-<pre><code>wget https://raw.githubusercontent.com/benIT/docker-nginx-reverse-proxy/master/demo.mp4
-vlc demo.mp4
-</code></pre>
-
-<h1 id="conclusion">Conclusion</h1>
-
-<p>Never forget that computing should always be fun!</p>
 
         </div>
             </article>

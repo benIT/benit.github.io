@@ -3,14 +3,14 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/security.xml" rel="self"/>
     <link href="/"/>
-    <updated>2020-04-28T13:09:25+00:00</updated>
+    <updated>2020-04-29T14:08:11+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
-            <title type="html"><![CDATA[rpi dev 6 - System logs]]></title>
-            <link href="/blog/2020/04/01/rpi-dev-system-logs"/>
+            <title type="html"><![CDATA[rpi dev 7 - System logs]]></title>
+            <link href="/blog/2020/04/01/rpi-dev-7-system-logs"/>
             <updated>2020-04-01T00:00:00+00:00</updated>
-            <id>/blog/2020/04/01/rpi-dev-system-logs</id>
+            <id>/blog/2020/04/01/rpi-dev-7-system-logs</id>
             <content type="html"><![CDATA[<h2 id="interesting-logs">interesting logs</h2>
 
 <ul>
@@ -42,10 +42,10 @@ lnav /var/log/auth.log /var/log/ufw.log /var/log/apache2/*access.log
 ]]></content>
         </entry>
             <entry>
-            <title type="html"><![CDATA[rpi dev 4 - UFW]]></title>
-            <link href="/blog/2020/04/01/rpi-dev-ufw"/>
+            <title type="html"><![CDATA[rpi dev 5 - UFW]]></title>
+            <link href="/blog/2020/04/01/rpi-dev-5-ufw"/>
             <updated>2020-04-01T00:00:00+00:00</updated>
-            <id>/blog/2020/04/01/rpi-dev-ufw</id>
+            <id>/blog/2020/04/01/rpi-dev-5-ufw</id>
             <content type="html"><![CDATA[<h2 id="enable%2Fdisable">enable/disable</h2>
 
 <pre><code>ufw logging on

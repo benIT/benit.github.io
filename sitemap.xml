@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc></loc>
-    <lastmod>2020-04-28</lastmod>
+    <lastmod>2020-04-29</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
@@ -91,37 +91,43 @@
     <priority>1.0</priority>
   </url>
     <url>
-    <loc>/blog/2020/04/01/rpi-dev-system-logs</loc>
+    <loc>/blog/2020/04/01/rpi-dev-7-system-logs</loc>
     <lastmod>2020-04-01T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
-    <loc>/blog/2020/04/01/rpi-dev-ssmtp</loc>
+    <loc>/blog/2020/04/01/rpi-dev-6-ssmtp</loc>
     <lastmod>2020-04-01T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
-    <loc>/blog/2020/04/01/rpi-dev-ufw</loc>
+    <loc>/blog/2020/04/01/rpi-dev-5-ufw</loc>
     <lastmod>2020-04-01T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
-    <loc>/blog/2020/04/01/rpi-dev-lets-encrypt-certificates</loc>
+    <loc>/blog/2020/04/01/rpi-dev-4-lets-encrypt-certificates</loc>
     <lastmod>2020-04-01T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
-    <loc>/blog/2020/04/01/rpi-dev-gitea</loc>
+    <loc>/blog/2020/04/01/rpi-dev-3-gitea</loc>
     <lastmod>2020-04-01T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
     <url>
-    <loc>/blog/2020/04/01/rpi-dev-summary</loc>
+    <loc>/blog/2020/04/01/rpi-dev-2-extend-fs</loc>
+    <lastmod>2020-04-01T00:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+    <url>
+    <loc>/blog/2020/04/01/rpi-dev-1-summary</loc>
     <lastmod>2020-04-01T00:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
