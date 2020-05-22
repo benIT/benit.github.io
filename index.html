@@ -72,6 +72,181 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2020/04/17/linux-quotas">linux basics: quotas</a></h2>
+        </header>
+        <div>
+            <h2 id="quotas">quotas</h2>
+
+<p>Quota specifications:</p>
+
+<ul>
+<li>number of inode (inode: pointer to file)</li>
+<li>number of block</li>
+</ul>
+
+<p>Types:</p>
+
+<ul>
+<li>hard: block user when quota is reached</li>
+<li>soft: inform user that is about to reached the quota</li>
+</ul>
+
+<h3 id="install-quotas">install quotas</h3>
+
+<pre><code>apt install quota
+</code></pre>
+
+<h3 id="enable-quotas">Enable quotas</h3>
+
+<h4 id="%C2%A0check-config-supports-quota"> Check config supports quota</h4>
+
+<pre><code>grep QUOTA /boot/config-*
+</code></pre>
+
+<p>=></p>
+
+<pre><code>CONFIG_NFT_QUOTA=m
+CONFIG_NETFILTER_XT_MATCH_QUOTA=m
+CONFIG_XFS_QUOTA=y
+CONFIG_QUOTA=y
+CONFIG_QUOTA_NETLINK_INTERFACE=y
+CONFIG_PRINT_QUOTA_WARNING=y
+# CONFIG_QUOTA_DEBUG is not set
+CONFIG_QUOTA_TREE=m
+CONFIG_QUOTACTL=y
+CONFIG_QUOTACTL_COMPAT=y
+</code></pre>
+
+<h4 id="mount-options">Mount options</h4>
+
+<p>Check quota are enable in /etc/fstab at the 4th column: <code>usrquota</code>, <code>grpquota</code> option must be specified:</p>
+
+<pre><code>UUID=e248b430-aed3-4586-8a9f-2444515376e7 /               ext4    errors=remount-ro,acl,usrquota,grpquota 0 
+</code></pre>
+
+<h3 id="enable">Enable</h3>
+
+<pre><code>quotacheck -ugm /
+</code></pre>
+
+<p>check quota files have been created:</p>
+
+<pre><code>ls /aquota.*
+/aquota.group  /aquota.user
+</code></pre>
+
+<p>this will fix the following error: <code>edquota: Cannot open quotafile //aquota.user: No such file or directory No filesystems with quota detected.</code></p>
+
+<p>turn it on:</p>
+
+<pre><code>quotaon -v /
+</code></pre>
+
+<p>=></p>
+
+<pre><code>/dev/sda1 [/]: group quotas turned on
+/dev/sda1 [/]: user quotas turned on
+</code></pre>
+
+<h3 id="quota-commands">Quota commands</h3>
+
+<p>check quotas:</p>
+
+<pre><code>quotacheck -a
+</code></pre>
+
+<p>display all quotas:</p>
+
+<pre><code>repquota -a 
+</code></pre>
+
+<p>edit quota:</p>
+
+<p>** do not edit <code>/etc/quotatab</code> file directly but use:</p>
+
+<pre><code>edquota -u foo
+edquota -g foogrp
+</code></pre>
+
+<h3 id="edit-grace-period">edit grace period</h3>
+
+<p>grace period is the quantity of time that the system allows you to exceed the soft limit without blocking you.
+After that, user will be considered as he exceeded the hard limit.</p>
+
+<pre><code>edquota -t
+</code></pre>
+
+<h3 id="service">Service</h3>
+
+<pre><code>/etc/init.d/quota start
+service quota start
+</code></pre>
+
+<h2 id="test-it-%21">Test it !</h2>
+
+<h3 id="as-root">As root</h3>
+
+<pre><code>Disk quotas for user foo (uid 1001):
+  Filesystem                   blocks       soft       hard     inodes     soft     hard
+  /dev/sda1                        16          0          0          4        5        6          
+</code></pre>
+
+<p>Here, our foo user has:
+* currently consumed 4 inodes on the FS
+* a quota soft limit set to 5 inodes
+* a quota hard  limit set to 6 inodes</p>
+
+<h3 id="as-final-user">As final user</h3>
+
+<h4 id="reach-the-soft-limit">Reach the soft limit</h4>
+
+<pre><code>foo@debian:~$ touch file 
+foo@debian:~$ touch file 2
+sda1: warning, user file quota exceeded.
+</code></pre>
+
+<h4 id="reach-the-hard-limit">Reach the hard limit</h4>
+
+<pre><code>foo@debian:~$ touch file 3
+sda1: write failed, user file limit reached.
+touch: cannot touch '3': Disk quota exceeded
+</code></pre>
+
+<h3 id="report">Report</h3>
+
+<pre><code>root@debian:~# repquota /
+</code></pre>
+
+<p>=></p>
+
+<pre><code>*** Report for user quotas on device /dev/sda1
+Block grace time: 7days; Inode grace time: 7days
+                        Block limits                File limits
+User            used    soft    hard  grace    used  soft  hard  grace
+----------------------------------------------------------------------
+root      -- 3645544       0       0         113922     0     0       
+man       --    1496       0       0            157     0     0       
+lp        --   11980       0       0              1     0     0       
+_apt      --      12       0       0              3     0     0       
+systemd-timesync --       4       0       0              2     0     0       
+avahi-autoipd --       4       0       0              1     0     0       
+speech-dispatcher --       4       0       0              1     0     0       
+colord    --       8       0       0              2     0     0       
+lightdm   --      32       0       0              8     0     0       
+ben       --   56020       0       0           1295     0     0       
+foo       -+      16       0       0              6     5     6  6days
+</code></pre>
+
+<h2 id="resources">Resources</h2>
+
+<ul>
+<li>https://www.digitalocean.com/community/tutorials/how-to-set-filesystem-quotas-on-debian-10</li>
+</ul>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/04/17/linux-file-permissions-4">linux basics: file permissions 4 - umask</a></h2>
         </header>
         <div>
@@ -340,133 +515,6 @@ other::r--
 <h2 id="acl-hierarchy">ACL hierarchy</h2>
 
 <p>mask > user ACL > group ACL > owner group ACL > POSIX rights</p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/17/linux-file-permissions-2">linux basics: file permissions 2 - advanced</a></h2>
-        </header>
-        <div>
-            <h2 id="suid%3A-set-user-identification-permission">SUID: Set-user Identification permission</h2>
-
-<p>usage:</p>
-
-<pre><code>chmod u+s prg.sh
-chmod 4[rwx][rwx][rwx] prg.sh
-</code></pre>
-
-<p>Specfic to executable file.</p>
-
-<p>When a command or script with SUID bit set is run, its effective UID becomes that of the owner of the file, rather than of the user who is running it.</p>
-
-<p>The setuid permission displayed as an “s” in the owner’s execute field.</p>
-
-<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
-When a command or script with SUID bit set is run, its effective UID becomes that of the owner of the file, rather than of the user who is running it.</p>
-
-<pre><code>chmod u+s prg.sh
-chmod 4[rwx][rwx][rwx] prg.sh
-</code></pre>
-
-<p>create a file:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# touch prg.sh
-root@raspbeeerry:/home/pi# ls -l prg.sh 
--rw-r--r-- 1 root root 0 Apr 16 15:06 prg.sh
-</code></pre>
-
-<p>add execution right for all:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# chmod a+x prg.sh 
-root@raspbeeerry:/home/pi# ls -l prg.sh 
--rwxr-xr-x 1 root root 0 Apr 16 15:06 prg.sh
-</code></pre>
-
-<p>set SUID, note the lower 's' when X right:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# chmod u+s prg.sh 
-root@raspbeeerry:/home/pi# ls -l prg.sh 
--rwsr-xr-x 1 root root 0 Apr 16 15:06 prg.sh
-</code></pre>
-
-<p>remove execution right for all, note the upper 'S' when no X right:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# chmod a-x prg.sh 
-root@raspbeeerry:/home/pi# ls -l prg.sh 
--rwSr--r-- 1 root root 0 Apr 16 15:06 prg.sh
-</code></pre>
-
-<h2 id="sgid%3A-set-group-identification-permission">SGID: Set-group identification permission</h2>
-
-<p>usage:</p>
-
-<pre><code>chmod g+s prg.sh
-chmod 2[rwx][rwx][rwx] prg.sh
-</code></pre>
-
-<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
-When SGID permission is set on a directory, files created in the directory belong to the group of which the directory is a member.
-– For example if a user having write permission in the directory creates a file there, that file is a member of the same group as the directory and not the user’s group.
-– This is very useful in creating shared directories.
-– The setgid permission displays as an “s” in the group’s execute field.</p>
-
-<h2 id="rights-on-folder">Rights on folder</h2>
-
-<p>*r: allow to list
-*w: allow to create/delete files
-*x: allow to traverse</p>
-
-<h2 id="sticky-bit-permission">Sticky bit permission</h2>
-
-<p>usage:</p>
-
-<pre><code>chmod +t folder
-chmod 1[rwx][rwx][rwx] prg.sh
-</code></pre>
-
-<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
-The sticky bit is primarily used on shared directories.
-* without the sticky bit : user with Write permission on a folder can create/delete other users files
-* with the sticky bit : user with Write permission on a folder are allowed to create new files but not to delete files</p>
-
-<p>Example:</p>
-
-<p>as root, create a folder with sticky bit:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# mkdir test-folder
-root@raspbeeerry:/home/pi# chmod a+w test-folder/
-root@raspbeeerry:/home/pi# ls -ld test-folder/
-drwxrwxrwx 2 root root 4096 Apr 16 14:53 test-folder/
-root@raspbeeerry:/home/pi# touch test-folder/a
-root@raspbeeerry:/home/pi# ls -l permissions.txt ^C
-root@raspbeeerry:/home/pi# ^C
-root@raspbeeerry:/home/pi# chmod +t test-folder/
-</code></pre>
-
-<p>as another user, let's try to create/delete file inside the folder with the sticky bit:</p>
-
-<pre><code>pi@raspbeeerry ~ $ touch test-folder/b
-pi@raspbeeerry ~ $ ls -l test-folder/
-total 0
--rw-r--r-- 1 root root 0 Apr 16 14:58 a
--rw-r--r-- 1 pi   pi   0 Apr 16 14:59 b
-pi@raspbeeerry ~ $ rm test-folder/a
-rm: remove write-protected regular empty file 'test-folder/a'? 
-</code></pre>
-
-<p>as root, let's remove the sticky bit:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# chmod -t test-folder/
-</code></pre>
-
-<p>as another user, retry to delete file created by another user:</p>
-
-<pre><code>pi@raspbeeerry ~ $ rm -f  test-folder/a
-@raspbeeerry ~ $ ls -l test-folder/
-total 0
--rw-r--r-- 1 pi pi 0 Apr 16 14:59 b
-</code></pre>
 
         </div>
             </article>

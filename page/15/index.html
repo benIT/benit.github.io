@@ -72,6 +72,88 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2019/01/14/docker-networking">Docker 101: networking</a></h2>
+        </header>
+        <div>
+            <h1 id="docker-running-containers-inside-a-bridge-network">Docker running containers inside a bridge network</h1>
+
+<p>The purpose of this post is to isolate each tiers of our app into different containers.</p>
+
+<p>We will create a private network and run containers inside this private network.</p>
+
+<p><a href="https://docker-curriculum.com/#webapps-with-docker">This article is largely inspired by this great resource.</a></p>
+
+<h2 id="networking">Networking</h2>
+
+<h3 id="create-an-isolated-private-bridge-network">Create an isolated private bridge network</h3>
+
+<pre><code>docker network create web-net    
+</code></pre>
+
+<h3 id="inspect-the-private-network">Inspect the private network</h3>
+
+<pre><code>docker network inspect web-net
+</code></pre>
+
+<h3 id="run-a-container-inside-the-private-bridge-network-with-%60--net%60-option">Run a container inside the private bridge network with <code>--net</code> option</h3>
+
+<pre><code>docker run --name pgsql-web --rm  -d --net web-net postgres:latest
+docker run --name debian-web --rm -p 80:80 --net web-net -d benit/debian-web:latest
+</code></pre>
+
+<h3 id="inspect-the-private-network-to-get-ips-of-containers-of-the-private-network">Inspect the private network to get IPs of containers of the private network</h3>
+
+<pre><code>docker network inspect web-net
+</code></pre>
+
+<p>gives:</p>
+
+<pre><code> "Containers": {
+            "3729ccbb14e514fd6c8b571ed9c985c28293cb5bfdb10c6c233773f50d6ba763": {
+                "Name": "debian-web",
+                "EndpointID": "c370cab93cdd2ac9f30f568a1709b8c998d2ca36106d5423b484a20aadbff84f",
+                "MacAddress": "02:42:ac:12:00:03",
+                "IPv4Address": "172.18.0.3/16",
+                "IPv6Address": ""
+            },
+            "61bcf5cd9838c8c2e66beef73a04a2704a3be7e2085a5c6b4ad58bd78f12a138": {
+                "Name": "pgsql-web",
+                "EndpointID": "128f50ead4974a725c04551cb284fec2c733a48375a4819096b0b623ff2af4ac",
+                "MacAddress": "02:42:ac:12:00:02",
+                "IPv4Address": "172.18.0.2/16",
+                "IPv6Address": ""
+            }
+        },
+</code></pre>
+
+<h2 id="putting-it-all-together">Putting it all together</h2>
+
+<h3 id="let%27s-create-a-database">Let's create a database</h3>
+
+<pre><code>docker container exec pgsql-web psql -U postgres -c "create database webapp";
+docker container exec pgsql-web psql -U postgres -d webapp -c "CREATE TABLE account(user_id serial PRIMARY KEY,username VARCHAR (50) UNIQUE NOT NULL,created_on TIMESTAMP NOT NULL);" ;
+docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('foo','2019-01-01') ;" ;
+docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('bar','2019-01-02') ;" ;
+</code></pre>
+
+<h3 id="connect-database-container-from-webserver-container">Connect database container from webserver container</h3>
+
+<pre><code>docker container exec -it debian-web  psql -U postgres -h 172.18.0.2 -d webapp -c "select * from account;" ;
+</code></pre>
+
+<p>gives:</p>
+
+<pre><code> user_id | username |     created_on      
+---------+----------+---------------------
+       1 | foo      | 2019-01-01 00:00:00
+       2 | bar      | 2019-01-02 00:00:00
+(2 rows)
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2019/01/14/docker-dockerfile">Docker 101: Dockerfile</a></h2>
         </header>
         <div>
@@ -124,46 +206,6 @@ Environment=https_proxy=http://user:pass@ip:port
 sudo chmod +x /usr/local/bin/docker-compose
 docker-compose --version
 </code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2018/04/27/wordpress-migration-procedure">Wordpress migration procedure</a></h2>
-        </header>
-        <div>
-            <h2 id="extract-source-site-filesystem">Extract source site filesystem</h2>
-
-<pre><code>tar -czf mySite.tgz /var/www/mySite
-</code></pre>
-
-<h2 id="extract-source-site-database">Extract source site database</h2>
-
-<pre><code>mysqldump -u mySite -p mySite &gt; mySite.sql
-</code></pre>
-
-<h2 id="transfert-source-fs-and-db-to-target-site">Transfert source fs and db to target site</h2>
-
-<ul>
-<li><p>Extract tar archive</p>
-
-<pre><code>tar -czf mySite.tgz
-</code></pre></li>
-<li><p>Import database</p></li>
-</ul>
-
-<h2 id="migrate-database">Migrate database</h2>
-
-<p>Wordpress stores url in database, some of them can be serialized so wa can't just replace them with a bash script.</p>
-
-<p>The best and easier way is to use this project <a href="https://github.com/interconnectit/Search-Replace-DB">interconnectit/Search-Replace-DB</a> :</p>
-
-<ul>
-<li>download it</li>
-<li>upload it to the wordpress root</li>
-<li>open a browser at the matching url</li>
-<li>fill the form to migrate your database</li>
-</ul>
 
         </div>
             </article>
