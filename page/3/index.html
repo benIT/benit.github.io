@@ -72,276 +72,427 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2020/04/13/linux-basics-material-9">linux basics: material 9 - mount FS</a></h2>
+            <h2><a href="/blog/2020/04/17/linux-file-permissions-3">linux basics: file permissions 3 - ACL</a></h2>
         </header>
         <div>
-            <h3 id="mount">mount</h3>
+            <p>ACL usage: when POSIX rights are too limited. Check ACL support is enabled:</p>
 
-<p>mounting a FS means associate it to the linux tree, in a particular folder.</p>
-
-<p>From man:</p>
-
-<p>All files accessible in a Unix system are arranged in one big tree, the
-file hierarchy, rooted at /.  These files can be spread out  over  sev‐
-eral  devices.  The mount command serves to attach the filesystem found
-on some device to the big file tree.</p>
-
-<pre><code> mkdir -p /mnt/test
- mount /dev/sdb1 /mnt/test
- cd /mnt/test/
- touch f1 f2 f3
- umount /mnt/test 
- mount /dev/sdb1 /mnt/test
- ls /mnt/test/
-
-
-mount -a: mount all FS /etc/fstab 
+<pre><code>grep ACL /boot/config* | grep -i ext4
 </code></pre>
+
+<p>install package:</p>
+
+<pre><code>apt install acl
+</code></pre>
+
+<p>Enable if needed in <code>/etc/fstab</code>, with option <code>acl</code></p>
+
+<p>create a test file: <code>touch test</code>
+create a test user: <code>adduser testuser</code>
+create a group user: <code>groupadd testgroup</code></p>
+
+<h2 id="getfacl">getfacl</h2>
+
+<pre><code>getfacl test
+
+# file: test
+# owner: root
+# group: root
+user::rw-
+group::r--
+other::r--
+</code></pre>
+
+<h2 id="setfacl">setfacl</h2>
+
+<p>Let's say we want to give an extra <code>rw</code> permissions to our <code>testuser</code> without using POSIX rights:</p>
+
+<pre><code>setfacl -m u:testuser:rw test
+</code></pre>
+
+<p>check that:</p>
+
+<pre><code>getfacl test
+# file: test
+# owner: root
+# group: root
+user::rw-
+user:testuser:rw-
+group::r--
+mask::rw-
+other::r--
+</code></pre>
+
+<p>Let's say we want to give an extra <code>rwx</code> permissions to our <code>testgroup</code> without using POSIX rights:</p>
+
+<pre><code>setfacl -m g:testgroup:rwx test
+</code></pre>
+
+<p>check that:</p>
+
+<pre><code>getfacl test
+# file: test
+# owner: root
+# group: root
+user::rw-
+user:testuser:rw-
+group::r--
+group:testgroup:rwx
+mask::rwx
+other::r--
+</code></pre>
+
+<p>It is possible to edit POSIX rights without specifying user or group:</p>
+
+<pre><code>setfacl -m g::r test
+getfacl test
+# file: test
+# owner: root
+# group: root
+user::rw-
+user:testuser:rw-
+group::r--
+group:testgroup:rwx
+mask::rwx
+other::r--
+</code></pre>
+
+<p>same for user:</p>
+
+<pre><code>setfacl -m u::r test
+getfacl test
+# file: test
+# owner: root
+# group: root
+user::r--
+user:testuser:rw-
+group::r--
+group:testgroup:rwx
+mask::rwx
+other::r--
+</code></pre>
+
+<h3 id="acl-on-folder">ACL on folder</h3>
 
 <ul>
-<li>-r: ro</li>
-<li>-t ext4: specify FS ext type</li>
-<li>-L alabel: mount the FS matching the given label</li>
-<li>-U aUUID: mount the FS matching the given UUID</li>
+<li>-d: inheritance. file in folder will inherit folder ACL</li>
+<li><p>-R: recursive</p>
+
+<p>mkdir test-folder
+setfacl -dm u:testuser:rwx test-folder/</p></li>
 </ul>
-
-<h3 id="list-mounted-fs">list mounted FS</h3>
-
-<pre><code>mount -l 
-</code></pre>
-
-<h3 id="mount-options">mount options</h3>
-
-<pre><code>mount -o auto
-</code></pre>
-
-<ul>
-<li>remount    </li>
-<li>ro</li>
-<li>rw</li>
-<li>loop: for loopback block device    </li>
-<li>auto/noauto: auto mount the FS at startup or mount -a</li>
-<li>user: specify user allowed to mount/unmount the FS</li>
-</ul>
-
-<p>mount FS in RO mode:</p>
-
-<pre><code> mount -o ro /dev/sdb1 /mnt/test/
- ls /mnt/test/
- f1  f2 f3  lost+found
- date &gt;&gt; /mnt/test/f1
- -su: /mnt/test/f1: Read-only file system
-</code></pre>
-
-<p>remount it in RW mode (without unmount!):</p>
-
-<pre><code> mount -o rw,remount /dev/sdb1 /mnt/test/
- date &gt;&gt; /mnt/test/f1
-</code></pre>
-
-<h2 id="umount">umount</h2>
-
-<pre><code>umount /dev/sdb1
-</code></pre>
-
-<p>or</p>
-
-<pre><code>umount /mnt/test
-</code></pre>
-
-<ul>
-<li>-a: all</li>
-<li>-f: forcee</li>
-<li>-r: if fails, remount in ro</li>
-</ul>
-
-<hr />
-
-<h3 id="fstab">fstab</h3>
-
-<p>/etc/fstab is used to automount FS</p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/13/linux-basics-material-8">linux basics: material 8 - FS tools</a></h2>
-        </header>
-        <div>
-            <h2 id="fs-tools">FS tools</h2>
-
-<h3 id="dumps-fs-informations%3A-dumpe2fs">dumps FS informations: dumpe2fs</h3>
-
-<p>inode: means a file</p>
-
-<pre><code>dumpe2fs -h /dev/sda1
-</code></pre>
-
-<p>outputs:</p>
-
-<pre><code>Filesystem OS type:       Linux
-Inode count:              9707520 #max number of files
-Block count:              38812416 #max number of blocks
-Reserved block count:     1940620
-Free blocks:              33756140 #
-Free inodes:              9545389  #
-</code></pre>
-
-<h3 id="tune-fs-settings%3A-tune2fs">tune FS settings: tune2fs</h3>
-
-<p>!! never use on a mounted FS !!</p>
-
-<p>tune2fs</p>
-
-<h4 id="set-number-of-mount-before-checking-fs">set number of mount before checking FS</h4>
-
-<pre><code>tune2fs -c 3 /dev/sdb1
-</code></pre>
-
-<p>=></p>
-
-<pre><code>tune2fs 1.43.4 (31-Jan-2017)
-Setting maximal mount count to 3
-</code></pre>
-
-<h4 id="set-time-interval-before-checking-fs">set time interval before checking FS</h4>
-
-<pre><code>tune2fs -i 60d /dev/sdb1
-</code></pre>
-
-<p>=></p>
-
-<pre><code>tune2fs 1.43.4 (31-Jan-2017)
-Setting interval between checks to 5184000 seconds
-</code></pre>
 
 <p>check:</p>
 
-<pre><code>dumpe2fs -h /dev/sdb1 | grep interval
+<pre><code>getfacl test-folder/
+# file: test-folder/
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+default:user::rwx
+default:user:testuser:rwx
+default:group::r-x
+default:mask::rwx
+default:other::r-x
 </code></pre>
 
-<h4 id="set-number-of-reserved-blocks">set number of reserved blocks</h4>
+<p>check child file inherits ACL from parent folder:</p>
 
-<p>prevent user to fullfill FS</p>
-
-<pre><code>tune2fs -m 3 /dev/sdb1
-</code></pre>
-
-<p>=></p>
-
-<pre><code>tune2fs 1.43.4 (31-Jan-2017)
-Setting reserved blocks percentage to 3% (14667 blocks)
-</code></pre>
-
-<h4 id="debugfs">debugfs</h4>
-
-<p>!! never use on a mounted FS !!</p>
-
-<p>dumpe + tune FS</p>
-
-<pre><code>debugfs -w /dev/sdb1
-</code></pre>
-
-<h5 id="fs-stats">FS stats</h5>
-
-<p>stats</p>
-
-<p>=></p>
-
-<pre><code>Filesystem volume name:   &lt;none&gt;
-Last mounted on:          /media/pi/CDROM
-Filesystem UUID:          41d6539d-342e-4c2b-93f3-c941525d29b3
-Filesystem magic number:  0xEF53
-Filesystem revision #:    1 (dynamic)
-Filesystem features:      has_journal ext_attr resize_inode dir_index filetype needs_recovery extent 64bit flex_bg sparse_super large_file huge_file dir_nlink extra_isize metadata_csum
-Filesystem flags:         signed_directory_hash 
-Default mount options:    user_xattr acl
-Filesystem state:         clean
-Errors behavior:          Continue
-Filesystem OS type:       Linux
-Inode count:              122400
-Block count:              488907
-Reserved block count:     14667
-Free blocks:              471589
-Free inodes:              122388
-First block:              0
-Block size:               4096
-Fragment size:            4096
-Group descriptor size:    64
-Reserved GDT blocks:      238
-</code></pre>
-
-<h5 id="file-stats">File stats</h5>
-
-<pre><code>stat test.txt
+<pre><code>touch test-folder/a
+getfacl test-folder/a
 </code></pre>
 
 <p>=></p>
 
-<pre><code>Inode: 13   Type: regular    Mode:  0644   Flags: 0x80000
-Generation: 1782112958    Version: 0x00000000:00000001
-User:     0   Group:     0   Project:     0   Size: 5
-File ACL: 0    Directory ACL: 0
-Links: 1   Blockcount: 8
-Fragment:  Address: 0    Number: 0    Size: 0
- ctime: 0x5e95a4c1:dc281c1c -- Tue Apr 14 13:55:45 2020
-  atime: 0x5e95a4c1:dc281c1c -- Tue Apr 14 13:55:45 2020
-   mtime: 0x5e95a4c1:dc281c1c -- Tue Apr 14 13:55:45 2020
-   crtime: 0x5e95a4c1:dc281c1c -- Tue Apr 14 13:55:45 2020
-   Size of extra inode fields: 32
-   Inode checksum: 0x8be005b7
-   EXTENTS:
-   (0):33008
+<pre><code># file: test-folder/a
+# owner: root
+# group: root
+user::rw-
+user:testuser:rwx       #effective:rw-
+group::r-x          #effective:r--
+mask::rw-
+other::r--
 </code></pre>
 
-<p>lsdel: list deleted file 
-undel: undelete a file</p>
+<p>Recursive mode is not linked to file.</p>
 
-<h3 id="fsck">FSCK</h3>
+<h3 id="delete-acl">Delete ACL</h3>
 
-<p>fsck - check and repair a Linux filesystem</p>
+<h4 id="delete-all-acls">Delete all ACLs</h4>
 
-<p>!! never use on a mounted FS !!</p>
-
-<pre><code>fsck -v /dev/sdb1
+<pre><code>setfacl -b test
 </code></pre>
 
-<p>=></p>
+<p>There is no more ACL rights, only POSIX rights:</p>
 
-<pre><code>fsck from util-linux 2.29.2
- e2fsck 1.43.4 (31-Jan-2017)
- /dev/sdb1: clean, 13/122400 files, 17319/488907 blocks (check after next mount)
+<pre><code>getfacl test
+# file: test
+# owner: root
+# group: root
+user::r--
+group::r--
+other::r--
+</code></pre>
+
+<h4 id="delete-default-acls-with-%60-k%60">Delete default ACLs with <code>-k</code></h4>
+
+<pre><code>getfacl test-folder/
+# file: test-folder/
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+default:user::rwx
+default:user:testuser:rwx
+default:group::r-x
+default:mask::rwx
+default:other::r-x
+</code></pre>
+
+<p>delete: <code>setfacl -k test-folder/</code>
+check: <code>getfacl test-folder/</code></p>
+
+<pre><code># file: test-folder/
+# owner: root
+# group: root
+user::rwx
+group::r-x
+other::r-x
+</code></pre>
+
+<h4 id="delete-a-particular-acl-with-%60-x%60">Delete a particular ACL with <code>-x</code></h4>
+
+<pre><code>setfacl -x u:testuser test
+</code></pre>
+
+<h2 id="mask">Mask</h2>
+
+<p>A mask is a logical AND operator. The effective rights will result of the logical AND operation of the right mask and the user or group ACL. Check the <code>#effective:</code> in <code>getfacl</code> output:</p>
+
+<p>Let a <code>rwx</code> ACL to <code>testuser</code>:</p>
+
+<pre><code>setfacl -m u:testuser:rwx test
+</code></pre>
+
+<p>Let a <code>rw</code> mask ACL:</p>
+
+<pre><code>setfacl -m m::rw test
+</code></pre>
+
+<p>Check rights:</p>
+
+<pre><code> getfacl test
+# file: test
+# owner: root
+# group: root
+user::r--
+user:testuser:rwx               #effective:rw-
+group::r--
+mask::rw-
+other::r--
+</code></pre>
+
+<p>For testuser:</p>
+
+<pre><code>user:testuser:rwx               #effective:rw
+</code></pre>
+
+<p>The effective rights are the result of the logical AND operation, thus <code>rw</code></p>
+
+<h2 id="acl-hierarchy">ACL hierarchy</h2>
+
+<p>mask > user ACL > group ACL > owner group ACL > POSIX rights</p>
+
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2020/04/17/linux-file-permissions-2">linux basics: file permissions 2 - advanced</a></h2>
+        </header>
+        <div>
+            <h2 id="suid%3A-set-user-identification-permission">SUID: Set-user Identification permission</h2>
+
+<p>usage:</p>
+
+<pre><code>chmod u+s prg.sh
+chmod 4[rwx][rwx][rwx] prg.sh
+</code></pre>
+
+<p>Specfic to executable file.</p>
+
+<p>When a command or script with SUID bit set is run, its effective UID becomes that of the owner of the file, rather than of the user who is running it.</p>
+
+<p>The setuid permission displayed as an “s” in the owner’s execute field.</p>
+
+<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
+When a command or script with SUID bit set is run, its effective UID becomes that of the owner of the file, rather than of the user who is running it.</p>
+
+<pre><code>chmod u+s prg.sh
+chmod 4[rwx][rwx][rwx] prg.sh
+</code></pre>
+
+<p>create a file:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# touch prg.sh
+root@raspbeeerry:/home/pi# ls -l prg.sh 
+-rw-r--r-- 1 root root 0 Apr 16 15:06 prg.sh
+</code></pre>
+
+<p>add execution right for all:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# chmod a+x prg.sh 
+root@raspbeeerry:/home/pi# ls -l prg.sh 
+-rwxr-xr-x 1 root root 0 Apr 16 15:06 prg.sh
+</code></pre>
+
+<p>set SUID, note the lower 's' when X right:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# chmod u+s prg.sh 
+root@raspbeeerry:/home/pi# ls -l prg.sh 
+-rwsr-xr-x 1 root root 0 Apr 16 15:06 prg.sh
+</code></pre>
+
+<p>remove execution right for all, note the upper 'S' when no X right:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# chmod a-x prg.sh 
+root@raspbeeerry:/home/pi# ls -l prg.sh 
+-rwSr--r-- 1 root root 0 Apr 16 15:06 prg.sh
+</code></pre>
+
+<h2 id="sgid%3A-set-group-identification-permission">SGID: Set-group identification permission</h2>
+
+<p>usage:</p>
+
+<pre><code>chmod g+s prg.sh
+chmod 2[rwx][rwx][rwx] prg.sh
+</code></pre>
+
+<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
+When SGID permission is set on a directory, files created in the directory belong to the group of which the directory is a member.
+– For example if a user having write permission in the directory creates a file there, that file is a member of the same group as the directory and not the user’s group.
+– This is very useful in creating shared directories.
+– The setgid permission displays as an “s” in the group’s execute field.</p>
+
+<h2 id="rights-on-folder">Rights on folder</h2>
+
+<p>*r: allow to list
+*w: allow to create/delete files
+*x: allow to traverse</p>
+
+<h2 id="sticky-bit-permission">Sticky bit permission</h2>
+
+<p>usage:</p>
+
+<pre><code>chmod +t folder
+chmod 1[rwx][rwx][rwx] prg.sh
+</code></pre>
+
+<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
+The sticky bit is primarily used on shared directories.
+* without the sticky bit : user with Write permission on a folder can create/delete other users files
+* with the sticky bit : user with Write permission on a folder are allowed to create new files but not to delete files</p>
+
+<p>Example:</p>
+
+<p>as root, create a folder with sticky bit:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# mkdir test-folder
+root@raspbeeerry:/home/pi# chmod a+w test-folder/
+root@raspbeeerry:/home/pi# ls -ld test-folder/
+drwxrwxrwx 2 root root 4096 Apr 16 14:53 test-folder/
+root@raspbeeerry:/home/pi# touch test-folder/a
+root@raspbeeerry:/home/pi# ls -l permissions.txt ^C
+root@raspbeeerry:/home/pi# ^C
+root@raspbeeerry:/home/pi# chmod +t test-folder/
+</code></pre>
+
+<p>as another user, let's try to create/delete file inside the folder with the sticky bit:</p>
+
+<pre><code>pi@raspbeeerry ~ $ touch test-folder/b
+pi@raspbeeerry ~ $ ls -l test-folder/
+total 0
+-rw-r--r-- 1 root root 0 Apr 16 14:58 a
+-rw-r--r-- 1 pi   pi   0 Apr 16 14:59 b
+pi@raspbeeerry ~ $ rm test-folder/a
+rm: remove write-protected regular empty file 'test-folder/a'? 
+</code></pre>
+
+<p>as root, let's remove the sticky bit:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# chmod -t test-folder/
+</code></pre>
+
+<p>as another user, retry to delete file created by another user:</p>
+
+<pre><code>pi@raspbeeerry ~ $ rm -f  test-folder/a
+@raspbeeerry ~ $ ls -l test-folder/
+total 0
+-rw-r--r-- 1 pi pi 0 Apr 16 14:59 b
 </code></pre>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2020/04/13/linux-basics-material-7">linux basics: material 7 - formatting</a></h2>
+            <h2><a href="/blog/2020/04/17/linux-file-permissions-1">linux basics: file permissions 1 - POSIX rights</a></h2>
         </header>
         <div>
-            <h2 id="formatting">Formatting</h2>
+            <h2 id="file-ownership">file ownership</h2>
 
-<p>BE CAREFUL: FORMATTING WILL ERASE ALL EXISTING DATA!</p>
+<p>File ownership is managed by a user owner and a group owner.
+See <code>ls -l</code> or <code>ls -n</code></p>
 
-<p>formatting means create a FS.</p>
+<p>Examples:</p>
 
-<pre><code>mkfs.ext4 /dev/sdb1
-mkfs -t ext4 /dev/sdb1
+<pre><code>chown user:group file #change owner and group
+chown user file # change only owner
+chown :group file #change only group, same as chgrp command
 </code></pre>
 
-<p>check a disk with mkfs, looks for bad element meaning the diskend of life:</p>
+<h2 id="linux-posix-rights">Linux POSIX rights</h2>
 
-<pre><code>mkfs -t ext4 -c /dev/sdb1
+<p>POSIX is a standard.</p>
+
+<h2 id="list-rights">List rights</h2>
+
+<pre><code>ls -l
 </code></pre>
 
-<p>-m: % reserved space to prevent user to fullfill disk.</p>
+<p>Type codes:</p>
 
-<h3 id="swap-formatting">SWAP formatting</h3>
+<ul>
+<li>-: file</li>
+<li>d: folder</li>
+<li>l: symlink</li>
+<li>p: pipe. used to make 2 programs communicate</li>
+<li>s: socket. used to make 2 programs communicate + network management + bidirectional</li>
+<li>b: block device, ie write block by block</li>
+<li>c: character device, ie write char by char</li>
+</ul>
 
-<pre><code>mkswap /dev/sdbX #format
-swapon /dev/sdbX #tell system to use it as swap
-</code></pre>
+<p>9 bits: 3 User + 3 Group + 3 Other</p>
+
+<h2 id="chmod">chmod</h2>
+
+<ul>
+<li>u: for user</li>
+<li>g: for group</li>
+<li>o: for others</li>
+<li><p>a: for all</p></li>
+<li><p>+: add right</p></li>
+<li>-: remove right</li>
+<li><p>=: set right</p></li>
+<li><p>r: read. 2^2 => 4</p></li>
+<li>w: write.2^1 => 2</li>
+<li><p>x: execute.2^0 => 1</p>
+
+<p>chmod u+r,g-r file.txt
+chmod a=rwx file.txt
+chmod 740 file.txt</p></li>
+</ul>
 
         </div>
             </article>

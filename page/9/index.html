@@ -72,627 +72,518 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2019/09/30/centos-course-notes">CentOS course notes</a></h2>
+            <h2><a href="/blog/2020/04/01/rpi-dev-2-extend-fs">rpi dev 2 - extend RPI storage with a USB drive</a></h2>
         </header>
         <div>
-            <h2 id="networking">networking</h2>
+            <h2 id="purpose">purpose</h2>
 
-<p>Network Manager CLI: <code>nmcli</code></p>
+<p>create 3 partitions of 8Go for :</p>
 
-<p>list all interfaces:</p>
+<ul>
+<li>/var/www</li>
+<li>/mnt/gitea</li>
+<li>/var/lib/postgresql/</li>
+</ul>
 
-<pre><code>ip a
+<h3 id="create-3-partitions-on-the-usb-drive-of-8go">Create 3 partitions on the USB drive of 8Go</h3>
+
+<pre><code>root@raspberrypi:~# fdisk /dev/sda
 </code></pre>
 
-<h3 id="centos">centos</h3>
+<p>=></p>
 
-<p>example: <code>/etc/sysconfig/network-scripts/ifcfg-enp0s3</code>
-naming:</p>
+<pre><code>Command (m for help): o
+Created a new DOS disklabel with disk identifier 0x78494e0c.
 
-<pre><code>en: Ethernet Network
-p0: bus PCI n°0
-s3: slot 3
+Command (m for help): n
+Partition type
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended (container for logical partitions)
+Select (default p): p
+Partition number (1-4, default 1): 1
+First sector (2048-60063743, default 2048): 
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-60063743, default 60063743): +8G
+
+Created a new partition 1 of type 'Linux' and of size 8 GiB.
+
+Command (m for help): n
+Partition type
+   p   primary (1 primary, 0 extended, 3 free)
+   e   extended (container for logical partitions)
+Select (default p): p
+Partition number (2-4, default 2): 2
+First sector (16779264-60063743, default 16779264): 
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (16779264-60063743, default 60063743): +8G
+
+Created a new partition 2 of type 'Linux' and of size 8 GiB.
+
+Command (m for help): n
+Partition type
+   p   primary (2 primary, 0 extended, 2 free)
+   e   extended (container for logical partitions)
+Select (default p): p
+Partition number (3,4, default 3): 
+First sector (33556480-60063743, default 33556480): 
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (33556480-60063743, default 60063743): +8G
+
+Created a new partition 3 of type 'Linux' and of size 8 GiB.
+
+Command (m for help): w
+The partition table has been altered.
+Calling ioctl() to re-read partition table.
+Syncing disks.
 </code></pre>
 
-<h2 id="%40ip-detail-fro-interface-enp0s3">@ip detail fro interface enp0s3</h2>
+<h3 id="check">Check</h3>
 
-<pre><code>ip addr show enp0s3
+<pre><code>root@raspberrypi:~# fdisk -l /dev/sda
 </code></pre>
 
-<p>Create a virtualbox nat network: 10.0.3.0/24</p>
+<p>=></p>
 
-<pre><code>10.0.3.1: gateway
-10.0.3.2: gateway
-10.0.3.3: DNS
+<pre><code>Disk /dev/sda: 28.7 GiB, 30752636928 bytes, 60063744 sectors
+Disk model: Ultra           
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x78494e0c
+
+Device     Boot    Start      End  Sectors Size Id Type
+/dev/sda1           2048 16779263 16777216   8G 83 Linux
+/dev/sda2       16779264 33556479 16777216   8G 83 Linux
+/dev/sda3       33556480 50333695 16777216   8G 83 Linux
 </code></pre>
 
-<p>1st @ip is: <code>10.0.3.4</code></p>
+<h3 id="create-ext4-filesystem-for-each-partitions-with-explicit-labels">create ext4 filesystem for each partitions with explicit labels</h3>
 
-<h3 id="static-%40ip">static @ip</h3>
-
-<p>vim /etc/sysconfig/network-scripts/ifcfg-enp0s3</p>
-
-<pre><code>TYPE="Ethernet"
-NM_CONTROLLED="no"
-
-PROXY_METHOD="none"
-BROWSER_ONLY="no"
-
-BOOTPROTO="static"
-
-DEFROUTE="yes"
-IPV4_FAILURE_FATAL="no"
-IPV6INIT="no"
-#IPV6_AUTOCONF="yes"
-#IPV6_DEFROUTE="yes"
-#IPV6_FAILURE_FATAL="no"
-#IPV6_ADDR_GEN_MODE="stable-privacy"
-
-IPADDR=10.0.3.5
-NETMASK=255.255.255.0
-GATEWAY=10.0.3.1
-DNS1=1.1.1.1
-
-NAME="enp0s3"
-UUID="f7b6b794-8d98-4c80-93ed-1b2ce803457e"
-DEVICE="enp0s3"
-ONBOOT="yes"
-
-systemctl restart network
-
-ping 1.1.1.1
-ping google.fr
+<pre><code>mkfs.ext4 -L pi-git /dev/sda1
+mkfs.ext4 -L pi-web /dev/sda2
+mkfs.ext4 -L pi-pgsql /dev/sda3
 </code></pre>
 
-<p>show internal route table:
-    ip route</p>
+<h2 id="check">Check</h2>
 
-<pre><code>default via 10.0.3.1 dev enp0s3 
-10.0.3.0/24 dev enp0s3 proto kernel scope link src 10.0.3.5 
-169.254.0.0/16 dev enp0s3 scope link metric 1002 
+<pre><code>root@raspberrypi:~# ls -l /dev/disk/by-label/
 </code></pre>
 
-<h2 id="arp-adress-resolution-protocol-%3A-mapping-%40mac-%40ip">ARP Adress resolution Protocol : mapping @mac &lt;=>@IP</h2>
+<p>=></p>
 
-<p>ip n show</p>
-
-<h2 id="firewall">Firewall</h2>
-
-<pre><code>firewall-cmd  --get-default-zone
-
-
-firewall-cmd --permanent  --add-service https  
-
-
-firewall-cmd  --zone=public --list-all
-
-public (active)
-  target: default
-  icmp-block-inversion: no
-  interfaces: enp0s3
-  sources: 
-  services: dhcpv6-client https ssh
-  ports: 
-  protocols: 
-  masquerade: no
-  forward-ports: 
-  source-ports: 
-  icmp-blocks: 
-  rich rules:   
+<pre><code>total 0
+lrwxrwxrwx 1 root root 15 Apr 28 18:17 boot -&gt; ../../mmcblk0p1
+lrwxrwxrwx 1 root root 10 Apr 29 11:02 pi-git -&gt; ../../sda1
+lrwxrwxrwx 1 root root 10 Apr 29 11:05 pi-pgsql -&gt; ../../sda3
+lrwxrwxrwx 1 root root 10 Apr 29 11:05 pi-web -&gt; ../../sda2
+lrwxrwxrwx 1 root root 15 Apr 28 18:17 rootfs -&gt; ../../mmcblk0p2
 </code></pre>
 
-<h2 id="virtualbox-guest-additions">Virtualbox guest additions</h2>
+<h2 id="mount">Mount</h2>
 
-<pre><code>click 'insert guest addition CD'
-mount /dev/cdrom /media/cdrom
-cd /media/cdrom
-KERN_DIR=/usr/src/kernels/$(uname -r)
-export KERN_DIR
-./VBoxLinuxAdditions.run
+<pre><code>mkdir -p /var/www
+mkdir -p /mnt/gitea
+mkdir -p /var/lib/postgresql/
 </code></pre>
 
-<h2 id="mate-gui">MATE GUI</h2>
+<p>add to `/etc/fstab. <a href="https://debian-facile.org/doc:systeme:fstab">see fstab resource</a>:</p>
 
-<pre><code>yum install -y epel-release
-yum groupinstall -y "MATE Desktop"
-systemctl set-default graphical.target
+<pre><code>LABEL=pi-git  /mnt/gitea                ext4    defaults  0       2
+LABEL=pi-web  /var/www                  ext4    defaults  0       2
+LABEL=pi-pgsql  /var/lib/postgresql         ext4    defaults  0       2
 </code></pre>
 
-<h2 id="partitioning">Partitioning</h2>
+<p>mount:</p>
 
-<h3 id="%C2%A0create-a-physical-partition"> Create a physical partition</h3>
-
-<pre><code>fdisk /dev/sdb
-Bienvenue dans fdisk (util-linux 2.23.2).
-
-Les modifications resteront en mémoire jusqu'à écriture.
-Soyez prudent avant d'utiliser la commande d'écriture.
-
-Le périphérique ne contient pas de table de partitions reconnue
-Construction d'une nouvelle étiquette pour disque de type DOS avec identifiant de disque 0xf858f73b.
-
-Commande (m pour l'aide) : m
-Commande d'action
-   a   toggle a bootable flag
-   b   edit bsd disklabel
-   c   toggle the dos compatibility flag
-   d   delete a partition
-   g   create a new empty GPT partition table
-   G   create an IRIX (SGI) partition table
-   l   list known partition types
-   m   print this menu
-   n   add a new partition
-   o   create a new empty DOS partition table
-   p   print the partition table
-   q   quit without saving changes
-   s   create a new empty Sun disklabel
-   t   change a partition's system id
-   u   change display/entry units
-   v   verify the partition table
-   w   write table to disk and exit
-   x   extra functionality (experts only)
-
-Commande (m pour l'aide) : n
-Type de partition :
-   p   primaire (0 primaire(s), 0 étendue(s), 4 libre(s))
-  e   étendue
-Sélection (p par défaut) : p
-Numéro de partition (1-4, 1 par défaut) : 1
-Premier secteur (2048-41943039, 2048 par défaut) : 
-Utilisation de la valeur 2048 par défaut
-Dernier secteur, +secteur ou +taille{K,M,G} (2048-41943039, 41943039 par défaut) : +5G
-La partition 1 de type Linux et de taille 5 GiB est configurée
-
-Commande (m pour l'aide) : m
-Commande d'action
-   a   toggle a bootable flag
-   b   edit bsd disklabel
-   c   toggle the dos compatibility flag
-   d   delete a partition
-   g   create a new empty GPT partition table
-   G   create an IRIX (SGI) partition table
-   l   list known partition types
-   m   print this menu
-   n   add a new partition
-   o   create a new empty DOS partition table
-   p   print the partition table
-   q   quit without saving changes
-   s   create a new empty Sun disklabel
-   t   change a partition's system id
-   u   change display/entry units
-   v   verify the partition table
-   w   write table to disk and exit
-   x   extra functionality (experts only)
-
-Commande (m pour l'aide) : w
-La table de partitions a été altérée.
-
-Appel d'ioctl() pour relire la table de partitions.
-Synchronisation des disques.
-
-partition créé, non formatée; inutilisable pour le moment
+<pre><code>mount -a
 </code></pre>
 
-<h3 id="create-a-15-go-extended-partition-on-all-remaning-space">Create a 15 GO extended partition on all remaning space</h3>
+<p>check:</p>
 
-<pre><code>fdisk /dev/sdb
-Bienvenue dans fdisk (util-linux 2.23.2).
-
-Les modifications resteront en mémoire jusqu'à écriture.
-Soyez prudent avant d'utiliser la commande d'écriture.
-
-
-Commande (m pour l'aide) : n
-Type de partition :
-   p   primaire (1 primaire(s), 0 étendue(s), 3 libre(s))
-  e   étendue
-Sélection (p par défaut) : e
-Numéro de partition (2-4, 2 par défaut) : 2
-Premier secteur (10487808-41943039, 10487808 par défaut) : 
-Utilisation de la valeur 10487808 par défaut
-Dernier secteur, +secteur ou +taille{K,M,G} (10487808-41943039, 41943039 par défaut) : 
-Utilisation de la valeur 41943039 par défaut
-La partition 2 de type Extended et de taille 15 GiB est configurée
+<pre><code>root@raspberrypi:~#  df -h
 </code></pre>
 
-<h3 id="add-3go-logical-partition-inside-the-extended-partition">Add 3Go logical partition inside the extended partition</h3>
+<p>=></p>
 
-<pre><code>Commande (m pour l'aide) : n
-Type de partition :
-   p   primaire (1 primaire(s), 1 étendue(s), 2 libre(s))
-   l   logique (numéroté à partir de 5)
-Sélection (p par défaut) : l
-Ajout de la partition logique 5
-Premier secteur (10489856-41943039, 10489856 par défaut) : 
-Utilisation de la valeur 10489856 par défaut
-Dernier secteur, +secteur ou +taille{K,M,G} (10489856-41943039, 41943039 par défaut) : +3G
-La partition 5 de type Linux et de taille 3 GiB est configurée
-
-Commande (m pour l'aide) : p 
-
-Disque /dev/sdb : 21.5 Go, 21474836480 octets, 41943040 secteurs
-Unités = secteur de 1 × 512 = 512 octets
-Taille de secteur (logique / physique) : 512 octets / 512 octets
-taille d'E/S (minimale / optimale) : 512 octets / 512 octets
-Type d'étiquette de disque : dos
-Identifiant de disque : 0xf858f73b
-
-Périphérique Amorçage  Début         Fin      Blocs    Id. Système
-/dev/sdb1            2048    10487807     5242880   83  Linux
-/dev/sdb2        10487808    41943039    15727616    5  Extended
-/dev/sdb5        10489856    16781311     3145728   83  Linux
-
-Commande (m pour l'aide) : w
-La table de partitions a été altérée.
-
-Appel d'ioctl() pour relire la table de partitions.
-Synchronisation des disques.
-</code></pre>
-
-<h2 id="lvm">LVM</h2>
-
-<h3 id="declare-physical-volumes">Declare physical volumes</h3>
-
-<pre><code>[root@centos ~]# pvcreate /dev/sdb
-WARNING: dos signature detected on /dev/sdb at offset 510. Wipe it? [y/n]: y
-  Wiping dos signature on /dev/sdb.
-  Physical volume "/dev/sdb" successfully created.
-
-[root@centos ~]# pvcreate /dev/sdc
-  Physical volume "/dev/sdc" successfully created.
-[root@centos ~]# vgcreate vg01 /dev/sd
-sda   sda1  sda2  sdb   sdc   
-</code></pre>
-
-<h3 id="create-a-volume-group%3A-%60vg01%60">Create a volume group: <code>vg01</code></h3>
-
-<pre><code>[root@centos ~]# vgcreate vg01 /dev/sdb /dev/sdc
-  Volume group "vg01" successfully created
-
-[root@centos ~]# vgdisplay vg01
-  --- Volume group ---
-  VG Name               vg01
-  System ID             
-  Format                lvm2
-  Metadata Areas        2
-  Metadata Sequence No  1
-  VG Access             read/write
-  VG Status             resizable
-  MAX LV                0
-  Cur LV                0
-  Open LV               0
-  Max PV                0
-  Cur PV                2
-  Act PV                2
-  VG Size               39,99 GiB
-  PE Size               4,00 MiB
-  Total PE              10238
-  Alloc PE / Size       0 / 0   
-  Free  PE / Size       10238 / 39,99 GiB
-  VG UUID               LoVhMG-uCtl-jw9H-LjCv-k5zh-jjoO-50w0S7
-</code></pre>
-
-<h3 id="create-logical-volumes">Create logical volumes</h3>
-
-<pre><code>[root@centos ~]# lvcreate -n lv01 -L 5Go /dev/vg01
-  Logical volume "lv01" created.
-
-[root@centos ~]# lvcreate -n lv02 -L 15Go /dev/vg01
-  Logical volume "lv02" created.
-
-[root@centos ~]# lvcreate -n lv03 -L 8Go /dev/vg01
-  Logical volume "lv03" created.
-</code></pre>
-
-<p><img src="/images/centos-course/gparted-lvm.png" alt="screenshot" /></p>
-
-<p><img src="/images/centos-course/partition-extended.png" alt="screenshot" /></p>
-
-<h3 id="ext4-formating-of-logical-volumes">Ext4 formating of logical volumes</h3>
-
-<pre><code>root@centos ~]# mkfs -t ext4 /dev/vg01/lv01
-mke2fs 1.42.9 (28-Dec-2013)
-Étiquette de système de fichiers=
-Type de système d'exploitation : Linux
-Taille de bloc=4096 (log=2)
-Taille de fragment=4096 (log=2)
-« Stride » = 0 blocs, « Stripe width » = 0 blocs
-327680 i-noeuds, 1310720 blocs
-65536 blocs (5.00%) réservés pour le super utilisateur
-Premier bloc de données=0
-Nombre maximum de blocs du système de fichiers=1342177280
-40 groupes de blocs
-32768 blocs par groupe, 32768 fragments par groupe
-8192 i-noeuds par groupe
-Superblocs de secours stockés sur les blocs : 
-    32768, 98304, 163840, 229376, 294912, 819200, 884736
-
-Allocation des tables de groupe : complété                        
-Écriture des tables d'i-noeuds : complété                        
-Création du journal (32768 blocs) : complété
-Écriture des superblocs et de l'information de comptabilité du système de
-fichiers : complété
-
-[root@centos ~]# mkfs -t ext4 /dev/vg01/lv02
-[root@centos ~]# mkfs -t ext4 /dev/vg01/lv03
-</code></pre>
-
-<h3 id="create-mount-points">Create mount points</h3>
-
-<pre><code>[root@centos mnt]# mkdir -p /mnt/volume1 /mnt/volume2 /mnt/volume3
-[root@centos mnt]# mount -t ext4 /dev/vg01/lv01 /mnt/volume1/
-[root@centos mnt]# mount -t ext4 /dev/vg01/lv02 /mnt/volume2/
-[root@centos mnt]# mount -t ext4 /dev/vg01/lv03 /mnt/volume3/
-[root@centos mnt]# touch /mnt/volume1/foo
-</code></pre>
-
-<h3 id="add-permanent-mount-point-in-%60%2Fetc%2Ffstab%60">Add permanent mount point in <code>/etc/fstab</code></h3>
-
-<p>vim /etc/fstab</p>
-
-<pre><code>/dev/vg01/lv01 /mnt/volume1                     ext4    defaults        0 0
-/dev/vg01/lv02 /mnt/volume2                     ext4    defaults        0 0
-/dev/vg01/lv03 /mnt/volume3                     ext4    defaults        0 0
-reboot
-df -h
-/dev/mapper/vg01-lv02      15G     41M   14G   1% /mnt/volume2
-/dev/mapper/vg01-lv03     7,8G     36M  7,3G   1% /mnt/volume3
-/dev/mapper/vg01-lv01     4,8G     20M  4,6G   1% /mnt/volume1
-</code></pre>
-
-<h2 id="copy-a-full-hard-drive">Copy a full hard drive</h2>
-
-<pre><code>[root@centos]# dd if=/dev/vg01/lv01 of=/dev/vg01/lv02
-10485760+0 enregistrements lus
-10485760+0 enregistrements écrits
-5368709120 octets (5,4 GB) copiés, 102,314 s, 52,5 MB/s
-</code></pre>
-
-<h2 id="dump-%2F-restore">Dump / restore</h2>
-
-<pre><code>ls /mnt/volume4
-umount /mnt/volume4
-dump -0f /tmp/vol4.dump /dev/vg01/lv04
-
-mount -t ext4 /dev/vg01/lv04 /mnt/volume4
-rm -rf /mnt/volume4/*
-
-cd /mnt/volume4
-restore -rf /tmp/vol4.dump 
-ls
-</code></pre>
-
-<h2 id="change-root-password">change root password</h2>
-
-<pre><code>When starting the machine, interrupt the countdown by pressing any key
-With the cursor on the start line
-Hit "e" to edit the entry
-Position on the line &lt;br&gt; by "linux16"
-Move to the end of the line and add: rd.break
-Hit Ctrl x to start the system with the modified configuration
-When the "switch_root: / #" prompt appears, issue the following commands:
-switch_root: / # mount -oremount, rw / sysroot
-switch_root: / # chroot / sysroot
-
-Change the root password:
-# echo newmdp | passwd - root -stdin
-or # passwd root
-Editing the / etc / shadow file in out of context SELinux requires a full reboot of the system at the next reboot. To do this, enter the following command: # touch /.autorelabel
-Hit the "exit" command twice, once to exit the chroot and a second time to the system.
-When restarting the machine, the new operational password.
+<pre><code>Filesystem      Size  Used Avail Use% Mounted on
+/dev/root        15G  1.3G   13G  10% /
+devtmpfs        459M     0  459M   0% /dev
+tmpfs           464M     0  464M   0% /dev/shm
+tmpfs           464M  6.3M  457M   2% /run
+tmpfs           5.0M  4.0K  5.0M   1% /run/lock
+tmpfs           464M     0  464M   0% /sys/fs/cgroup
+/dev/mmcblk0p1  253M   53M  200M  21% /boot
+tmpfs            93M     0   93M   0% /run/user/1000
+/dev/sda1       7.9G   36M  7.4G   1% /mnt/gitea
+/dev/sda2       7.9G   36M  7.4G   1% /var/www
+/dev/sda3       7.9G   36M  7.4G   1% /var/lib/postgresql
 </code></pre>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2019/09/19/run-multiple-php-versions-same-server-with-fpm">Run multiple php versions on the same server with PHP-FPM and apache2</a></h2>
+            <h2><a href="/blog/2020/04/01/rpi-dev-1-summary">rpi dev 1 - Setup a development server with a RPI 3</a></h2>
         </header>
         <div>
-            <h2 id="purpose">Purpose</h2>
+            <h2 id="summary">Summary</h2>
 
-<p>The aim of this post is to run several php versions on the same server.</p>
-
-<p>This installation has been performed on debian 9 stretch.</p>
-
-<p>This post has been mainly inspired <a href="https://tecadmin.net/install-multiple-php-version-apache-ubuntu/">from this source</a></p>
-
-<h2 id="about-%60php-fpm%60">About <code>php-fpm</code></h2>
-
-<p>PHP-FPM (FastCGI Process Manager) allows communication between a webserver and a PHP process based on FastCGI protocol.</p>
-
-<p>In this post, PHP-FPM listen to a socket file to communicate with apache.</p>
-
-<h2 id="add-%60sury%60-repo-to-get-both-%60php-5.6%60-and-%60php7.x%60-packages">Add <code>sury</code> repo to get both <code>php-5.6</code> and <code>php7.x</code> packages</h2>
-
-<p>Since debian strech did not have php5 packages, we have to add an extra repo to our apt sources.list to get those packages (<a href="https://stackoverflow.com/questions/46378017/install-php5-6-in-debian-9">source here</a>):</p>
-
-<pre><code>apt-get install apt-transport-https lsb-release ca-certificates
-wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg --no-check-certificate
-echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" &gt; /etc/apt/sources.list.d/php.list
-apt-get update
-</code></pre>
-
-<h2 id="about-the-apache2-library-that-communicates-with-php-fpm-process">About the apache2 library that communicates with php fpm process</h2>
-
-<p>These libs are not required anymore: <code>libapache2-mod-fastcgi</code>, <code>libapache2-mod-fcgid</code> since there are now <code>proxy_fcgi</code> and <code>proxy</code> apache modules.</p>
-
-<h3 id="apache2-modules">Apache2 modules</h3>
-
-<pre><code>a2enmod actions alias proxy_fcgi
-</code></pre>
-
-<h2 id="install-php-fpm-module-for-php-5.6">Install php fpm module for php 5.6</h2>
-
-<pre><code>apt-get install php5.6-fpm
-</code></pre>
-
-<p>Checkout in <code>/etc/php/5.6/fpm/pool.d/www.conf</code> the directive that contains the socket path where php-fpm is listening:</p>
-
-<pre><code>listen = /run/php/php5.6-fpm.sock
-</code></pre>
-
-<h2 id="install-php-fpm-module-for-php-7.1">Install php fpm module for php 7.1</h2>
-
-<pre><code>apt-get install php7.1-fpm
-</code></pre>
-
-<p>Checkout in <code>/etc/php/7.1/fpm/pool.d/www.conf</code> the directive that contains the socket path where php-fpm is listening:</p>
-
-<pre><code>listen = /run/php/php7.1-fpm.sock
-</code></pre>
-
-<h2 id="test">Test</h2>
-
-<h3 id="create-test-apps">Create test apps</h3>
-
-<pre><code>mkdir -p /var/www/html/php5.6 /var/www/html/php7.1
-echo "&lt;?php phpinfo(); ?&gt;" &gt; /var/www/php56/index.php
-echo "&lt;?php phpinfo(); ?&gt;" &gt; /var/www/php71/index.php
-</code></pre>
-
-<h3 id="virtual-hosts">Virtual hosts</h3>
-
-<pre><code>a2dissite 000-default.conf    
-</code></pre>
-
-<h3 id="edit-local-dns-file">Edit local DNS file</h3>
-
-<p>Edit <code>/etc/hosts</code>:</p>
-
-<pre><code>10.11.12.13 php56.test
-10.11.12.13 php71.test
-</code></pre>
-
-<h4 id="php-5.6-virtual-host">PHP 5.6 virtual host</h4>
-
-<pre><code>cp 000-default.conf php56.conf 
-a2ensite php56.conf
-</code></pre>
-
-<p>Edit <code>/etc/apache2/sites-available/php56.conf</code>:</p>
-
-<pre><code>&lt;VirtualHost *:80&gt;
-    ServerName php56.test
-    DocumentRoot /var/www/php56
-    &lt;Directory /var/www/php56&gt;
-        Options -Indexes +FollowSymLinks +MultiViews
-        AllowOverride All
-        Require all granted
-    &lt;/Directory&gt;
-    &lt;FilesMatch \.php$&gt;
-        # Apache 2.4.10+ can proxy to unix socket
-        SetHandler "proxy:unix:/var/run/php/php5.6-fpm.sock|fcgi://localhost/"
-    &lt;/FilesMatch&gt;
-    ErrorLog ${APACHE_LOG_DIR}/php56-error.log
-    CustomLog ${APACHE_LOG_DIR}/php56-access.log combined
-&lt;/VirtualHost&gt;
-</code></pre>
-
-<p>Reload :</p>
-
-<pre><code>systemctl reload apache2    
-</code></pre>
-
-<p>Check with your browser:</p>
-
-<p><img src="/images/multiple-php-versions/56.png" alt="screenshot" /></p>
-
-<h4 id="php-7.1-virtual-host">PHP 7.1 virtual host</h4>
-
-<pre><code>cp 000-default.conf php71.conf
-a2ensite php71.conf
-</code></pre>
-
-<p>Edit <code>/etc/apache2/sites-available/php71.conf</code>:</p>
-
-<pre><code>&lt;VirtualHost *:80&gt;
-    ServerName php56.test
-    DocumentRoot /var/www/php56
-    &lt;Directory /var/www/php56&gt;
-        Options -Indexes +FollowSymLinks +MultiViews
-        AllowOverride All
-        Require all granted
-    &lt;/Directory&gt;
-    &lt;FilesMatch \.php$&gt;
-        # Apache 2.4.10+ can proxy to unix socket
-        SetHandler "proxy:unix:/var/run/php/php7.1-fpm.sock|fcgi://localhost/"
-    &lt;/FilesMatch&gt;
-    ErrorLog ${APACHE_LOG_DIR}/php71-error.log
-    CustomLog ${APACHE_LOG_DIR}/php71-access.log combined
-&lt;/VirtualHost&gt;    
-</code></pre>
-
-<p>Reload :</p>
-
-<pre><code>systemctl reload apache2    
-</code></pre>
-
-<p>Check with your browser:</p>
-
-<p><img src="/images/multiple-php-versions/71.png" alt="screenshot" /></p>
+<ul>
+<li>install <a href="https://www.raspberrypi.org/downloads/raspbian/">Raspbian Buster Lite</a>: <code>dd if=2020-02-13-raspbian-buster-lite.img of=/dev/mmcblk0</code></li>
+<li>setup minimal configuration: from <code>raspi-config</code>, set <code>locale</code>, <code>keyboard layout</code>, <code>timezone</code>, <code>wifi-country</code> </li>
+<li>update it : <code>apt update &amp;&amp; apt upgrade</code></li>
+<li><a href="https://www.raspberrypi.org/documentation/configuration/security.md">secure your RPI</a>: create admin user, remove default pi user, setup ssh</li>
+<li>fix your RPI private @IP: in my case, I do this in the admin section of my router</li>
+<li>buy a domain name from a registrar</li>
+<li>edit your DNS zone from your registrar to add <code>A record</code> that will link your domain name and your router public @IP</li>
+<li>edit your router DMZ section to redirect incoming traffic to your device, here the RPI. You can make use of NAT rules too and port redirections</li>
+<li><a href="/blog/2020/04/01/rpi-dev-2-extend-fs">extend RPI File system</a> </li>
+<li><a href="/blog/2020/04/01/rpi-dev-3-gitea">install a GITHUB like app, gitea</a> </li>
+<li><a href="/blog/2020/04/01/rpi-dev-4-lets-encrypt-certificates">get SSL certificates from let's encrypt</a></li>
+<li><a href="/blog/2020/04/01/rpi-dev-5-ufw">secure it with firewall rules</a></li>
+<li><a href="/blog/2020/04/01/rpi-dev-6-ssmtp">setup smtp</a></li>
+<li><a href="/blog/2020/04/01/rpi-dev-7-system-logs">check logs</a></li>
+</ul>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2019/07/12/php-survival-sheet">PHP survival sheet</a></h2>
+            <h2><a href="/blog/2019/10/15/bash-scripting-course-note">Bash scripting course notes</a></h2>
         </header>
         <div>
-            <h2 id="identify-different-%60php.ini%60-files">Identify different <code>php.ini</code> files</h2>
+            <h1 id="shell%2Fbash-course">Shell/bash course</h1>
 
-<p>This <code>find</code> command:</p>
+<p>https://urfist.unistra.fr/uploads/media/command_memento_fr.pdf</p>
 
-<pre><code>find /etc -name php.ini 
+<ul>
+<li>BSD: berkely univsersity. public/research</li>
+<li>system V: private, constructors: DEC, SUN</li>
+<li>POSIX: standard on all system</li>
+</ul>
+
+<h2 id="change-shell">Change shell</h2>
+
+<pre><code>usermod -s /bin/bash formation
+chsh
+
+[root@localhost ~]# useradd ben
+[root@localhost ~]# passwd ben
+Changement de mot de passe pour l'utilisateur ben.
+Nouveau mot de passe : 
+MOT DE PASSE INCORRECT : Le mot de passe comporte moins de 8 caractères
+Retapez le nouveau mot de passe : 
+passwd : mise à jour réussie de tous les jetons d'authentification.
+[root@localhost ~]# usermod -s /bin/ksh ben
+[root@localhost ~]# tail -4 /etc/passwd
+tcpdump:x:72:72::/:/sbin/nologin
+formation:x:1000:1000:Formation:/home/formation:/bin/bash
+vboxadd:x:988:1::/var/run/vboxadd:/bin/false
+ben:x:1001:1001::/home/ben:/bin/ksh
 </code></pre>
 
-<p>returns:</p>
+<h3 id="switch-user%3A-su">Switch user: su</h3>
 
-<pre><code>/etc/php/7.1/apache2/php.ini
-/etc/php/7.1/cli/php.ini
+<p>Make use of the <code>-</code> to get user env
+    [root@localhost ~]# su - ben
+    Dernière connexion : lundi  7 octobre 2019 à 09:46:27 CEST sur pts/0</p>
+
+<h2 id="text-shell">Text shell</h2>
+
+<pre><code>ctrl + alt + F1 =&gt; graphical shell mode
+ctrl + alt + F[2-6] =&gt; text shell mode
 </code></pre>
 
-<h2 id="identify-loaded-php.ini-files-from-command-line">Identify loaded php.ini files from command line</h2>
+<h2 id="file-type">File type</h2>
 
-<p>This command:</p>
-
-<pre><code>php --ini
+<pre><code>- file
+d directory
+l link
+c char I/O hardware
+b block I/O hardware
+p pipe : inter process (local)
+s socket : inter process (network)
 </code></pre>
 
-<p>returns:</p>
+<h2 id="tty">tty</h2>
 
-<pre><code>Configuration File (php.ini) Path: /etc/php/7.1/cli
-Loaded Configuration File:         /etc/php/7.1/cli/php.ini
-Scan for additional .ini files in: /etc/php/7.1/cli/conf.d
-Additional .ini files parsed:      /etc/php/7.1/cli/conf.d/10-mysqlnd.ini,
-/etc/php/7.1/cli/conf.d/10-opcache.ini,
-/etc/php/7.1/cli/conf.d/10-pdo.ini,
-/etc/php/7.1/cli/conf.d/15-xml.ini,
-...
+<p>terminal teletype</p>
+
+<pre><code>[formation@localhost ~]$ tty
+/dev/pts/0
+[formation@localhost ~]$ echo "hello"
+hello
+[formation@localhost ~]$ echo "hello" &gt; /dev/pts/1
 </code></pre>
 
-<h2 id="get-configuration-values-from-the-command-line">Get configuration values from the command line</h2>
+<h2 id="env-var">Env var</h2>
 
-<p>This command returns:</p>
+<p>available in:</p>
 
-<pre><code>php -i | grep upload_max_filesize
+<ul>
+<li>new window</li>
+<li>new shell</li>
+<li>new script</li>
+</ul>
+
+<p>env: list env var
+set: env + pre param shell</p>
+
+<h2 id="file-command">File command</h2>
+
+<pre><code>[formation@localhost ~]$ file /bin/ls
+/bin/ls: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.32, BuildID[sha1]=c5ad78cfc1de12b9bb6829207cececb990b3e987, stripped
+[formation@localhost ~]$ file foo.pdf 
+foo.pdf: ASCII text
+[formation@localhost ~]$ mv foo.pdf foo.md
+[formation@localhost ~]$ file foo.md 
+foo.md: ASCII text
 </code></pre>
 
-<p>returns:</p>
+<h2 id="special-bits">special bits</h2>
 
-<pre><code>upload_max_filesize =&gt; 2M =&gt; 2M
+<h3 id="setuid">setuid</h3>
+
+<p>when present on an executable file, the programm is executed with the identity of the file owner</p>
+
+<pre><code>[formation@localhost ~]$ which passwd 
+/usr/bin/passwd
+[formation@localhost ~]$ ls -l /usr/bin/passwd 
+-rwsr-xr-x. 1 root root 27832 10 juin   2014 /usr/bin/passwd
+
+chmod 4555 prog.sh 
+[formation@localhost ~]$ ls -l prog.sh 
+-r-sr-xr-x. 1 formation formation 0  7 oct.  10:56 prog.sh
 </code></pre>
 
-<p>Common configuration to change in <code>php.ini</code> files:</p>
+<h3 id="setgid">setgid</h3>
 
-<pre><code>memory_limit
-max_execution_time
-max_input_time
-post_max_size
-upload_max_filesize
+<p>idem for group</p>
 
-display_errors
-html_errors
+<h3 id="sticky-bit%3A-t">sticky bit: t</h3>
+
+<p>only owner can destroy folder (add resistance to destruction).</p>
+
+<pre><code>ls -ld /tmp/
+drwxrwxrwt. 15 root root 4096  7 oct.  10:59 /tmp/
+</code></pre>
+
+<h2 id="groups">Groups</h2>
+
+<p>create first group
+then create user, and assign group</p>
+
+<pre><code>groupadd friends
+groupadd painters
+
+useradd foo -g firends -G painters
+</code></pre>
+
+<h2 id="%24path">$PATH</h2>
+
+<p>contains paths of executables path</p>
+
+<pre><code>PATH=$PATH:/new/location/exec
+</code></pre>
+
+<h2 id="find-command">find command</h2>
+
+<pre><code>find /dev - type l -name "*or*" -exec file {} \;
+</code></pre>
+
+<h2 id="locate-command">locate command</h2>
+
+<p>locate file2Search
+updatedb</p>
+
+<h2 id="command-io">Command IO</h2>
+
+<ul>
+<li>stdin: &lt;1</li>
+<li>stdout: >1</li>
+<li>stderr: >2</li>
+</ul>
+
+<p>2>&amp;1: recirect stderr to stdout
+1>&amp;2: redirect stdout to stderr</p>
+
+<pre><code>ls -l file 1&gt; out
+ls -l file doesNotExist 2&gt; error 1&gt;out
+ls -l file &amp;&gt; out
+</code></pre>
+
+<h2 id="tree">tree</h2>
+
+<p>tree of files</p>
+
+<h2 id="pstree">pstree</h2>
+
+<p>tree of ps</p>
+
+<pre><code>ps clax
+ps -ef
+</code></pre>
+
+<h2 id="bash-debug-mode">bash debug mode</h2>
+
+<p>bash -vx script.sh</p>
+
+<h2 id="command-return-code">command return code</h2>
+
+<p>$? == 0 ok
+$? != 0 ko</p>
+
+<h2 id="logical-operators">logical operators</h2>
+
+<h3 id="and-%26%26">AND &amp;&amp;</h3>
+
+<p>if left part is OK</p>
+
+<pre><code>ls &amp;&amp; echo "ls done"
+</code></pre>
+
+<h3 id="or-%7C%7C">OR ||</h3>
+
+<p>if left part fails</p>
+
+<pre><code>ls -l inexistant || echo "inexistant file does not exist"
+</code></pre>
+
+<h3 id="together">Together</h3>
+
+<p>concatenate if exists,else copy</p>
+
+<pre><code>ls -l mypasswd &amp;&amp; cat /etc/passwd &gt;&gt; mypasswd || cp /etc/passwd mypasswd
+
+
+
+cut -d":" -f1,3 /etc/passwd | tr ':' ' ' &gt; users-id
+</code></pre>
+
+<p>cat /etc/group | cut -d":" -f1,3 | sort | nl
+cut -d: -f1,3 /etc/group|sort -t: -n -k2 | nl</p>
+
+<h2 id="terminal-movement-utilities">Terminal movement utilities</h2>
+
+<p>ctrl+a
+ctrl+e
+alt+d</p>
+
+<h2 id="vim">Vim</h2>
+
+<p>filetype  indent plugin on
+gg=G => indent all file</p>
+
+<h2 id="source-vs-.%2F">source VS ./</h2>
+
+<p>source script: execute in current shell
+./script: execute in a child shell</p>
+
+<h2 id="nohut">nohut</h2>
+
+<p>run a script whithout deconnexion
+nohup ./script.sh &amp;</p>
+
+<h2 id="exec-command">exec command</h2>
+
+<p>exec date
+print date and kill exit current process</p>
+
+<h2 id="signals">signals</h2>
+
+<ul>
+<li>ctrl + c: </li>
+<li>ctrl + z:</li>
+<li>ctrl + d:
+When killing a parent process with child process, children are adopted by systemd PID #1.
+example
+eyes &amp;
+ctrl+d
+ps aux
+eyes has PPID=1</li>
+</ul>
+
+<h2 id="jobs-command">jobs command</h2>
+
+<h3 id="foreground-%2B-ctrl-c">foreground + ctrl-c</h3>
+
+<pre><code>[formation@localhost ~]$ xeyes &amp;
+[1] 19078
+[formation@localhost ~]$ jobs
+[1]+  En cours d'exécution   xeyes &amp;
+[formation@localhost ~]$ fg %1
+xeyes
+^C
+[formation@localhost ~]$ 
+</code></pre>
+
+<h3 id="kill-it">kill it</h3>
+
+<pre><code>[formation@localhost ~]$ xeyes &amp;
+[1] 19207
+[formation@localhost ~]$ kill %1
+[1]+  Complété              xeyes
+</code></pre>
+
+<h2 id="trap">trap</h2>
+
+<pre><code>[root@localhost ~]# trap -l
+ 1) SIGHUP   2) SIGINT   3) SIGQUIT  4) SIGILL   5) SIGTRAP
+ 6) SIGABRT  7) SIGBUS   8) SIGFPE   9) SIGKILL 10) SIGUSR1
+11) SIGSEGV 12) SIGUSR2 13) SIGPIPE 14) SIGALRM 15) SIGTERM
+16) SIGSTKFLT   17) SIGCHLD 18) SIGCONT 19) SIGSTOP 20) SIGTSTP
+21) SIGTTIN 22) SIGTTOU 23) SIGURG  24) SIGXCPU 25) SIGXFSZ
+26) SIGVTALRM   27) SIGPROF 28) SIGWINCH    29) SIGIO   30) SIGPWR
+31) SIGSYS  34) SIGRTMIN    35) SIGRTMIN+1  36) SIGRTMIN+2  37) SIGRTMIN+3
+38) SIGRTMIN+4  39) SIGRTMIN+5  40) SIGRTMIN+6  41) SIGRTMIN+7  42) SIGRTMIN+8
+43) SIGRTMIN+9  44) SIGRTMIN+10 45) SIGRTMIN+11 46) SIGRTMIN+12 47) SIGRTMIN+13
+48) SIGRTMIN+14 49) SIGRTMIN+15 50) SIGRTMAX-14 51) SIGRTMAX-13 52) SIGRTMAX-12
+53) SIGRTMAX-11 54) SIGRTMAX-10 55) SIGRTMAX-9  56) SIGRTMAX-8  57) SIGRTMAX-7
+58) SIGRTMAX-6  59) SIGRTMAX-5  60) SIGRTMAX-4  61) SIGRTMAX-3  62) SIGRTMAX-2
+63) SIGRTMAX-1  64) SIGRTMAX    
+</code></pre>
+
+<h2 id="loop">Loop</h2>
+
+<h3 id="sequence-command">sequence command</h3>
+
+<pre><code>seq 5
+1
+2
+3
+4
+5
+
+for i in $(seq 5); do echo $i; done
+</code></pre>
+
+<h2 id="return-code">Return code</h2>
+
+<p>$?
+value ok: 0</p>
+
+<p>shift: process &amp; remove first value of array parameter
+shift.sh</p>
+
+<pre><code>#!/bin/bash
+while test $# -ne 0
+do
+    echo "current paramater: $1 - nb remaning paramter "$#
+    shift 1
+done
+</code></pre>
+
+<p>bash shift.sh aa bb cc</p>
+
+<pre><code>current paramater: aa - nb remaning paramter 3
+current paramater: bb - nb remaning paramter 2
+current paramater: cc - nb remaning paramter 1
+</code></pre>
+
+<h2 id="arithmetic-expression-%3A--expr-">arithmetic expression : (( expr ))</h2>
+
+<pre><code>echo $(( 2+2+6+6 ))
+16
+
+((i=i+1))
 </code></pre>
 
         </div>

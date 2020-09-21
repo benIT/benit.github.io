@@ -72,310 +72,104 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2020/04/01/rpi-dev-4-lets-encrypt-certificates">rpi dev 4 - get let&#039;s encrypt certificates with certbot</a></h2>
+            <h2><a href="/blog/2020/04/13/linux-basics-material-1">linux basics: material 1 - command &amp; kernel</a></h2>
         </header>
         <div>
-            <h2 id="usage">Usage</h2>
+            <h2 id="linux-material-command">Linux material command</h2>
 
-<pre><code>apt-get install -y certbot python-certbot-apache
+<ul>
+<li><code>free</code>: for memory information</li>
+<li><code>uname</code>: material information</li>
+</ul>
 
-certbot certonly --webroot --webroot-path /var/www/html --domain mydomain.com --email me@mail.com
-</code></pre>
+<p>see dedicated virtual FS such as : /dev, /proc...</p>
 
-<h3 id="renewal">Renewal</h3>
+<h2 id="special-pseudo-drives">Special pseudo drives</h2>
 
-<pre><code>certbot renew --dry-run
-</code></pre>
+<ul>
+<li><code>/dev/null</code>: black hole</li>
+<li><code>/dev/zero</code>: returns zeros</li>
+<li><code>/dev/full</code>: emulate a full  hard drive</li>
+</ul>
 
-<p>if fails because of FW:</p>
+<h2 id="about-linux-kernel">About linux kernel</h2>
 
-<pre><code>ufw allow 80/tcp comment 'allow IN 80 temporary'
-ufw allow 443/tcp comment 'allow IN 443 temporary'
+<p>The kernel gives a material abstraction layer to software layer.</p>
 
-certbot renew --dry-run #launch renewal again
+<h2 id="about-linux-kernel-modules">About linux kernel modules</h2>
 
-ufw delete allow 80/tcp &amp;&amp; ufw delete allow 443/tcp
-</code></pre>
+<p>The linux kernel is monolithic but some modules can be loaded/unloaded such as driver</p>
+
+<ul>
+<li><code>lsmod</code> : list kernel modules</li>
+<li><code>modprobe</code>: load/unload/manage kernel modules</li>
+</ul>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2020/04/01/rpi-dev-3-gitea">rpi dev 3 - Install GITEA</a></h2>
+            <h2><a href="/blog/2020/04/01/rpi-dev-7-system-logs">rpi dev 7 - System logs</a></h2>
         </header>
         <div>
-            <h2 id="git-itself">GIT itself</h2>
-
-<pre><code>apt-get install git
-adduser --disabled-login --gecos 'Gitea' git
-</code></pre>
-
-<h3 id="gitea-app">GITEA app</h3>
-
-<pre><code>cd /mnt/gitea/
-wget https://dl.gitea.io/gitea/1.4.0/gitea-1.4.0-linux-arm-7 -O gitea
-chmod +x gitea
-chown -R git: /mnt/gitea
-</code></pre>
-
-<p>check its running at https://192.X.X.X:3000 with : <code>./gitea web</code></p>
-
-<h4 id="gitea-systemd-service">GITEA systemd service</h4>
-
-<p>In <code>/etc/systemd/system/gitea.service</code>:</p>
-
-<pre><code>[Unit]
-Description=Gitea (Git with a cup of tea)
-After=syslog.target
-After=network.target
-
-[Service]
-# Modify these two values ​​and uncomment them if you have
-# repos with lots of files and get to HTTP error 500 because of that
-###
-# LimitMEMLOCK=infinity
-# LimitNOFILE=65535
-RestartSec=2s
-Type=simple
-User=git
-Group=git
-WorkingDirectory=/mnt/gitea
-ExecStart=/mnt/gitea/gitea web
-Restart=always
-Environment=USER=git 
-HOME=/mnt/gitea/gitea
-
-[Install]
-WantedBy=multi-user.target
-</code></pre>
-
-<p>enable service:</p>
-
-<pre><code>systemctl enable gitea.service
-systemctl start gitea.service
-</code></pre>
-
-<p>reboot and check service is running.</p>
-
-<h3 id="apache2">Apache2</h3>
-
-<pre><code>apt-get install -y apache2
-a2enmod ssl rewrite actions alias proxy_fcgi proxy proxy_http
-</code></pre>
-
-<h3 id="postgresql">PostgreSQL</h3>
-
-<pre><code>CREATE DATABASE gitea;
-CREATE USER gitea_user WITH ENCRYPTED PASSWORD 'pass123';    
-GRANT CONNECT ON DATABASE gitea TO gitea_user;
-\c gitea;
-GRANT USAGE ON SCHEMA public TO gitea_user;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO gitea_user;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO gitea_user;
-</code></pre>
-
-<h3 id="setup-apache2-reverse-proxy">Setup Apache2 reverse proxy</h3>
-
-<pre><code>a2enmod proxy
-a2enmod proxy_http
-</code></pre>
-
-<p>Configure reverse proxy directives <a href="https://www.digitalocean.com/community/questions/how-do-i-setup-gitea-with-a-domain-name-or-sub-domain">source</a> :</p>
-
-<pre><code>ProxyPreserveHost On
-ProxyRequests off
-ProxyPass / http://localhost:3000/
-ProxyPassReverse / http://localhost:3000/
-</code></pre>
-
-<p><code>gitea.com.conf</code> file:</p>
-
-<pre><code>&lt;VirtualHost *:80&gt;
-    ServerName mygitea.com
-    Redirect permanent / https://mygitea.com
-&lt;/VirtualHost&gt;
-
-&lt;VirtualHost *:443&gt;
-    ServerName mygitea.com
-    ProxyPreserveHost On
-    ProxyRequests off
-    ProxyPass / http://localhost:3000/
-    ProxyPassReverse / http://localhost:3000/
-
-    ServerAdmin webmaster@localhost
-    DocumentRoot /var/www/html
-    SSLengine on
-    SSLCertificateKeyFile /etc/letsencrypt/live/mygitea.com/privkey.pem
-    SSLCertificateFile    /etc/letsencrypt/live/mygitea.com/cert.pem
-    SSLCertificateChainFile /etc/letsencrypt/live/mygitea.com/fullchain.pem
-
-    ErrorLog ${APACHE_LOG_DIR}/gitea-error.log
-    CustomLog ${APACHE_LOG_DIR}/gitea-access.log combined
-    Include conf-available/serve-cgi-bin.conf
-&lt;/VirtualHost&gt;
-</code></pre>
-
-<h3 id="configuration">Configuration</h3>
-
-<h3 id="from-gui">from GUI</h3>
+            <h2 id="interesting-logs">interesting logs</h2>
 
 <ul>
-<li>disable registration form</li>
-<li>mark repo as private</li>
+<li>/var/log/auth.log</li>
+<li>/var/log/ufw.log</li>
+<li>/var/log/apache2/*access.log</li>
+<li>/var/log/apache2/*error.log</li>
 </ul>
 
-<h3 id="from-cli">from CLI</h3>
+<h2 id="tools">tools</h2>
 
-<p>edit <code>custom/conf/app.ini</code> and <code>systemctl restart gitea.service</code></p>
+<h3 id="lnav---ncurses-based-log-file-viewer">lnav - ncurses-based log file viewer</h3>
+
+<p>From man: The  log  file navigator, lnav, is an enhanced log file viewer that takes advantage of any semantic information that can be gleaned from the files being viewed, such as timestamps and log levels</p>
+
+<pre><code>apt install -y lnav
+
+lnav /var/log/auth.log /var/log/ufw.log /var/log/apache2/*access.log
+</code></pre>
+
+<h3 id="ezservermonitor">ezservermonitor</h3>
+
+<p>Install webapp:</p>
+
+<pre><code>wget https://www.ezservermonitor.com/esm-web/downloads/version/2.5 -O ezservermonitor.zip
+</code></pre>
+
+<p>Configure in <code>conf/esm.config.json</code></p>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2020/04/01/rpi-dev-2-extend-fs">rpi dev 2 - extend RPI storage with a USB drive</a></h2>
+            <h2><a href="/blog/2020/04/01/rpi-dev-6-ssmtp">rpi dev 6 - setup ssmpt with netcourrier</a></h2>
         </header>
         <div>
-            <h2 id="purpose">purpose</h2>
+            <h2 id="install">install</h2>
 
-<p>create 3 partitions of 8Go for :</p>
-
-<ul>
-<li>/var/www</li>
-<li>/mnt/gitea</li>
-<li>/var/lib/postgresql/</li>
-</ul>
-
-<h3 id="create-3-partitions-on-the-usb-drive-of-8go">Create 3 partitions on the USB drive of 8Go</h3>
-
-<pre><code>root@raspberrypi:~# fdisk /dev/sda
+<pre><code>apt-get install ssmtp
+apt-get install mailutils
 </code></pre>
 
-<p>=></p>
+<h2 id="configure">configure</h2>
 
-<pre><code>Command (m for help): o
-Created a new DOS disklabel with disk identifier 0x78494e0c.
+<p>edit <code>/etc/ssmtp/ssmtp.conf</code>:</p>
 
-Command (m for help): n
-Partition type
-   p   primary (0 primary, 0 extended, 4 free)
-   e   extended (container for logical partitions)
-Select (default p): p
-Partition number (1-4, default 1): 1
-First sector (2048-60063743, default 2048): 
-Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-60063743, default 60063743): +8G
-
-Created a new partition 1 of type 'Linux' and of size 8 GiB.
-
-Command (m for help): n
-Partition type
-   p   primary (1 primary, 0 extended, 3 free)
-   e   extended (container for logical partitions)
-Select (default p): p
-Partition number (2-4, default 2): 2
-First sector (16779264-60063743, default 16779264): 
-Last sector, +/-sectors or +/-size{K,M,G,T,P} (16779264-60063743, default 60063743): +8G
-
-Created a new partition 2 of type 'Linux' and of size 8 GiB.
-
-Command (m for help): n
-Partition type
-   p   primary (2 primary, 0 extended, 2 free)
-   e   extended (container for logical partitions)
-Select (default p): p
-Partition number (3,4, default 3): 
-First sector (33556480-60063743, default 33556480): 
-Last sector, +/-sectors or +/-size{K,M,G,T,P} (33556480-60063743, default 60063743): +8G
-
-Created a new partition 3 of type 'Linux' and of size 8 GiB.
-
-Command (m for help): w
-The partition table has been altered.
-Calling ioctl() to re-read partition table.
-Syncing disks.
+<pre><code>root=
+mailhub=mail.net-c.com:465
+hostname=myhost.com
+AuthUser=usermail@netc.fr
+AuthPass=ENTER-SMTP-PASSWORD-HERE
+FromLineOverride=YES
+UseTLS=YES
 </code></pre>
 
-<h3 id="check">Check</h3>
+<h2 id="test">Test</h2>
 
-<pre><code>root@raspberrypi:~# fdisk -l /dev/sda
-</code></pre>
-
-<p>=></p>
-
-<pre><code>Disk /dev/sda: 28.7 GiB, 30752636928 bytes, 60063744 sectors
-Disk model: Ultra           
-Units: sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disklabel type: dos
-Disk identifier: 0x78494e0c
-
-Device     Boot    Start      End  Sectors Size Id Type
-/dev/sda1           2048 16779263 16777216   8G 83 Linux
-/dev/sda2       16779264 33556479 16777216   8G 83 Linux
-/dev/sda3       33556480 50333695 16777216   8G 83 Linux
-</code></pre>
-
-<h3 id="create-ext4-filesystem-for-each-partitions-with-explicit-labels">create ext4 filesystem for each partitions with explicit labels</h3>
-
-<pre><code>mkfs.ext4 -L pi-git /dev/sda1
-mkfs.ext4 -L pi-web /dev/sda2
-mkfs.ext4 -L pi-pgsql /dev/sda3
-</code></pre>
-
-<h2 id="check">Check</h2>
-
-<pre><code>root@raspberrypi:~# ls -l /dev/disk/by-label/
-</code></pre>
-
-<p>=></p>
-
-<pre><code>total 0
-lrwxrwxrwx 1 root root 15 Apr 28 18:17 boot -&gt; ../../mmcblk0p1
-lrwxrwxrwx 1 root root 10 Apr 29 11:02 pi-git -&gt; ../../sda1
-lrwxrwxrwx 1 root root 10 Apr 29 11:05 pi-pgsql -&gt; ../../sda3
-lrwxrwxrwx 1 root root 10 Apr 29 11:05 pi-web -&gt; ../../sda2
-lrwxrwxrwx 1 root root 15 Apr 28 18:17 rootfs -&gt; ../../mmcblk0p2
-</code></pre>
-
-<h2 id="mount">Mount</h2>
-
-<pre><code>mkdir -p /var/www
-mkdir -p /mnt/gitea
-mkdir -p /var/lib/postgresql/
-</code></pre>
-
-<p>add to `/etc/fstab. <a href="https://debian-facile.org/doc:systeme:fstab">see fstab resource</a>:</p>
-
-<pre><code>LABEL=pi-git  /mnt/gitea                ext4    defaults  0       2
-LABEL=pi-web  /var/www                  ext4    defaults  0       2
-LABEL=pi-pgsql  /var/lib/postgresql         ext4    defaults  0       2
-</code></pre>
-
-<p>mount:</p>
-
-<pre><code>mount -a
-</code></pre>
-
-<p>check:</p>
-
-<pre><code>root@raspberrypi:~#  df -h
-</code></pre>
-
-<p>=></p>
-
-<pre><code>Filesystem      Size  Used Avail Use% Mounted on
-/dev/root        15G  1.3G   13G  10% /
-devtmpfs        459M     0  459M   0% /dev
-tmpfs           464M     0  464M   0% /dev/shm
-tmpfs           464M  6.3M  457M   2% /run
-tmpfs           5.0M  4.0K  5.0M   1% /run/lock
-tmpfs           464M     0  464M   0% /sys/fs/cgroup
-/dev/mmcblk0p1  253M   53M  200M  21% /boot
-tmpfs            93M     0   93M   0% /run/user/1000
-/dev/sda1       7.9G   36M  7.4G   1% /mnt/gitea
-/dev/sda2       7.9G   36M  7.4G   1% /var/www
-/dev/sda3       7.9G   36M  7.4G   1% /var/lib/postgresql
-</code></pre>
+<p>echo "Hello world email body" | mail -s "Test Subject" test@mail.fr</p>
 
         </div>
             </article>

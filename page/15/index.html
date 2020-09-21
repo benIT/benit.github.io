@@ -72,140 +72,234 @@
                 <div class="span8">
                         <article>
         <header>
-            <h2><a href="/blog/2019/01/14/docker-networking">Docker 101: networking</a></h2>
+            <h2><a href="/blog/2019/02/15/linux-multiusb-live">Linux multiusb live</a></h2>
         </header>
         <div>
-            <h1 id="docker-running-containers-inside-a-bridge-network">Docker running containers inside a bridge network</h1>
+            <h2 id="purpose">Purpose</h2>
 
-<p>The purpose of this post is to isolate each tiers of our app into different containers.</p>
+<p>This post deals with creating a multi linux iso live usb drive. <a href="https://itsfoss.com/multiple-linux-one-usb/">source</a></p>
 
-<p>We will create a private network and run containers inside this private network.</p>
+<h2 id="procedure">Procedure</h2>
 
-<p><a href="https://docker-curriculum.com/#webapps-with-docker">This article is largely inspired by this great resource.</a></p>
+<ul>
+<li>format your drive to fat32</li>
+<li><a href="https://github.com/mbusb/multibootusb/releases/download/v8.8.0/python3-multibootusb_8.8.0-1_all.deb">download MultiBootUsb</a></li>
+<li>install it : <code>dpkg -i python3-multibootusb_8.8.0-1_all.deb</code></li>
+<li>check if all python dependencies are satisfied, if not try install missing with <code>sudo apt install python3-pyqt5 p7zip-full python3-pyudev</code></li>
+<li>enjoy : you can now burn several iso using the GUI. Great tool!</li>
+</ul>
 
-<h2 id="networking">Networking</h2>
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2019/02/11/linux-mastering-logs">Linux logs</a></h2>
+        </header>
+        <div>
+            <h2 id="purpose">Purpose</h2>
 
-<h3 id="create-an-isolated-private-bridge-network">Create an isolated private bridge network</h3>
+<p>The aim of is post is to manipulate linux system logs.</p>
 
-<pre><code>docker network create web-net    
+<p>Logging is an important part of IT system and must be understand.</p>
+
+<h2 id="test-program">Test program</h2>
+
+<p>The following program named <code>program.sh</code> is used to test log services:</p>
+
+<pre><code>echo I am $(whoami) and up from  $(uptime)
 </code></pre>
 
-<h3 id="inspect-the-private-network">Inspect the private network</h3>
+<h2 id="logs">Logs</h2>
 
-<pre><code>docker network inspect web-net
+<p>Logs are managed with a service named <code>rsyslog</code></p>
+
+<pre><code>sudo service rsyslog status
 </code></pre>
 
-<h3 id="run-a-container-inside-the-private-bridge-network-with-%60--net%60-option">Run a container inside the private bridge network with <code>--net</code> option</h3>
+<h2 id="activate-cron-log">Activate cron log</h2>
 
-<pre><code>docker run --name pgsql-web --rm  -d --net web-net postgres:latest
-docker run --name debian-web --rm -p 80:80 --net web-net -d benit/debian-web:latest
+<p>In <code>sudo vim /etc/rsyslog.conf</code>, uncomment this line:</p>
+
+<pre><code>cron.*                          /var/log/cron.log
 </code></pre>
 
-<h3 id="inspect-the-private-network-to-get-ips-of-containers-of-the-private-network">Inspect the private network to get IPs of containers of the private network</h3>
+<p>Restart <code>systemctl</code>:</p>
 
-<pre><code>docker network inspect web-net
+<pre><code>sudo systemctl restart rsyslog
 </code></pre>
 
-<p>gives:</p>
+<p>This doesn't log your program output, but logs your cron information.</p>
 
-<pre><code> "Containers": {
-            "3729ccbb14e514fd6c8b571ed9c985c28293cb5bfdb10c6c233773f50d6ba763": {
-                "Name": "debian-web",
-                "EndpointID": "c370cab93cdd2ac9f30f568a1709b8c998d2ca36106d5423b484a20aadbff84f",
-                "MacAddress": "02:42:ac:12:00:03",
-                "IPv4Address": "172.18.0.3/16",
-                "IPv6Address": ""
-            },
-            "61bcf5cd9838c8c2e66beef73a04a2704a3be7e2085a5c6b4ad58bd78f12a138": {
-                "Name": "pgsql-web",
-                "EndpointID": "128f50ead4974a725c04551cb284fec2c733a48375a4819096b0b623ff2af4ac",
-                "MacAddress": "02:42:ac:12:00:02",
-                "IPv4Address": "172.18.0.2/16",
-                "IPv6Address": ""
-            }
-        },
+<p>Considering the following crontab that runs every minute:</p>
+
+<pre><code>* * * * * /home/debian/prog.sh
 </code></pre>
 
-<h2 id="putting-it-all-together">Putting it all together</h2>
+<p>Let's check <code>cron.log</code> details:</p>
 
-<h3 id="let%27s-create-a-database">Let's create a database</h3>
+<pre><code>sudo tail -f /var/log/cron.log
 
-<pre><code>docker container exec pgsql-web psql -U postgres -c "create database webapp";
-docker container exec pgsql-web psql -U postgres -d webapp -c "CREATE TABLE account(user_id serial PRIMARY KEY,username VARCHAR (50) UNIQUE NOT NULL,created_on TIMESTAMP NOT NULL);" ;
-docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('foo','2019-01-01') ;" ;
-docker container exec pgsql-web psql -U postgres -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('bar','2019-01-02') ;" ;
+Feb 11 10:09:01 sandbox CRON[25182]: (root) CMD (  [ -x /usr/lib/php/sessionclean ] &amp;&amp; if [ ! -d /run/systemd/system ]; then /usr/lib/php/sessionclean; fi)
+Feb 11 10:09:01 sandbox CRON[25183]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:10:01 sandbox CRON[25243]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:11:01 sandbox CRON[25373]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:12:01 sandbox CRON[25396]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:13:01 sandbox CRON[25405]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:14:01 sandbox CRON[25415]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:15:01 sandbox CRON[25439]: (root) CMD (command -v debian-sa1 &gt; /dev/null &amp;&amp; debian-sa1 1 1)
+Feb 11 10:15:01 sandbox CRON[25441]: (debian) CMD (/home/debian/prog.sh)
+Feb 11 10:16:02 sandbox CRON[25459]: (debian) CMD (/home/debian/prog.sh)
 </code></pre>
 
-<h3 id="connect-database-container-from-webserver-container">Connect database container from webserver container</h3>
+<h2 id="log-rotation">Log rotation</h2>
 
-<pre><code>docker container exec -it debian-web  psql -U postgres -h 172.18.0.2 -d webapp -c "select * from account;" ;
+<p>Log rotation is managed with a service named <code>logrotate</code></p>
+
+<pre><code>cat /var/lib/logrotate/status | grep apache
+
+"/var/log/apache2/access.log" 2019-2-8-6:25:2
+"/var/log/apache2/other_vhosts_access.log" 2018-5-29-6:0:0
+"/var/log/apache2/error.log" 2019-2-11-6:25:1
 </code></pre>
 
-<p>gives:</p>
+<p>Let's check apache2 webserver log rotation configuration :</p>
 
-<pre><code> user_id | username |     created_on      
----------+----------+---------------------
-       1 | foo      | 2019-01-01 00:00:00
-       2 | bar      | 2019-01-02 00:00:00
-(2 rows)
+<pre><code>cat /etc/logrotate.d/apache2 
+/var/log/apache2/*.log {
+    daily
+    missingok
+    rotate 14
+    compress
+    delaycompress
+    notifempty
+    create 640 root adm
+    sharedscripts
+    postrotate
+            if /etc/init.d/apache2 status &gt; /dev/null ; then \
+                /etc/init.d/apache2 reload &gt; /dev/null; \
+            fi;
+    endscript
+    prerotate
+        if [ -d /etc/logrotate.d/httpd-prerotate ]; then \
+            run-parts /etc/logrotate.d/httpd-prerotate; \
+        fi; \
+    endscript
+}
+</code></pre>
+
+<h2 id="example-with-%60program.sh%60">Example with <code>program.sh</code></h2>
+
+<h3 id="program-log-location">Program log location</h3>
+
+<p>We will tell our program to write here: <code>/var/log/prog.sh/log</code>. Let's create this file with the right permissions:</p>
+
+<pre><code>sudo mkdir /var/log/prog.sh/
+sudo touch /var/log/prog.sh/log
+sudo chmod ugo+rw /var/log/prog.sh/log
+</code></pre>
+
+<h3 id="program-crontab">Program crontab</h3>
+
+<pre><code>* * * * * /home/debian/prog.sh &gt;&gt; /var/log/prog.sh/log
+</code></pre>
+
+<h3 id="program-log-rotation">Program log rotation</h3>
+
+<p>Edit <code>/etc/logrotate.d/program.sh</code> :</p>
+
+<pre><code>/var/log/program.sh/*.log {
+        daily
+        missingok
+        rotate 5
+        compress
+        delaycompress
+        notifempty
+        create 644 root root
+}
+</code></pre>
+
+<p><a href="https://doc.ubuntu-fr.org/logrotate#exemple">Great doc here</a>.</p>
+
+<h3 id="check-log-rotation">Check log rotation</h3>
+
+<pre><code>ls /var/log/prog.sh/
+</code></pre>
+
+<h2 id="another-example-with-a-cronjob-from-a-webapp-named-%60moodle%60">Another example with a cronjob from a webapp named <code>moodle</code></h2>
+
+<h3 id="moodle-log-location">Moodle log location</h3>
+
+<pre><code>sudo mkdir /var/log/moodle
+sudo touch /var/log/moodle/cron.log
+sudo chmod -R ug+rw /var/log/moodle/
+</code></pre>
+
+<h3 id="moodle-crontab">Moodle crontab</h3>
+
+<p>This job must be run from <code>www-data</code> user, so we need the crontab too to be run from <code>www-data</code> user:</p>
+
+<pre><code>sudo crontab -u www-data -e
+</code></pre>
+
+<p>edit as follow:</p>
+
+<pre><code>#run moodle cron every hour
+0 * * * * php /data/moodle/admin/cli/cron.php &gt;&gt; /var/log/moodle/cron.log 2&gt;&amp;1
+</code></pre>
+
+<p><strong>Important stderr has been redirected to stdout with <code>2&amp;1</code></strong> and all that is printed in a file.</p>
+
+<h3 id="moodle-log-rotation">Moodle log rotation</h3>
+
+<p>Edit <code>/etc/logrotate.d/moodle</code> :</p>
+
+<pre><code>/var/log/moodle/*.log {
+        daily
+        missingok
+        rotate 5
+        compress
+        delaycompress
+        notifempty
+        create 640 www-data www-data
+}    
 </code></pre>
 
         </div>
             </article>
     <article>
         <header>
-            <h2><a href="/blog/2019/01/14/docker-dockerfile">Docker 101: Dockerfile</a></h2>
+            <h2><a href="/blog/2019/01/25/docker-make-a-christmas-garland-with-nginx-apache">How to make a christmas garland with a nginx reverse proxy and 3 apache backends under docker?</a></h2>
         </header>
         <div>
-            <h1 id="dockerfile">Dockerfile</h1>
+            <h1 id="purpose">Purpose</h1>
 
-<p>A <code>Dockerfile</code> is a text document that contains all the commands a user could call on the command line to assemble an image.</p>
+<p>This posts deals with doing yourself a christmas garland!</p>
 
-<h2 id="example">Example</h2>
+<p>We will be using :</p>
 
-<p>You will find <a href="https://github.com/benIT/debian-web">in this repo</a> a running <code>Dockerfile</code>  based on a debian image that runs an Apache webserver.</p>
+<ul>
+<li>nginx as a reverse proxy</li>
+<li>apache as a backend</li>
+<li>docker as a plateforme  </li>
+</ul>
 
-<p>You will find <a href="https://github.com/benIT/debian-web/blob/master/README.md">in this file</a> all the base commands to manage a <code>Dockerfile</code> .</p>
+<h1 id="repository">Repository</h1>
 
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/01/10/docker-installation">Install Docker on ubuntu 16.04</a></h2>
-        </header>
-        <div>
-            <h2 id="install-docker-ce-for-ubuntu">Install Docker CE for Ubuntu</h2>
+<p><a href="https://github.com/benIT/docker-nginx-reverse-proxy">You will find a demonstration repository here.</a></p>
 
-<p>See <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/">official documentation</a>.</p>
+<h1 id="demo">Demo</h1>
 
-<h2 id="run-docker-as-a-non-root-user">Run docker as a non-root user</h2>
+<p><center><video width="640" height="480" controls src="https://benit.github.io/docker-nginx-reverse-proxy/demo.mp4"></video></center></p>
 
-<p>See <a href="https://docs.docker.com/install/linux/linux-postinstall/">official documentation</a>.</p>
+<p>If it does not work, download it from github repo:</p>
 
-<h2 id="configure-docker-to-be-used-behind-a-http-proxy">Configure docker to be used behind a http proxy</h2>
-
-<p>Create the following file <code>/etc/systemd/system/docker.service.d/http-proxy.conf</code> and edit it:</p>
-
-<pre><code>[Service]
-Environment=http_proxy=http://user:pass@ip:port
-Environment=https_proxy=http://user:pass@ip:port
+<pre><code>wget https://raw.githubusercontent.com/benIT/docker-nginx-reverse-proxy/master/demo.mp4
+vlc demo.mp4
 </code></pre>
 
-<h2 id="test">Test</h2>
+<h1 id="conclusion">Conclusion</h1>
 
-<pre><code>docker run hello-world
-</code></pre>
-
-<h2 id="install-docker-compose">Install docker-compose</h2>
-
-<p>See <a href="https://docs.docker.com/compose/install/">official documentation</a>.</p>
-
-<p>currently, I use docker-compose <code>v1.23.2</code></p>
-
-<pre><code>sudo curl -L "https://github.com/docker/compose/releases/download/1.23.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-docker-compose --version
-</code></pre>
+<p>Never forget that computing should always be fun!</p>
 
         </div>
             </article>
