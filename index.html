@@ -170,6 +170,21 @@ print( 2 &lt;=&gt; 1);print("&lt;br/&gt;");
             </article>
     <article>
         <header>
+            <h2><a href="/blog/2020/10/12/ca-certfile">Linux install CA cert file</a></h2>
+        </header>
+        <div>
+            <p>Self signed certificates throw error and can make CLI scripts fail. Here is the procedure to use to import cert file at a system level.</p>
+
+<p>Tested with debian 10.</p>
+
+<pre><code>cp my-cert-file.crt /usr/local/share/ca-certificates
+update-ca-certificates
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/09/16/git-bfg">Clean your git repo with BFG Repo-Cleaner</a></h2>
         </header>
         <div>
@@ -189,17 +204,6 @@ git push
 </code></pre>
 
 <p>Size 400Mo -> 30 Mo</p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/17/linux-startup">linux basics: startup</a></h2>
-        </header>
-        <div>
-            <p>init: parent of all ps. PID=0</p>
-
-<p>stages</p>
 
         </div>
             </article>

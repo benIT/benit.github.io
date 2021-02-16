@@ -3,9 +3,23 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/linux.xml" rel="self"/>
     <link href="/"/>
-    <updated>2021-02-16T11:20:33+00:00</updated>
+    <updated>2021-02-16T11:22:51+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[Linux install CA cert file]]></title>
+            <link href="/blog/2020/10/12/ca-certfile"/>
+            <updated>2020-10-12T00:00:00+00:00</updated>
+            <id>/blog/2020/10/12/ca-certfile</id>
+            <content type="html"><![CDATA[<p>Self signed certificates throw error and can make CLI scripts fail. Here is the procedure to use to import cert file at a system level.</p>
+
+<p>Tested with debian 10.</p>
+
+<pre><code>cp my-cert-file.crt /usr/local/share/ca-certificates
+update-ca-certificates
+</code></pre>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Clean your git repo with BFG Repo-Cleaner]]></title>
             <link href="/blog/2020/09/16/git-bfg"/>
@@ -786,21 +800,6 @@ chown :group file #change only group, same as chgrp command
 <p>chmod u+r,g-r file.txt
 chmod a=rwx file.txt
 chmod 740 file.txt</p></li>
-</ul>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[linux basics: material 10 -  File System Summary]]></title>
-            <link href="/blog/2020/04/13/linux-basics-material-10"/>
-            <updated>2020-04-13T00:00:00+00:00</updated>
-            <id>/blog/2020/04/13/linux-basics-material-10</id>
-            <content type="html"><![CDATA[<ul>
-<li>partitioning a disk means divide it into several spaces: see <code>fdisk</code> or <code>parted</code> </li>
-<li>formatting means creating a FS on partition: see <code>mkfs</code></li>
-<li>FS can  be analysed with <code>dumpe2fs</code>, tuned with <code>tune2fs</code> </li>
-<li>FS can  be checked with <code>fsck</code> </li>
-<li>mount means attaching a device in a particular folder of the linux tree with <code>mount</code></li>
-<li>FS mount can be automated with <code>/etc/fstab</code> file</li>
 </ul>
 ]]></content>
         </entry>

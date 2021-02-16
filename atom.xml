@@ -3,7 +3,7 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2021-02-16T11:20:33+00:00</updated>
+    <updated>2021-02-16T11:22:51+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -101,6 +101,20 @@ print( 2 &lt;=&gt; 1);print("&lt;br/&gt;");
 </code></pre>
 
 <p><a href="https://www.tutorialspoint.com/php7/php7_coalescing_operator.htm">Source</a></p>
+]]></content>
+        </entry>
+            <entry>
+            <title type="html"><![CDATA[Linux install CA cert file]]></title>
+            <link href="/blog/2020/10/12/ca-certfile"/>
+            <updated>2020-10-12T00:00:00+00:00</updated>
+            <id>/blog/2020/10/12/ca-certfile</id>
+            <content type="html"><![CDATA[<p>Self signed certificates throw error and can make CLI scripts fail. Here is the procedure to use to import cert file at a system level.</p>
+
+<p>Tested with debian 10.</p>
+
+<pre><code>cp my-cert-file.crt /usr/local/share/ca-certificates
+update-ca-certificates
+</code></pre>
 ]]></content>
         </entry>
             <entry>
@@ -824,66 +838,6 @@ rm: remove write-protected regular empty file 'test-folder/a'?
 total 0
 -rw-r--r-- 1 pi pi 0 Apr 16 14:59 b
 </code></pre>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[linux basics: file permissions 1 - POSIX rights]]></title>
-            <link href="/blog/2020/04/17/linux-file-permissions-1"/>
-            <updated>2020-04-17T00:00:00+00:00</updated>
-            <id>/blog/2020/04/17/linux-file-permissions-1</id>
-            <content type="html"><![CDATA[<h2 id="file-ownership">file ownership</h2>
-
-<p>File ownership is managed by a user owner and a group owner.
-See <code>ls -l</code> or <code>ls -n</code></p>
-
-<p>Examples:</p>
-
-<pre><code>chown user:group file #change owner and group
-chown user file # change only owner
-chown :group file #change only group, same as chgrp command
-</code></pre>
-
-<h2 id="linux-posix-rights">Linux POSIX rights</h2>
-
-<p>POSIX is a standard.</p>
-
-<h2 id="list-rights">List rights</h2>
-
-<pre><code>ls -l
-</code></pre>
-
-<p>Type codes:</p>
-
-<ul>
-<li>-: file</li>
-<li>d: folder</li>
-<li>l: symlink</li>
-<li>p: pipe. used to make 2 programs communicate</li>
-<li>s: socket. used to make 2 programs communicate + network management + bidirectional</li>
-<li>b: block device, ie write block by block</li>
-<li>c: character device, ie write char by char</li>
-</ul>
-
-<p>9 bits: 3 User + 3 Group + 3 Other</p>
-
-<h2 id="chmod">chmod</h2>
-
-<ul>
-<li>u: for user</li>
-<li>g: for group</li>
-<li>o: for others</li>
-<li><p>a: for all</p></li>
-<li><p>+: add right</p></li>
-<li>-: remove right</li>
-<li><p>=: set right</p></li>
-<li><p>r: read. 2^2 => 4</p></li>
-<li>w: write.2^1 => 2</li>
-<li><p>x: execute.2^0 => 1</p>
-
-<p>chmod u+r,g-r file.txt
-chmod a=rwx file.txt
-chmod 740 file.txt</p></li>
-</ul>
 ]]></content>
         </entry>
     </feed>
