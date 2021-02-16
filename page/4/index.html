@@ -72,6 +72,67 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2020/04/17/linux-file-permissions-1">linux basics: file permissions 1 - POSIX rights</a></h2>
+        </header>
+        <div>
+            <h2 id="file-ownership">file ownership</h2>
+
+<p>File ownership is managed by a user owner and a group owner.
+See <code>ls -l</code> or <code>ls -n</code></p>
+
+<p>Examples:</p>
+
+<pre><code>chown user:group file #change owner and group
+chown user file # change only owner
+chown :group file #change only group, same as chgrp command
+</code></pre>
+
+<h2 id="linux-posix-rights">Linux POSIX rights</h2>
+
+<p>POSIX is a standard.</p>
+
+<h2 id="list-rights">List rights</h2>
+
+<pre><code>ls -l
+</code></pre>
+
+<p>Type codes:</p>
+
+<ul>
+<li>-: file</li>
+<li>d: folder</li>
+<li>l: symlink</li>
+<li>p: pipe. used to make 2 programs communicate</li>
+<li>s: socket. used to make 2 programs communicate + network management + bidirectional</li>
+<li>b: block device, ie write block by block</li>
+<li>c: character device, ie write char by char</li>
+</ul>
+
+<p>9 bits: 3 User + 3 Group + 3 Other</p>
+
+<h2 id="chmod">chmod</h2>
+
+<ul>
+<li>u: for user</li>
+<li>g: for group</li>
+<li>o: for others</li>
+<li><p>a: for all</p></li>
+<li><p>+: add right</p></li>
+<li>-: remove right</li>
+<li><p>=: set right</p></li>
+<li><p>r: read. 2^2 => 4</p></li>
+<li>w: write.2^1 => 2</li>
+<li><p>x: execute.2^0 => 1</p>
+
+<p>chmod u+r,g-r file.txt
+chmod a=rwx file.txt
+chmod 740 file.txt</p></li>
+</ul>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/04/13/linux-basics-material-10">linux basics: material 10 -  File System Summary</a></h2>
         </header>
         <div>
@@ -179,158 +240,6 @@ mount -a: mount all FS /etc/fstab
 
         </div>
             </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/13/linux-basics-material-8">linux basics: material 8 - FS tools</a></h2>
-        </header>
-        <div>
-            <h2 id="fs-tools">FS tools</h2>
-
-<h3 id="dumps-fs-informations%3A-dumpe2fs">dumps FS informations: dumpe2fs</h3>
-
-<p>inode: means a file</p>
-
-<pre><code>dumpe2fs -h /dev/sda1
-</code></pre>
-
-<p>outputs:</p>
-
-<pre><code>Filesystem OS type:       Linux
-Inode count:              9707520 #max number of files
-Block count:              38812416 #max number of blocks
-Reserved block count:     1940620
-Free blocks:              33756140 #
-Free inodes:              9545389  #
-</code></pre>
-
-<h3 id="tune-fs-settings%3A-tune2fs">tune FS settings: tune2fs</h3>
-
-<p>!! never use on a mounted FS !!</p>
-
-<p>tune2fs</p>
-
-<h4 id="set-number-of-mount-before-checking-fs">set number of mount before checking FS</h4>
-
-<pre><code>tune2fs -c 3 /dev/sdb1
-</code></pre>
-
-<p>=></p>
-
-<pre><code>tune2fs 1.43.4 (31-Jan-2017)
-Setting maximal mount count to 3
-</code></pre>
-
-<h4 id="set-time-interval-before-checking-fs">set time interval before checking FS</h4>
-
-<pre><code>tune2fs -i 60d /dev/sdb1
-</code></pre>
-
-<p>=></p>
-
-<pre><code>tune2fs 1.43.4 (31-Jan-2017)
-Setting interval between checks to 5184000 seconds
-</code></pre>
-
-<p>check:</p>
-
-<pre><code>dumpe2fs -h /dev/sdb1 | grep interval
-</code></pre>
-
-<h4 id="set-number-of-reserved-blocks">set number of reserved blocks</h4>
-
-<p>prevent user to fullfill FS</p>
-
-<pre><code>tune2fs -m 3 /dev/sdb1
-</code></pre>
-
-<p>=></p>
-
-<pre><code>tune2fs 1.43.4 (31-Jan-2017)
-Setting reserved blocks percentage to 3% (14667 blocks)
-</code></pre>
-
-<h4 id="debugfs">debugfs</h4>
-
-<p>!! never use on a mounted FS !!</p>
-
-<p>dumpe + tune FS</p>
-
-<pre><code>debugfs -w /dev/sdb1
-</code></pre>
-
-<h5 id="fs-stats">FS stats</h5>
-
-<p>stats</p>
-
-<p>=></p>
-
-<pre><code>Filesystem volume name:   &lt;none&gt;
-Last mounted on:          /media/pi/CDROM
-Filesystem UUID:          41d6539d-342e-4c2b-93f3-c941525d29b3
-Filesystem magic number:  0xEF53
-Filesystem revision #:    1 (dynamic)
-Filesystem features:      has_journal ext_attr resize_inode dir_index filetype needs_recovery extent 64bit flex_bg sparse_super large_file huge_file dir_nlink extra_isize metadata_csum
-Filesystem flags:         signed_directory_hash 
-Default mount options:    user_xattr acl
-Filesystem state:         clean
-Errors behavior:          Continue
-Filesystem OS type:       Linux
-Inode count:              122400
-Block count:              488907
-Reserved block count:     14667
-Free blocks:              471589
-Free inodes:              122388
-First block:              0
-Block size:               4096
-Fragment size:            4096
-Group descriptor size:    64
-Reserved GDT blocks:      238
-</code></pre>
-
-<h5 id="file-stats">File stats</h5>
-
-<pre><code>stat test.txt
-</code></pre>
-
-<p>=></p>
-
-<pre><code>Inode: 13   Type: regular    Mode:  0644   Flags: 0x80000
-Generation: 1782112958    Version: 0x00000000:00000001
-User:     0   Group:     0   Project:     0   Size: 5
-File ACL: 0    Directory ACL: 0
-Links: 1   Blockcount: 8
-Fragment:  Address: 0    Number: 0    Size: 0
- ctime: 0x5e95a4c1:dc281c1c -- Tue Apr 14 13:55:45 2020
-  atime: 0x5e95a4c1:dc281c1c -- Tue Apr 14 13:55:45 2020
-   mtime: 0x5e95a4c1:dc281c1c -- Tue Apr 14 13:55:45 2020
-   crtime: 0x5e95a4c1:dc281c1c -- Tue Apr 14 13:55:45 2020
-   Size of extra inode fields: 32
-   Inode checksum: 0x8be005b7
-   EXTENTS:
-   (0):33008
-</code></pre>
-
-<p>lsdel: list deleted file 
-undel: undelete a file</p>
-
-<h3 id="fsck">FSCK</h3>
-
-<p>fsck - check and repair a Linux filesystem</p>
-
-<p>!! never use on a mounted FS !!</p>
-
-<pre><code>fsck -v /dev/sdb1
-</code></pre>
-
-<p>=></p>
-
-<pre><code>fsck from util-linux 2.29.2
- e2fsck 1.43.4 (31-Jan-2017)
- /dev/sdb1: clean, 13/122400 files, 17319/488907 blocks (check after next mount)
-</code></pre>
-
-        </div>
-            </article>
     <nav>
         <ul class="pager">
             <li class="next"><a href="/page/5">Older posts<span aria-hidden="true">&rarr;</span></a></li>            <li class="previous"><a href="/page/3"><span aria-hidden="true">&larr;</span> Newer posts</a></li>        </ul>
@@ -351,7 +260,7 @@ undel: undelete a file</p>
             </div>
         </div>
         <footer class="container">
-            &copy; 2020 benIT&#039;s notebook
+            &copy; 2021 benIT&#039;s notebook
         </footer>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

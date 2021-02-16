@@ -72,6 +72,201 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2019/03/25/git-rebase">GIT rebase</a></h2>
+        </header>
+        <div>
+            <p>The aim of this post is to understand and get confortable with the git rebase command.</p>
+
+<p><a href="https://www.atlassian.com/git/tutorials/rewriting-history/git-rebase">Definition</a>:</p>
+
+<blockquote>
+  <p>Rebasing is the process of moving or combining a sequence of commits to a new base commit. Rebasing is most useful and easily visualized in the context of a feature branching workflow.</p>
+</blockquote>
+
+<h2 id="create-a-git-repo">Create a git repo</h2>
+
+<pre><code>mkdir rebase-test &amp;&amp; cd rebase-test
+git init
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>Initialized empty Git repository in /home/bmn/rebase-test/.git/
+</code></pre>
+
+<h2 id="create-one-commit-on-%60master%60-branch">Create one commit on <code>master</code> branch</h2>
+
+<pre><code>echo "first content from master" &gt;&gt; README.md
+git add README.md 
+git commit -m "first commit"
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>[master (root-commit) dc5f8d2] first commit
+1 file changed, 1 insertion(+)
+create mode 100644 README.md
+</code></pre>
+
+<h2 id="create-a-%60feature%60-branch-from-that-commit">Create a <code>feature</code> branch from that commit</h2>
+
+<pre><code>git checkout -b feature
+Switched to a new branch 'feature'
+</code></pre>
+
+<h2 id="create-one-commit-on-the-%60feature%60-branch">Create one commit on the <code>feature</code> branch</h2>
+
+<pre><code>echo "introducing a new feature" &gt;&gt; README.md
+</code></pre>
+
+<p>Check file:</p>
+
+<pre><code>cat README.md
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>first content from master
+introducing a new feature
+
+
+git commit -am "add feature line"
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>[feature 2212653] add feature line
+1 file changed, 1 insertion(+)
+</code></pre>
+
+<h2 id="check-repo-graph">Check repo graph</h2>
+
+<pre><code>nohup gitg &amp;
+</code></pre>
+
+<p><img src="/images/git-rebase/graph1.png" alt="screenshot" /></p>
+
+<h2 id="create-a-new-commit-on-master-branch">Create a new commit on master branch</h2>
+
+<pre><code>git checkout master 
+Switched to branch 'master'
+</code></pre>
+
+<p>Check file:</p>
+
+<pre><code>cat README.md 
+first content from master
+
+vim README.md # add a title line for example
+cat README.md
+</code></pre>
+
+<p>output:</p>
+
+<pre><code># Master title
+first content from master
+</code></pre>
+
+<p>Commit that:</p>
+
+<pre><code>git commit -am "add master title"
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>[master ec82793] add master title
+ 1 file changed, 1 insertion(+)
+</code></pre>
+
+<blockquote>
+  <p>Let's say that <code>master</code> branch has a new commit because work on master has been delivered. Let's rebase the <code>feature</code> branch to this new commit, to get the new content from <code>master</code> and play the commit from <code>feature</code> branch.</p>
+</blockquote>
+
+<h2 id="let%27s-rebase-the-%60feature%60-branch-on-the-%60master%60-branch">Let's rebase the <code>feature</code> branch on the <code>master</code> branch</h2>
+
+<p>Let's move on our <code>feature</code> branch:</p>
+
+<pre><code>git checkout feature 
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>Switched to branch 'feature'
+</code></pre>
+
+<p>And now the rebase operation itself:</p>
+
+<pre><code>git rebase -i master 
+</code></pre>
+
+<p><img src="/images/git-rebase/rebase.png" alt="screenshot" /></p>
+
+<p>output:</p>
+
+<pre><code>Successfully rebased and updated refs/heads/feature.
+</code></pre>
+
+<p><em>Our <code>feature</code> branch starts now from <code>master</code> head commit and now git is replaying all the commit from our <code>feature</code> branch from this point.</em></p>
+
+<p>The result is the following:</p>
+
+<p>The file <code>README.ms</code> now contains the commits from <code>master</code> + the commit from <code>feature</code>.</p>
+
+<h2 id="let%27s-check-feature-branch-content">Let's check feature branch content</h2>
+
+<pre><code>cat README.md 
+</code></pre>
+
+<p>output:</p>
+
+<pre><code># Master title
+first content from master
+introducing a new feature
+</code></pre>
+
+<h2 id="let%27s-check-%60master%60-branch-content">Let's check <code>master</code> branch content</h2>
+
+<pre><code>git checkout master 
+</code></pre>
+
+<p>output:</p>
+
+<pre><code>Switched to branch 'master'
+
+
+cat README.md
+</code></pre>
+
+<p>output:</p>
+
+<pre><code># Master title
+first content from master
+</code></pre>
+
+<h2 id="check-repo-graph">Check repo graph</h2>
+
+<pre><code>nohup gitg &amp;
+</code></pre>
+
+<p><img src="/images/git-rebase/graph2.png" alt="screenshot" /></p>
+
+<h2 id="usage%3A-getting-changes-from-origin%2Fbranch-on-branch">Usage: getting changes from origin/branch on branch</h2>
+
+<p>Retrieve changes from origin:</p>
+
+<pre><code>git fetch
+</code></pre>
+
+<p>apply commit from that:</p>
+
+<pre><code>git checkout master
+git rebase origin/master
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2019/02/22/phpstorm-search-and-replace-regexp">PHPSTORM search &amp; replace with regexp</a></h2>
         </header>
         <div>
@@ -283,72 +478,6 @@ sudo -u postgres psql -d webapp -c "SELECT * FROM account" ;
 
         </div>
             </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/02/15/ssh-x11-docker">SSH X11 &amp; docker</a></h2>
-        </header>
-        <div>
-            <h2 id="purpose">Purpose</h2>
-
-<p>Run GUI application inside a docker container using X11Forwarding.</p>
-
-<p><a href="https://gist.github.com/udkyo/c20935c7577c71d634f0090ef6fa8393">source from github.</a></p>
-
-<h2 id="create-a-container">Create a container</h2>
-
-<h3 id="dockerfile">DockerFile</h3>
-
-<pre><code>FROM ubuntu
-RUN apt update \
-    &amp;&amp; apt install -y firefox \
-                      openssh-server \
-                      xauth \
-                      emacs \
-    &amp;&amp; mkdir /var/run/sshd \
-    &amp;&amp; mkdir /root/.ssh \
-    &amp;&amp; chmod 700 /root/.ssh \
-    &amp;&amp; ssh-keygen -A \
-    &amp;&amp; sed -i "s/^.*PasswordAuthentication.*$/PasswordAuthentication no/" /etc/ssh/sshd_config \
-    &amp;&amp; sed -i "s/^.*X11Forwarding.*$/X11Forwarding yes/" /etc/ssh/sshd_config \
-    &amp;&amp; sed -i "s/^.*X11UseLocalhost.*$/X11UseLocalhost no/" /etc/ssh/sshd_config \
-    &amp;&amp; grep "^X11UseLocalhost" /etc/ssh/sshd_config || echo "X11UseLocalhost no" &gt;&gt; /etc/ssh/sshd_config
-
-RUN echo "CONTENT_OF_ID_RSA_PUB_KEY_HERE" &gt;&gt; /root/.ssh/authorized_keys
-</code></pre>
-
-<h3 id="build-it">Build it</h3>
-
-<pre><code>docker build -t benit/ubuntu-x11 . --build-arg http_proxy=$http_proxy
-</code></pre>
-
-<h2 id="run-container">Run Container</h2>
-
-<pre><code>docker run --name ubuntu-x11 --rm -d -p 2150:22 benit/ubuntu-x11
-</code></pre>
-
-<h2 id="ssh-client-configuration">SSH client configuration</h2>
-
-<p>Edit <code>~/.ssh/config</code> on the client, here my workstation is named <code>lxdev</code>:</p>
-
-<pre><code>Host ubuntuX11
-     Hostname lxdev
-     Port 2150
-     user root
-     ForwardX11 yes
-     ForwardX11Trusted yes
-</code></pre>
-
-<h2 id="use-it%21">Use it!</h2>
-
-<pre><code>ssh -X ubuntu-x11 emacs     
-</code></pre>
-
-<h2 id="enjoy%21">Enjoy!</h2>
-
-<p><img src="/images/docker/docker-ssh-x11-emacs.png" alt="screenshot" /></p>
-
-        </div>
-            </article>
     <nav>
         <ul class="pager">
             <li class="next"><a href="/page/15">Older posts<span aria-hidden="true">&rarr;</span></a></li>            <li class="previous"><a href="/page/13"><span aria-hidden="true">&larr;</span> Newer posts</a></li>        </ul>
@@ -369,7 +498,7 @@ RUN echo "CONTENT_OF_ID_RSA_PUB_KEY_HERE" &gt;&gt; /root/.ssh/authorized_keys
             </div>
         </div>
         <footer class="container">
-            &copy; 2020 benIT&#039;s notebook
+            &copy; 2021 benIT&#039;s notebook
         </footer>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>

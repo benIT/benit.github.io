@@ -3,9 +3,106 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2020-09-21T14:22:47+00:00</updated>
+    <updated>2021-02-16T11:20:33+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[PHP 7]]></title>
+            <link href="/blog/2021/02/16/php7"/>
+            <updated>2021-02-16T00:00:00+00:00</updated>
+            <id>/blog/2021/02/16/php7</id>
+            <content type="html"><![CDATA[<h1 id="php-7%3A-the-important-stuff">PHP 7: The Important Stuff</h1>
+
+<p>Basic PHP 7 cheat sheet from <a href="https://symfonycasts.com/screencast/php7">symfonycasts</a>.</p>
+
+<h2 id="throwable">Throwable</h2>
+
+<p>Both <code>\Exception</code> and <code>\Error</code> implements <code>\Throwable</code>:</p>
+
+<pre><code>&lt;?php
+try {
+    undefinedFunction();
+} catch (\Throwable $error) {
+    echo 'Now if you write bad code, you can catch it! ' . $error-&gt;getMessage();
+}
+echo "\n\nContinue processing file...";
+</code></pre>
+
+<h2 id="scalar-type-hints">Scalar Type Hints</h2>
+
+<p>string, int, float, bool, array, callable, iterable</p>
+
+<pre><code>public function setName(string $name)
+</code></pre>
+
+<p>Weak Mode (defaut mode) versus Strict Mode</p>
+
+<pre><code>declare(strict_types = 1);
+</code></pre>
+
+<h2 id="return-types">Return Types</h2>
+
+<p>string, int, float, bool, array, callable, iterable</p>
+
+<pre><code>public function getName(): string
+</code></pre>
+
+<h2 id="nullable-types">Nullable Types</h2>
+
+<pre><code>public function getFunFact(): ?string
+</code></pre>
+
+<h2 id="void-types">Void Types</h2>
+
+<pre><code>public function setFunFact(?string $funFact): void
+</code></pre>
+
+<h2 id="private-constants">Private Constants</h2>
+
+<pre><code>private const AVATAR_FILE_PREFIX = '/images';
+</code></pre>
+
+<h2 id="the-iterable-pseudo-type">The iterable Pseudo-Type</h2>
+
+<pre><code>public function feed(iterable $food): string
+</code></pre>
+
+<h2 id="the-multi-exception-catch">The Multi Exception Catch</h2>
+
+<pre><code>    try {
+        if (random_int(0, 1)) {
+            throw new NoCookieForYou();
+        }
+        throw new NoCookiesLeft();
+    } catch (NoCookieForYou | NoCookiesLeft $e) {
+        $whisper = sprintf('Crazy Dave whispered "%s"', $e-&gt;getMessage());
+    }
+</code></pre>
+
+<h2 id="spaceship-operator-">spaceship operator &lt;=></h2>
+
+<p>It returns -1, 0 or 1 when first expression is respectively less than, equal to, or greater than second expression.</p>
+
+<pre><code>print( 1 &lt;=&gt; 1);print("&lt;br/&gt;");
+print( 1 &lt;=&gt; 2);print("&lt;br/&gt;");
+print( 2 &lt;=&gt; 1);print("&lt;br/&gt;");
+</code></pre>
+
+<p><a href="https://www.tutorialspoint.com/php7/php7_spaceship_operator.htm">source</a></p>
+
+<h2 id="null-coalescing-operator-%3F%3F">Null Coalescing Operator ??</h2>
+
+<pre><code>$username = $_GET['username'] ?? 'not passed';
+</code></pre>
+
+<p>Equivalent code using ternary operator:</p>
+
+<pre><code>$username = isset($_GET['username']) ? $_GET['username'] : 'not passed';
+</code></pre>
+
+<p><a href="https://www.tutorialspoint.com/php7/php7_coalescing_operator.htm">Source</a></p>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[Clean your git repo with BFG Repo-Cleaner]]></title>
             <link href="/blog/2020/09/16/git-bfg"/>
@@ -786,21 +883,6 @@ chown :group file #change only group, same as chgrp command
 <p>chmod u+r,g-r file.txt
 chmod a=rwx file.txt
 chmod 740 file.txt</p></li>
-</ul>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[linux basics: material 10 -  File System Summary]]></title>
-            <link href="/blog/2020/04/13/linux-basics-material-10"/>
-            <updated>2020-04-13T00:00:00+00:00</updated>
-            <id>/blog/2020/04/13/linux-basics-material-10</id>
-            <content type="html"><![CDATA[<ul>
-<li>partitioning a disk means divide it into several spaces: see <code>fdisk</code> or <code>parted</code> </li>
-<li>formatting means creating a FS on partition: see <code>mkfs</code></li>
-<li>FS can  be analysed with <code>dumpe2fs</code>, tuned with <code>tune2fs</code> </li>
-<li>FS can  be checked with <code>fsck</code> </li>
-<li>mount means attaching a device in a particular folder of the linux tree with <code>mount</code></li>
-<li>FS mount can be automated with <code>/etc/fstab</code> file</li>
 </ul>
 ]]></content>
         </entry>

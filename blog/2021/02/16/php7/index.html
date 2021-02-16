@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>PHP 7 &mdash; benIT&#039;s notebook &mdash; </title>
+        <meta charset="utf-8">
+        <meta name="theme-color" content="#ffffff">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="robots" content="index, follow">
+        <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="/css/style.css" rel="stylesheet" type="text/css" />
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+        <link rel="apple-touch-startup-image" href="/images/jackson/2048x2048.png">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <link rel="shortcut icon" sizes="76x76" href="/images/jackson/76x76.png">
+        <link rel="shortcut icon" sizes="120x120" href="/images/jackson/120x120.png">
+        <link rel="shortcut icon" sizes="128x128" href="/images/jackson/128x128.png">
+        <link rel="shortcut icon" sizes="152x152" href="/images/jackson/152x152.png">
+        <link rel="shortcut icon" sizes="196x196" href="/images/jackson/196x196.png">
+        <link rel="shortcut icon" sizes="512x512" href="/images/jackson/512x512.png">
+        <link rel="shortcut icon" sizes="1024x1024" href="/images/jackson/1024x1024.png">
+        <link rel="shortcut icon" sizes="2048x2048" href="/images/jackson/2048x2048.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="/images/jackson/76x76.png">
+        <link rel="apple-touch-icon" sizes="120x120" href="/images/jackson/120x120.png">
+        <link rel="apple-touch-icon" sizes="128x128" href="/images/jackson/128x128.png">
+        <link rel="apple-touch-icon" sizes="152x152" href="/images/jackson/152x152.png">
+        <link rel="apple-touch-icon" sizes="196x196" href="/images/jackson/196x196.png">
+        <link rel="apple-touch-icon" sizes="512x512" href="/images/jackson/512x512.png">
+        <link rel="apple-touch-icon" sizes="1024x1024" href="/images/jackson/1024x1024.png">
+        <link rel="apple-touch-icon" sizes="2048x2048" href="/images/jackson/2048x2048.png">
+
+        <link rel="stylesheet" href="/components/highlightjs/styles/github.css" />
+        <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="benIT&#039;s notebook activity feed" />
+        <style>
+        /** quick fix because bootstrap <pre> has a background-color. */
+        pre code { background-color: inherit; }
+        </style>
+                                    </head>
+    <a href="https://github.com/benIT/github-blog"><img style="z-index:1032;position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/e7bbb0521b397edbd5fe43e7f760759336b5e05f/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677265656e5f3030373230302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png"></a>
+    <body>
+        <header>
+            <nav class="navbar navbar-inverse navbar-fixed-top">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/">benIT&#039;s notebook </a>
+                    </div>
+                    <div id="navbar" class="collapse navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li><a href="https://github.com/benIT">Github</a></li>
+                            <li><a href="/blog">Posts Archive</a></li>
+                            <li><a href="/blog/categories">Categories</a></li>
+                            <li><a href="/atom.xml">RSS feed</a></li>
+                            <!--<li><a href="/blog/tags">Tags</a></li>-->
+                            <li><a href="/about">About</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="mainContent container">
+            <div class="row-fluid">
+                <div class="span8">
+                        <article>
+        <header>
+            <h2>PHP 7 <small>post</small></h2>
+        </header>
+        <div>
+            <h1 id="php-7%3A-the-important-stuff">PHP 7: The Important Stuff</h1>
+
+<p>Basic PHP 7 cheat sheet from <a href="https://symfonycasts.com/screencast/php7">symfonycasts</a>.</p>
+
+<h2 id="throwable">Throwable</h2>
+
+<p>Both <code>\Exception</code> and <code>\Error</code> implements <code>\Throwable</code>:</p>
+
+<pre><code>&lt;?php
+try {
+    undefinedFunction();
+} catch (\Throwable $error) {
+    echo 'Now if you write bad code, you can catch it! ' . $error-&gt;getMessage();
+}
+echo "\n\nContinue processing file...";
+</code></pre>
+
+<h2 id="scalar-type-hints">Scalar Type Hints</h2>
+
+<p>string, int, float, bool, array, callable, iterable</p>
+
+<pre><code>public function setName(string $name)
+</code></pre>
+
+<p>Weak Mode (defaut mode) versus Strict Mode</p>
+
+<pre><code>declare(strict_types = 1);
+</code></pre>
+
+<h2 id="return-types">Return Types</h2>
+
+<p>string, int, float, bool, array, callable, iterable</p>
+
+<pre><code>public function getName(): string
+</code></pre>
+
+<h2 id="nullable-types">Nullable Types</h2>
+
+<pre><code>public function getFunFact(): ?string
+</code></pre>
+
+<h2 id="void-types">Void Types</h2>
+
+<pre><code>public function setFunFact(?string $funFact): void
+</code></pre>
+
+<h2 id="private-constants">Private Constants</h2>
+
+<pre><code>private const AVATAR_FILE_PREFIX = '/images';
+</code></pre>
+
+<h2 id="the-iterable-pseudo-type">The iterable Pseudo-Type</h2>
+
+<pre><code>public function feed(iterable $food): string
+</code></pre>
+
+<h2 id="the-multi-exception-catch">The Multi Exception Catch</h2>
+
+<pre><code>    try {
+        if (random_int(0, 1)) {
+            throw new NoCookieForYou();
+        }
+        throw new NoCookiesLeft();
+    } catch (NoCookieForYou | NoCookiesLeft $e) {
+        $whisper = sprintf('Crazy Dave whispered "%s"', $e-&gt;getMessage());
+    }
+</code></pre>
+
+<h2 id="spaceship-operator-">spaceship operator &lt;=></h2>
+
+<p>It returns -1, 0 or 1 when first expression is respectively less than, equal to, or greater than second expression.</p>
+
+<pre><code>print( 1 &lt;=&gt; 1);print("&lt;br/&gt;");
+print( 1 &lt;=&gt; 2);print("&lt;br/&gt;");
+print( 2 &lt;=&gt; 1);print("&lt;br/&gt;");
+</code></pre>
+
+<p><a href="https://www.tutorialspoint.com/php7/php7_spaceship_operator.htm">source</a></p>
+
+<h2 id="null-coalescing-operator-%3F%3F">Null Coalescing Operator ??</h2>
+
+<pre><code>$username = $_GET['username'] ?? 'not passed';
+</code></pre>
+
+<p>Equivalent code using ternary operator:</p>
+
+<pre><code>$username = isset($_GET['username']) ? $_GET['username'] : 'not passed';
+</code></pre>
+
+<p><a href="https://www.tutorialspoint.com/php7/php7_coalescing_operator.htm">Source</a></p>
+
+        </div>
+                    <p class="categories">
+            Categories:
+                        <a href="/blog/categories/dev">dev</a>                        </p>
+                
+                    <nav class="article">
+                <ul>
+                                                                <li>Previous: <a class="previous" href="/blog/2020/09/16/git-bfg" title="Clean your git repo with BFG Repo-Cleaner"><span class="title">Clean your git repo with BFG Repo-Cleaner</span></a></li>
+                                    </ul>
+            </nav>
+            </article>
+
+
+
+                </div>
+                <!--<div class="span4 sidebar">-->
+                    <!--<div class="well">-->
+                        <!--<h4>benIT&#039;s notebook</h4>-->
+                    <!--</div>-->
+                    <!--<div class="well sidebar-nav">-->
+                        <!--<h4>Links</h4>-->
+                        <!--<ul class="nav">-->
+                            <!--<li><a href="http://sculpin.io">sculpin.io</a></li>-->
+                            <!--<li><a href="http://twitter.com/getsculpin">@getsculpin</a></li>-->
+                        <!--</ul>-->
+                    <!--</div>-->
+                <!--</div>-->
+            </div>
+        </div>
+        <footer class="container">
+            &copy; 2021 benIT&#039;s notebook
+        </footer>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="/components/jquery/jquery.min.js"><\/script>')</script>
+        <script src="/components/bootstrap/js/bootstrap.min.js"></script>
+                
+                <script src="/components/highlightjs/highlight.pack.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+
+                    </body>
+</html>

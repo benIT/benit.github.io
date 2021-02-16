@@ -72,6 +72,36 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2020/04/01/rpi-dev-6-ssmtp">rpi dev 6 - setup ssmpt with netcourrier</a></h2>
+        </header>
+        <div>
+            <h2 id="install">install</h2>
+
+<pre><code>apt-get install ssmtp
+apt-get install mailutils
+</code></pre>
+
+<h2 id="configure">configure</h2>
+
+<p>edit <code>/etc/ssmtp/ssmtp.conf</code>:</p>
+
+<pre><code>root=
+mailhub=mail.net-c.com:465
+hostname=myhost.com
+AuthUser=usermail@netc.fr
+AuthPass=ENTER-SMTP-PASSWORD-HERE
+FromLineOverride=YES
+UseTLS=YES
+</code></pre>
+
+<h2 id="test">Test</h2>
+
+<p>echo "Hello world email body" | mail -s "Test Subject" test@mail.fr</p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/04/01/rpi-dev-5-ufw">rpi dev 5 - UFW</a></h2>
         </header>
         <div>
@@ -182,137 +212,6 @@ ufw delete allow 80/tcp &amp;&amp; ufw delete allow 443/tcp
 
         </div>
             </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/01/rpi-dev-3-gitea">rpi dev 3 - Install GITEA</a></h2>
-        </header>
-        <div>
-            <h2 id="git-itself">GIT itself</h2>
-
-<pre><code>apt-get install git
-adduser --disabled-login --gecos 'Gitea' git
-</code></pre>
-
-<h3 id="gitea-app">GITEA app</h3>
-
-<pre><code>cd /mnt/gitea/
-wget https://dl.gitea.io/gitea/1.4.0/gitea-1.4.0-linux-arm-7 -O gitea
-chmod +x gitea
-chown -R git: /mnt/gitea
-</code></pre>
-
-<p>check its running at https://192.X.X.X:3000 with : <code>./gitea web</code></p>
-
-<h4 id="gitea-systemd-service">GITEA systemd service</h4>
-
-<p>In <code>/etc/systemd/system/gitea.service</code>:</p>
-
-<pre><code>[Unit]
-Description=Gitea (Git with a cup of tea)
-After=syslog.target
-After=network.target
-
-[Service]
-# Modify these two values ​​and uncomment them if you have
-# repos with lots of files and get to HTTP error 500 because of that
-###
-# LimitMEMLOCK=infinity
-# LimitNOFILE=65535
-RestartSec=2s
-Type=simple
-User=git
-Group=git
-WorkingDirectory=/mnt/gitea
-ExecStart=/mnt/gitea/gitea web
-Restart=always
-Environment=USER=git 
-HOME=/mnt/gitea/gitea
-
-[Install]
-WantedBy=multi-user.target
-</code></pre>
-
-<p>enable service:</p>
-
-<pre><code>systemctl enable gitea.service
-systemctl start gitea.service
-</code></pre>
-
-<p>reboot and check service is running.</p>
-
-<h3 id="apache2">Apache2</h3>
-
-<pre><code>apt-get install -y apache2
-a2enmod ssl rewrite actions alias proxy_fcgi proxy proxy_http
-</code></pre>
-
-<h3 id="postgresql">PostgreSQL</h3>
-
-<pre><code>CREATE DATABASE gitea;
-CREATE USER gitea_user WITH ENCRYPTED PASSWORD 'pass123';    
-GRANT CONNECT ON DATABASE gitea TO gitea_user;
-\c gitea;
-GRANT USAGE ON SCHEMA public TO gitea_user;
-GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO gitea_user;
-GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO gitea_user;
-</code></pre>
-
-<h3 id="setup-apache2-reverse-proxy">Setup Apache2 reverse proxy</h3>
-
-<pre><code>a2enmod proxy
-a2enmod proxy_http
-</code></pre>
-
-<p>Configure reverse proxy directives <a href="https://www.digitalocean.com/community/questions/how-do-i-setup-gitea-with-a-domain-name-or-sub-domain">source</a> :</p>
-
-<pre><code>ProxyPreserveHost On
-ProxyRequests off
-ProxyPass / http://localhost:3000/
-ProxyPassReverse / http://localhost:3000/
-</code></pre>
-
-<p><code>gitea.com.conf</code> file:</p>
-
-<pre><code>&lt;VirtualHost *:80&gt;
-    ServerName mygitea.com
-    Redirect permanent / https://mygitea.com
-&lt;/VirtualHost&gt;
-
-&lt;VirtualHost *:443&gt;
-    ServerName mygitea.com
-    ProxyPreserveHost On
-    ProxyRequests off
-    ProxyPass / http://localhost:3000/
-    ProxyPassReverse / http://localhost:3000/
-
-    ServerAdmin webmaster@localhost
-    DocumentRoot /var/www/html
-    SSLengine on
-    SSLCertificateKeyFile /etc/letsencrypt/live/mygitea.com/privkey.pem
-    SSLCertificateFile    /etc/letsencrypt/live/mygitea.com/cert.pem
-    SSLCertificateChainFile /etc/letsencrypt/live/mygitea.com/fullchain.pem
-
-    ErrorLog ${APACHE_LOG_DIR}/gitea-error.log
-    CustomLog ${APACHE_LOG_DIR}/gitea-access.log combined
-    Include conf-available/serve-cgi-bin.conf
-&lt;/VirtualHost&gt;
-</code></pre>
-
-<h3 id="configuration">Configuration</h3>
-
-<h3 id="from-gui">from GUI</h3>
-
-<ul>
-<li>disable registration form</li>
-<li>mark repo as private</li>
-</ul>
-
-<h3 id="from-cli">from CLI</h3>
-
-<p>edit <code>custom/conf/app.ini</code> and <code>systemctl restart gitea.service</code></p>
-
-        </div>
-            </article>
     <nav>
         <ul class="pager">
             <li class="next"><a href="/page/9">Older posts<span aria-hidden="true">&rarr;</span></a></li>            <li class="previous"><a href="/page/7"><span aria-hidden="true">&larr;</span> Newer posts</a></li>        </ul>
@@ -333,7 +232,7 @@ ProxyPassReverse / http://localhost:3000/
             </div>
         </div>
         <footer class="container">
-            &copy; 2020 benIT&#039;s notebook
+            &copy; 2021 benIT&#039;s notebook
         </footer>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
