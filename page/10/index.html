@@ -72,6 +72,155 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2020/04/01/rpi-dev-2-extend-fs">rpi dev 2 - extend RPI storage with a USB drive</a></h2>
+        </header>
+        <div>
+            <h2 id="purpose">purpose</h2>
+
+<p>create 3 partitions of 8Go for :</p>
+
+<ul>
+<li>/var/www</li>
+<li>/mnt/gitea</li>
+<li>/var/lib/postgresql/</li>
+</ul>
+
+<h3 id="create-3-partitions-on-the-usb-drive-of-8go">Create 3 partitions on the USB drive of 8Go</h3>
+
+<pre><code>root@raspberrypi:~# fdisk /dev/sda
+</code></pre>
+
+<p>=></p>
+
+<pre><code>Command (m for help): o
+Created a new DOS disklabel with disk identifier 0x78494e0c.
+
+Command (m for help): n
+Partition type
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended (container for logical partitions)
+Select (default p): p
+Partition number (1-4, default 1): 1
+First sector (2048-60063743, default 2048): 
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-60063743, default 60063743): +8G
+
+Created a new partition 1 of type 'Linux' and of size 8 GiB.
+
+Command (m for help): n
+Partition type
+   p   primary (1 primary, 0 extended, 3 free)
+   e   extended (container for logical partitions)
+Select (default p): p
+Partition number (2-4, default 2): 2
+First sector (16779264-60063743, default 16779264): 
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (16779264-60063743, default 60063743): +8G
+
+Created a new partition 2 of type 'Linux' and of size 8 GiB.
+
+Command (m for help): n
+Partition type
+   p   primary (2 primary, 0 extended, 2 free)
+   e   extended (container for logical partitions)
+Select (default p): p
+Partition number (3,4, default 3): 
+First sector (33556480-60063743, default 33556480): 
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (33556480-60063743, default 60063743): +8G
+
+Created a new partition 3 of type 'Linux' and of size 8 GiB.
+
+Command (m for help): w
+The partition table has been altered.
+Calling ioctl() to re-read partition table.
+Syncing disks.
+</code></pre>
+
+<h3 id="check">Check</h3>
+
+<pre><code>root@raspberrypi:~# fdisk -l /dev/sda
+</code></pre>
+
+<p>=></p>
+
+<pre><code>Disk /dev/sda: 28.7 GiB, 30752636928 bytes, 60063744 sectors
+Disk model: Ultra           
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x78494e0c
+
+Device     Boot    Start      End  Sectors Size Id Type
+/dev/sda1           2048 16779263 16777216   8G 83 Linux
+/dev/sda2       16779264 33556479 16777216   8G 83 Linux
+/dev/sda3       33556480 50333695 16777216   8G 83 Linux
+</code></pre>
+
+<h3 id="create-ext4-filesystem-for-each-partitions-with-explicit-labels">create ext4 filesystem for each partitions with explicit labels</h3>
+
+<pre><code>mkfs.ext4 -L pi-git /dev/sda1
+mkfs.ext4 -L pi-web /dev/sda2
+mkfs.ext4 -L pi-pgsql /dev/sda3
+</code></pre>
+
+<h2 id="check">Check</h2>
+
+<pre><code>root@raspberrypi:~# ls -l /dev/disk/by-label/
+</code></pre>
+
+<p>=></p>
+
+<pre><code>total 0
+lrwxrwxrwx 1 root root 15 Apr 28 18:17 boot -&gt; ../../mmcblk0p1
+lrwxrwxrwx 1 root root 10 Apr 29 11:02 pi-git -&gt; ../../sda1
+lrwxrwxrwx 1 root root 10 Apr 29 11:05 pi-pgsql -&gt; ../../sda3
+lrwxrwxrwx 1 root root 10 Apr 29 11:05 pi-web -&gt; ../../sda2
+lrwxrwxrwx 1 root root 15 Apr 28 18:17 rootfs -&gt; ../../mmcblk0p2
+</code></pre>
+
+<h2 id="mount">Mount</h2>
+
+<pre><code>mkdir -p /var/www
+mkdir -p /mnt/gitea
+mkdir -p /var/lib/postgresql/
+</code></pre>
+
+<p>add to `/etc/fstab. <a href="https://debian-facile.org/doc:systeme:fstab">see fstab resource</a>:</p>
+
+<pre><code>LABEL=pi-git  /mnt/gitea                ext4    defaults  0       2
+LABEL=pi-web  /var/www                  ext4    defaults  0       2
+LABEL=pi-pgsql  /var/lib/postgresql         ext4    defaults  0       2
+</code></pre>
+
+<p>mount:</p>
+
+<pre><code>mount -a
+</code></pre>
+
+<p>check:</p>
+
+<pre><code>root@raspberrypi:~#  df -h
+</code></pre>
+
+<p>=></p>
+
+<pre><code>Filesystem      Size  Used Avail Use% Mounted on
+/dev/root        15G  1.3G   13G  10% /
+devtmpfs        459M     0  459M   0% /dev
+tmpfs           464M     0  464M   0% /dev/shm
+tmpfs           464M  6.3M  457M   2% /run
+tmpfs           5.0M  4.0K  5.0M   1% /run/lock
+tmpfs           464M     0  464M   0% /sys/fs/cgroup
+/dev/mmcblk0p1  253M   53M  200M  21% /boot
+tmpfs            93M     0   93M   0% /run/user/1000
+/dev/sda1       7.9G   36M  7.4G   1% /mnt/gitea
+/dev/sda2       7.9G   36M  7.4G   1% /var/www
+/dev/sda3       7.9G   36M  7.4G   1% /var/lib/postgresql
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/04/01/rpi-dev-1-summary">rpi dev 1 - Setup a development server with a RPI 3</a></h2>
         </header>
         <div>
@@ -435,50 +584,6 @@ current paramater: cc - nb remaning paramter 1
 16
 
 ((i=i+1))
-</code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/10/01/from-a-p12-certificate-to-apache-ssl">Configure an apache2 SSL virtual host from a P12 certificate</a></h2>
-        </header>
-        <div>
-            <p><a href="https://www.tbs-certificats.com/FAQ/fr/346.html">source article</a></p>
-
-<h2 id="about-pkcs_12">About PKCS_12</h2>
-
-<p><a href="https://en.wikipedia.org/wiki/PKCS_12">Wikipedia</a>:</p>
-
-<p>In cryptography, PKCS #12 defines an archive file format for storing many cryptography objects as a single file. It is commonly used to bundle a private key with its X.509 certificate or to bundle all the members of a chain of trust.</p>
-
-<h2 id="get-certificate-and-private-key-from-p12-file">Get certificate and private key from P12 file</h2>
-
-<pre><code>openssl pkcs12 -in file.p12 -out package.pem -nodes
-cp package.pem myapp.domain.fr.key
-cp package.pem myapp.domain.fr.cert
-</code></pre>
-
-<h3 id="extract-certificate">Extract certificate</h3>
-
-<p>Edit <code>myapp.domain.fr.key</code> and keep only the certificate section from <code>-----BEGIN CERTIFICATE-----</code> to <code>-----END CERTIFICATE-----</code></p>
-
-<h3 id="extract-private-key">Extract private key</h3>
-
-<p>Edit <code>myapp.domain.fr.key</code> and keep only the certificate section from <code>-----BEGIN PRIVATE KEY-----</code> to <code>-----BEGIN PRIVATE KEY-----</code></p>
-
-<h2 id="%C2%A0configure-your-webserver"> Configure your webserver</h2>
-
-<h3 id="move-files">Move files</h3>
-
-<pre><code>mv myapp.domain.fr.cert /etc/ssl/certs/
-mv myapp.domain.fr.key /etc/ssl/private
-</code></pre>
-
-<h4 id="configure-your-virtual-host">Configure your virtual host</h4>
-
-<pre><code>SSLCertificateFile  /etc/ssl/certs/myapp.domain.fr.cert
-SSLCertificateKeyFile /etc/ssl/private/myapp.domain.fr.key
 </code></pre>
 
         </div>

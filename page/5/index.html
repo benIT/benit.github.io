@@ -72,6 +72,22 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2020/04/13/linux-basics-material-10">linux basics: material 10 -  File System Summary</a></h2>
+        </header>
+        <div>
+            <ul>
+<li>partitioning a disk means divide it into several spaces: see <code>fdisk</code> or <code>parted</code> </li>
+<li>formatting means creating a FS on partition: see <code>mkfs</code></li>
+<li>FS can  be analysed with <code>dumpe2fs</code>, tuned with <code>tune2fs</code> </li>
+<li>FS can  be checked with <code>fsck</code> </li>
+<li>mount means attaching a device in a particular folder of the linux tree with <code>mount</code></li>
+<li>FS mount can be automated with <code>/etc/fstab</code> file</li>
+</ul>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/04/13/linux-basics-material-9">linux basics: material 9 - mount FS</a></h2>
         </header>
         <div>
@@ -311,36 +327,6 @@ undel: undelete a file</p>
 <pre><code>fsck from util-linux 2.29.2
  e2fsck 1.43.4 (31-Jan-2017)
  /dev/sdb1: clean, 13/122400 files, 17319/488907 blocks (check after next mount)
-</code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/13/linux-basics-material-7">linux basics: material 7 - formatting</a></h2>
-        </header>
-        <div>
-            <h2 id="formatting">Formatting</h2>
-
-<p>BE CAREFUL: FORMATTING WILL ERASE ALL EXISTING DATA!</p>
-
-<p>formatting means create a FS.</p>
-
-<pre><code>mkfs.ext4 /dev/sdb1
-mkfs -t ext4 /dev/sdb1
-</code></pre>
-
-<p>check a disk with mkfs, looks for bad element meaning the diskend of life:</p>
-
-<pre><code>mkfs -t ext4 -c /dev/sdb1
-</code></pre>
-
-<p>-m: % reserved space to prevent user to fullfill disk.</p>
-
-<h3 id="swap-formatting">SWAP formatting</h3>
-
-<pre><code>mkswap /dev/sdbX #format
-swapon /dev/sdbX #tell system to use it as swap
 </code></pre>
 
         </div>

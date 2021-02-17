@@ -3,9 +3,106 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2021-02-16T11:23:48+00:00</updated>
+    <updated>2021-02-17T10:05:58+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[wireshark basics]]></title>
+            <link href="/blog/2021/02/17/wireshark"/>
+            <updated>2021-02-17T00:00:00+00:00</updated>
+            <id>/blog/2021/02/17/wireshark</id>
+            <content type="html"><![CDATA[<h2 id="install">install</h2>
+
+<pre><code>sudo apt install wireshark -y
+</code></pre>
+
+<p>answer yes to allow wireshark execution question for non super user.</p>
+
+<pre><code>sudo usermod -aG wireshark $(whoami)
+</code></pre>
+
+<p>logout and login</p>
+
+<h2 id="add-src-%26-destination-port-columns">Add src &amp; destination port columns</h2>
+
+<p>right clock "column preferences" and add "source port" &amp; "destination port"</p>
+
+<h2 id="sniff-post-request-on-a-uri-pattern">sniff post request on a uri pattern</h2>
+
+<pre><code>http.request.method == "POST" &amp;&amp; http.request.uri contains login 
+</code></pre>
+
+<h2 id="scan-lan">Scan LAN</h2>
+
+<p>Let's use nmap to san lan and choose the @IP machine to listen. Here it's a RPI.</p>
+
+<pre><code>sudo nmap -sT -O 192.168.1.0/24
+</code></pre>
+
+<p>=></p>
+
+<pre><code>Starting Nmap 7.60 ( https://nmap.org ) at 2021-02-17 10:09 CET
+Nmap scan report for XYZ-eth0 (192.168.1.68)
+Host is up (0.0030s latency).
+Not shown: 994 closed ports
+PORT     STATE SERVICE
+21/tcp   open  ftp
+22/tcp   open  ssh
+80/tcp   open  http
+443/tcp  open  https
+3000/tcp open  ppp
+5432/tcp open  postgresql
+MAC Address: B8:27:EB:39:1D:77 (Raspberry Pi Foundation)
+</code></pre>
+
+<h2 id="wireshark-over-ssh-via-sshdump">Wireshark over ssh via sshdump</h2>
+
+<h3 id="install-tools-on-the-remote-server">Install tools on the remote server</h3>
+
+<pre><code>apt install -y tcpdump
+</code></pre>
+
+<h4 id="allow-tcpdump-execution-for-non-superuser">Allow tcpdump execution for non superuser</h4>
+
+<pre><code>sudo groupadd pcap
+sudo usermod -a -G pcap $USER
+sudo chgrp pcap /usr/sbin/tcpdump
+sudo chmod 750 /usr/sbin/tcpdump
+sudo setcap cap_net_raw,cap_net_admin=eip /usr/sbin/tcpdump
+</code></pre>
+
+<p>logout &amp; login</p>
+
+<p>check this command is running without error:</p>
+
+<pre><code>tcpdump -A port '(80 or 443)'
+</code></pre>
+
+<p>When this part is ok, we can now use wireshark to use tcp dump over ssh. This can be checked with an ssh command:</p>
+
+<pre><code>ssh XXX@192.168.1.68 "sudo tcpdump"
+</code></pre>
+
+<h2 id="configure-wireshark-to-listen-over-ssh">Configure wireshark to listen over ssh</h2>
+
+<p>From the main menu, select ssh remote capture: sshdump</p>
+
+<p>Fill in the windows</p>
+
+<p>We can now capture packets.</p>
+
+<h2 id="wireshark-filters">Wireshark filters</h2>
+
+<pre><code>http
+ip.dst == 192.168.1.68
+ip.src == 192.168.1.68
+http.request.method == "POST" 
+http.request.method == "POST" &amp;&amp; http.request.uri contains login
+tcp.port==80
+tcp.port==443
+</code></pre>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[PHP 7]]></title>
             <link href="/blog/2021/02/16/php7"/>
@@ -712,132 +809,6 @@ other::r--
 <h2 id="acl-hierarchy">ACL hierarchy</h2>
 
 <p>mask > user ACL > group ACL > owner group ACL > POSIX rights</p>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[linux basics: file permissions 2 - advanced]]></title>
-            <link href="/blog/2020/04/17/linux-file-permissions-2"/>
-            <updated>2020-04-17T00:00:00+00:00</updated>
-            <id>/blog/2020/04/17/linux-file-permissions-2</id>
-            <content type="html"><![CDATA[<h2 id="suid%3A-set-user-identification-permission">SUID: Set-user Identification permission</h2>
-
-<p>usage:</p>
-
-<pre><code>chmod u+s prg.sh
-chmod 4[rwx][rwx][rwx] prg.sh
-</code></pre>
-
-<p>Specfic to executable file.</p>
-
-<p>When a command or script with SUID bit set is run, its effective UID becomes that of the owner of the file, rather than of the user who is running it.</p>
-
-<p>The setuid permission displayed as an “s” in the owner’s execute field.</p>
-
-<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
-When a command or script with SUID bit set is run, its effective UID becomes that of the owner of the file, rather than of the user who is running it.</p>
-
-<pre><code>chmod u+s prg.sh
-chmod 4[rwx][rwx][rwx] prg.sh
-</code></pre>
-
-<p>create a file:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# touch prg.sh
-root@raspbeeerry:/home/pi# ls -l prg.sh 
--rw-r--r-- 1 root root 0 Apr 16 15:06 prg.sh
-</code></pre>
-
-<p>add execution right for all:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# chmod a+x prg.sh 
-root@raspbeeerry:/home/pi# ls -l prg.sh 
--rwxr-xr-x 1 root root 0 Apr 16 15:06 prg.sh
-</code></pre>
-
-<p>set SUID, note the lower 's' when X right:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# chmod u+s prg.sh 
-root@raspbeeerry:/home/pi# ls -l prg.sh 
--rwsr-xr-x 1 root root 0 Apr 16 15:06 prg.sh
-</code></pre>
-
-<p>remove execution right for all, note the upper 'S' when no X right:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# chmod a-x prg.sh 
-root@raspbeeerry:/home/pi# ls -l prg.sh 
--rwSr--r-- 1 root root 0 Apr 16 15:06 prg.sh
-</code></pre>
-
-<h2 id="sgid%3A-set-group-identification-permission">SGID: Set-group identification permission</h2>
-
-<p>usage:</p>
-
-<pre><code>chmod g+s prg.sh
-chmod 2[rwx][rwx][rwx] prg.sh
-</code></pre>
-
-<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
-When SGID permission is set on a directory, files created in the directory belong to the group of which the directory is a member.
-– For example if a user having write permission in the directory creates a file there, that file is a member of the same group as the directory and not the user’s group.
-– This is very useful in creating shared directories.
-– The setgid permission displays as an “s” in the group’s execute field.</p>
-
-<h2 id="rights-on-folder">Rights on folder</h2>
-
-<p>*r: allow to list
-*w: allow to create/delete files
-*x: allow to traverse</p>
-
-<h2 id="sticky-bit-permission">Sticky bit permission</h2>
-
-<p>usage:</p>
-
-<pre><code>chmod +t folder
-chmod 1[rwx][rwx][rwx] prg.sh
-</code></pre>
-
-<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
-The sticky bit is primarily used on shared directories.
-* without the sticky bit : user with Write permission on a folder can create/delete other users files
-* with the sticky bit : user with Write permission on a folder are allowed to create new files but not to delete files</p>
-
-<p>Example:</p>
-
-<p>as root, create a folder with sticky bit:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# mkdir test-folder
-root@raspbeeerry:/home/pi# chmod a+w test-folder/
-root@raspbeeerry:/home/pi# ls -ld test-folder/
-drwxrwxrwx 2 root root 4096 Apr 16 14:53 test-folder/
-root@raspbeeerry:/home/pi# touch test-folder/a
-root@raspbeeerry:/home/pi# ls -l permissions.txt ^C
-root@raspbeeerry:/home/pi# ^C
-root@raspbeeerry:/home/pi# chmod +t test-folder/
-</code></pre>
-
-<p>as another user, let's try to create/delete file inside the folder with the sticky bit:</p>
-
-<pre><code>pi@raspbeeerry ~ $ touch test-folder/b
-pi@raspbeeerry ~ $ ls -l test-folder/
-total 0
--rw-r--r-- 1 root root 0 Apr 16 14:58 a
--rw-r--r-- 1 pi   pi   0 Apr 16 14:59 b
-pi@raspbeeerry ~ $ rm test-folder/a
-rm: remove write-protected regular empty file 'test-folder/a'? 
-</code></pre>
-
-<p>as root, let's remove the sticky bit:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# chmod -t test-folder/
-</code></pre>
-
-<p>as another user, retry to delete file created by another user:</p>
-
-<pre><code>pi@raspbeeerry ~ $ rm -f  test-folder/a
-@raspbeeerry ~ $ ls -l test-folder/
-total 0
--rw-r--r-- 1 pi pi 0 Apr 16 14:59 b
-</code></pre>
 ]]></content>
         </entry>
     </feed>

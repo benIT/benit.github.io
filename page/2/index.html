@@ -72,6 +72,30 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2020/09/16/git-bfg">Clean your git repo with BFG Repo-Cleaner</a></h2>
+        </header>
+        <div>
+            <p>Use case : delete the <code>medias</code> from my git repo that contains huge files.</p>
+
+<p>Download bgf.jar from https://rtyley.github.io/bfg-repo-cleaner/</p>
+
+<pre><code>git clone --mirror https://git.mycompany.com/myrepo.git
+
+java -jar ../bfg-1.13.0.jar --delete-folders medias myrepo.git
+
+cd myrepo.git
+
+git reflog expire --expire=now --all &amp;&amp; git gc --prune=now --aggressive
+
+git push
+</code></pre>
+
+<p>Size 400Mo -> 30 Mo</p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/04/17/linux-startup">linux basics: startup</a></h2>
         </header>
         <div>
@@ -253,39 +277,6 @@ foo       -+      16       0       0              6     5     6  6days
 <ul>
 <li>https://www.digitalocean.com/community/tutorials/how-to-set-filesystem-quotas-on-debian-10</li>
 </ul>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/17/linux-command-help">linux basics: get command help</a></h2>
-        </header>
-        <div>
-            <h2 id="%60whereis%60-command"><code>whereis</code> command</h2>
-
-<p>search in several location <code>/usr/bin</code>... and returns exec file and related resources such as man, config.</p>
-
-<pre><code>whereis sl
-sl: /usr/games/sl /usr/share/man/man6/sl.6.gz
-</code></pre>
-
-<h2 id="%60which%60-command"><code>which</code> command</h2>
-
-<p>only search in $PATH and only return path to exec:</p>
-
-<pre><code>which sl
-/usr/games/sl
-</code></pre>
-
-<h2 id="%60type%60-command"><code>type</code> command</h2>
-
-<p>return how a command is interpreted:</p>
-
-<pre><code>type -a echo
-echo is a shell builtin
-echo is /usr/bin/echo
-echo is /bin/echo
-</code></pre>
 
         </div>
             </article>
