@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title><![CDATA[benIT&#039;s notebook]]></title>
+    <link href="/blog/categories/gitea.xml" rel="self"/>
+    <link href="/"/>
+    <updated>2021-03-24T15:54:50+00:00</updated>
+    <id>/</id>
+        <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[GITEA 503 after changing RPI @IP]]></title>
+            <link href="/blog/2021/03/24/gitea-503"/>
+            <updated>2021-03-24T00:00:00+00:00</updated>
+            <id>/blog/2021/03/24/gitea-503</id>
+            <content type="html"><![CDATA[<p>After moving RPI from a lan to another lan, service gitea failed with a 503 error.</p>
+
+<p>This error comes from the new @IP of the device on the lan, this is now <code>192.168.0.13</code></p>
+
+<h2 id="edit-%2Fmnt%2Fgitea%2Fcustom%2Fconf%2Fapp.ini">Edit /mnt/gitea/custom/conf/app.ini</h2>
+
+<pre><code>[database]
+DB_TYPE  = postgres
+HOST     = 192.168.0.13:5432
+</code></pre>
+
+<h2 id="edit-%2Fetc%2Fpostgresql%2F11%2Fmain%2Fpostgresql.conf">Edit /etc/postgresql/11/main/postgresql.conf</h2>
+
+<pre><code>listen_addresses = '192.168.0.13'
+</code></pre>
+
+<h2 id="restart">Restart</h2>
+
+<pre><code>service gitea restart
+
+service gitea status
+</code></pre>
+
+<h2 id="check">Check</h2>
+
+<pre><code>curl localhost:3000
+</code></pre>
+]]></content>
+        </entry>
+    </feed>

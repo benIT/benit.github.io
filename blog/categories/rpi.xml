@@ -3,9 +3,70 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/rpi.xml" rel="self"/>
     <link href="/"/>
-    <updated>2021-02-22T15:19:31+00:00</updated>
+    <updated>2021-03-24T15:54:50+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[GITEA 503 after changing RPI @IP]]></title>
+            <link href="/blog/2021/03/24/gitea-503"/>
+            <updated>2021-03-24T00:00:00+00:00</updated>
+            <id>/blog/2021/03/24/gitea-503</id>
+            <content type="html"><![CDATA[<p>After moving RPI from a lan to another lan, service gitea failed with a 503 error.</p>
+
+<p>This error comes from the new @IP of the device on the lan, this is now <code>192.168.0.13</code></p>
+
+<h2 id="edit-%2Fmnt%2Fgitea%2Fcustom%2Fconf%2Fapp.ini">Edit /mnt/gitea/custom/conf/app.ini</h2>
+
+<pre><code>[database]
+DB_TYPE  = postgres
+HOST     = 192.168.0.13:5432
+</code></pre>
+
+<h2 id="edit-%2Fetc%2Fpostgresql%2F11%2Fmain%2Fpostgresql.conf">Edit /etc/postgresql/11/main/postgresql.conf</h2>
+
+<pre><code>listen_addresses = '192.168.0.13'
+</code></pre>
+
+<h2 id="restart">Restart</h2>
+
+<pre><code>service gitea restart
+
+service gitea status
+</code></pre>
+
+<h2 id="check">Check</h2>
+
+<pre><code>curl localhost:3000
+</code></pre>
+]]></content>
+        </entry>
+            <entry>
+            <title type="html"><![CDATA[Fix static @IP on RPI]]></title>
+            <link href="/blog/2021/03/24/rpi-static-ip"/>
+            <updated>2021-03-24T00:00:00+00:00</updated>
+            <id>/blog/2021/03/24/rpi-static-ip</id>
+            <content type="html"><![CDATA[<h2 id="get-dns-servers-%40ips">GET DNS servers @IPs</h2>
+
+<pre><code>cat /etc/resolv.conf 
+</code></pre>
+
+<p>=></p>
+
+<pre><code>nameserver 89.2.0.1
+nameserver 89.2.0.2
+</code></pre>
+
+<h2 id="set-up-fix-%40ip">Set up fix @IP</h2>
+
+<p>In <code>/etc/dhcpcd.conf</code>, add the following lines:</p>
+
+<pre><code>interface eth0
+static ip_address=192.168.0.13
+static routers=192.168.0.1
+static domain_name_servers=89.2.0.1 89.2.0.2
+</code></pre>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[rpi dev 7 - System logs]]></title>
             <link href="/blog/2020/04/01/rpi-dev-7-system-logs"/>

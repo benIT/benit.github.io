@@ -72,6 +72,79 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2020/04/13/linux-basics-material-1">linux basics: material 1 - command &amp; kernel</a></h2>
+        </header>
+        <div>
+            <h2 id="linux-material-command">Linux material command</h2>
+
+<ul>
+<li><code>free</code>: for memory information</li>
+<li><code>uname</code>: material information</li>
+</ul>
+
+<p>see dedicated virtual FS such as : /dev, /proc...</p>
+
+<h2 id="special-pseudo-drives">Special pseudo drives</h2>
+
+<ul>
+<li><code>/dev/null</code>: black hole</li>
+<li><code>/dev/zero</code>: returns zeros</li>
+<li><code>/dev/full</code>: emulate a full  hard drive</li>
+</ul>
+
+<h2 id="about-linux-kernel">About linux kernel</h2>
+
+<p>The kernel gives a material abstraction layer to software layer.</p>
+
+<h2 id="about-linux-kernel-modules">About linux kernel modules</h2>
+
+<p>The linux kernel is monolithic but some modules can be loaded/unloaded such as driver</p>
+
+<ul>
+<li><code>lsmod</code> : list kernel modules</li>
+<li><code>modprobe</code>: load/unload/manage kernel modules</li>
+</ul>
+
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2020/04/01/rpi-dev-7-system-logs">rpi dev 7 - System logs</a></h2>
+        </header>
+        <div>
+            <h2 id="interesting-logs">interesting logs</h2>
+
+<ul>
+<li>/var/log/auth.log</li>
+<li>/var/log/ufw.log</li>
+<li>/var/log/apache2/*access.log</li>
+<li>/var/log/apache2/*error.log</li>
+</ul>
+
+<h2 id="tools">tools</h2>
+
+<h3 id="lnav---ncurses-based-log-file-viewer">lnav - ncurses-based log file viewer</h3>
+
+<p>From man: The  log  file navigator, lnav, is an enhanced log file viewer that takes advantage of any semantic information that can be gleaned from the files being viewed, such as timestamps and log levels</p>
+
+<pre><code>apt install -y lnav
+
+lnav /var/log/auth.log /var/log/ufw.log /var/log/apache2/*access.log
+</code></pre>
+
+<h3 id="ezservermonitor">ezservermonitor</h3>
+
+<p>Install webapp:</p>
+
+<pre><code>wget https://www.ezservermonitor.com/esm-web/downloads/version/2.5 -O ezservermonitor.zip
+</code></pre>
+
+<p>Configure in <code>conf/esm.config.json</code></p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/04/01/rpi-dev-6-ssmtp">rpi dev 6 - setup ssmpt with netcourrier</a></h2>
         </header>
         <div>
@@ -97,118 +170,6 @@ UseTLS=YES
 <h2 id="test">Test</h2>
 
 <p>echo "Hello world email body" | mail -s "Test Subject" test@mail.fr</p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/01/rpi-dev-5-ufw">rpi dev 5 - UFW</a></h2>
-        </header>
-        <div>
-            <h2 id="enable%2Fdisable">enable/disable</h2>
-
-<pre><code>ufw logging on
-ufw disable
-ufw enable
-</code></pre>
-
-<h2 id="log-file">log file</h2>
-
-<pre><code>tail -f /var/log/ufw.log
-</code></pre>
-
-<h2 id="print-fw-rules">Print FW rules</h2>
-
-<pre><code>ufw status verbose
-ufw status numbered
-</code></pre>
-
-<h2 id="common-rules">Common rules</h2>
-
-<h3 id="block-all-incoming-%26-outgoing-trafic">Block all INcoming &amp; outgoing trafic</h3>
-
-<pre><code>ufw default deny incoming
-ufw default deny outgoing
-</code></pre>
-
-<h3 id="allow-common-services">Allow common services</h3>
-
-<pre><code>ufw allow out 53 comment 'DNS'
-ufw allow out 465 comment 'SMTP'
-ufw allow ntp
-</code></pre>
-
-<h3 id="allow-all-incomming-requests-on-all-ports-from-an-%40ip-range">Allow all INcomming requests on all ports from an @IP range</h3>
-
-<pre><code>ufw allow from 192.168.1.0/24
-</code></pre>
-
-<h3 id="allow-all-incomming-requests-on-all-ports-from-an-%40ip">Allow all INcomming requests on all ports from an @IP</h3>
-
-<pre><code>ufw allow from XXX.XXX.XXX.XXX
-</code></pre>
-
-<h3 id="allow-incomming-requests-on-specific-port-from-an-%40ip">Allow INcomming requests on specific port from an @IP</h3>
-
-<pre><code>ufw allow from XXX.XXX.XXX.XXX to any port 80
-ufw allow from XXX.XXX.XXX.XXX to any port 3000
-</code></pre>
-
-<h3 id="for-apt-and-software-installation">For apt and software installation</h3>
-
-<p>use that to allow apt, for instance <code>apt install -y lnav</code>:</p>
-
-<pre><code>ufw allow out 80/tcp comment 'allow OUT 80 temporary for apt' &amp;&amp; ufw allow out 443/tcp comment 'allow OUT 443 temporary for apt'
-</code></pre>
-
-<p>remove:</p>
-
-<pre><code>ufw delete allow out 80/tcp &amp;&amp; ufw delete allow out 443/tcp
-</code></pre>
-
-<p>OR:</p>
-
-<pre><code>ufw default allow outgoing
-</code></pre>
-
-<p>remove:</p>
-
-<pre><code>ufw default deny outgoing
-</code></pre>
-
-<h2 id="%C2%A0reset-all-rules"> Reset all rules</h2>
-
-<pre><code>ufw reset
-</code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/01/rpi-dev-4-lets-encrypt-certificates">rpi dev 4 - get let&#039;s encrypt certificates with certbot</a></h2>
-        </header>
-        <div>
-            <h2 id="usage">Usage</h2>
-
-<pre><code>apt-get install -y certbot python-certbot-apache
-
-certbot certonly --webroot --webroot-path /var/www/html --domain mydomain.com --email me@mail.com
-</code></pre>
-
-<h3 id="renewal">Renewal</h3>
-
-<pre><code>certbot renew --dry-run
-</code></pre>
-
-<p>if fails because of FW:</p>
-
-<pre><code>ufw allow 80/tcp comment 'allow IN 80 temporary'
-ufw allow 443/tcp comment 'allow IN 443 temporary'
-
-certbot renew --dry-run #launch renewal again
-
-ufw delete allow 80/tcp &amp;&amp; ufw delete allow 443/tcp
-</code></pre>
 
         </div>
             </article>
