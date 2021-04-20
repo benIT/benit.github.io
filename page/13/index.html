@@ -72,6 +72,156 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2019/09/19/run-multiple-php-versions-same-server-with-fpm">Run multiple php versions on the same server with PHP-FPM and apache2</a></h2>
+        </header>
+        <div>
+            <h2 id="purpose">Purpose</h2>
+
+<p>The aim of this post is to run several php versions on the same server.</p>
+
+<p>This installation has been performed on debian 9 stretch.</p>
+
+<p>This post has been mainly inspired <a href="https://tecadmin.net/install-multiple-php-version-apache-ubuntu/">from this source</a></p>
+
+<h2 id="about-%60php-fpm%60">About <code>php-fpm</code></h2>
+
+<p>PHP-FPM (FastCGI Process Manager) allows communication between a webserver and a PHP process based on FastCGI protocol.</p>
+
+<p>In this post, PHP-FPM listen to a socket file to communicate with apache.</p>
+
+<h2 id="add-%60sury%60-repo-to-get-both-%60php-5.6%60-and-%60php7.x%60-packages">Add <code>sury</code> repo to get both <code>php-5.6</code> and <code>php7.x</code> packages</h2>
+
+<p>Since debian strech did not have php5 packages, we have to add an extra repo to our apt sources.list to get those packages (<a href="https://stackoverflow.com/questions/46378017/install-php5-6-in-debian-9">source here</a>):</p>
+
+<pre><code>apt-get install apt-transport-https lsb-release ca-certificates
+wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg --no-check-certificate
+echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" &gt; /etc/apt/sources.list.d/php.list
+apt-get update
+</code></pre>
+
+<h2 id="about-the-apache2-library-that-communicates-with-php-fpm-process">About the apache2 library that communicates with php fpm process</h2>
+
+<p>These libs are not required anymore: <code>libapache2-mod-fastcgi</code>, <code>libapache2-mod-fcgid</code> since there are now <code>proxy_fcgi</code> and <code>proxy</code> apache modules.</p>
+
+<h3 id="apache2-modules">Apache2 modules</h3>
+
+<pre><code>a2enmod actions alias proxy_fcgi
+</code></pre>
+
+<h2 id="install-php-fpm-module-for-php-5.6">Install php fpm module for php 5.6</h2>
+
+<pre><code>apt-get install php5.6-fpm
+</code></pre>
+
+<p>Checkout in <code>/etc/php/5.6/fpm/pool.d/www.conf</code> the directive that contains the socket path where php-fpm is listening:</p>
+
+<pre><code>listen = /run/php/php5.6-fpm.sock
+</code></pre>
+
+<h2 id="install-php-fpm-module-for-php-7.1">Install php fpm module for php 7.1</h2>
+
+<pre><code>apt-get install php7.1-fpm
+</code></pre>
+
+<p>Checkout in <code>/etc/php/7.1/fpm/pool.d/www.conf</code> the directive that contains the socket path where php-fpm is listening:</p>
+
+<pre><code>listen = /run/php/php7.1-fpm.sock
+</code></pre>
+
+<h2 id="test">Test</h2>
+
+<h3 id="create-test-apps">Create test apps</h3>
+
+<pre><code>mkdir -p /var/www/html/php5.6 /var/www/html/php7.1
+echo "&lt;?php phpinfo(); ?&gt;" &gt; /var/www/php56/index.php
+echo "&lt;?php phpinfo(); ?&gt;" &gt; /var/www/php71/index.php
+</code></pre>
+
+<h3 id="virtual-hosts">Virtual hosts</h3>
+
+<pre><code>a2dissite 000-default.conf    
+</code></pre>
+
+<h3 id="edit-local-dns-file">Edit local DNS file</h3>
+
+<p>Edit <code>/etc/hosts</code>:</p>
+
+<pre><code>10.11.12.13 php56.test
+10.11.12.13 php71.test
+</code></pre>
+
+<h4 id="php-5.6-virtual-host">PHP 5.6 virtual host</h4>
+
+<pre><code>cp 000-default.conf php56.conf 
+a2ensite php56.conf
+</code></pre>
+
+<p>Edit <code>/etc/apache2/sites-available/php56.conf</code>:</p>
+
+<pre><code>&lt;VirtualHost *:80&gt;
+    ServerName php56.test
+    DocumentRoot /var/www/php56
+    &lt;Directory /var/www/php56&gt;
+        Options -Indexes +FollowSymLinks +MultiViews
+        AllowOverride All
+        Require all granted
+    &lt;/Directory&gt;
+    &lt;FilesMatch \.php$&gt;
+        # Apache 2.4.10+ can proxy to unix socket
+        SetHandler "proxy:unix:/var/run/php/php5.6-fpm.sock|fcgi://localhost/"
+    &lt;/FilesMatch&gt;
+    ErrorLog ${APACHE_LOG_DIR}/php56-error.log
+    CustomLog ${APACHE_LOG_DIR}/php56-access.log combined
+&lt;/VirtualHost&gt;
+</code></pre>
+
+<p>Reload :</p>
+
+<pre><code>systemctl reload apache2    
+</code></pre>
+
+<p>Check with your browser:</p>
+
+<p><img src="/images/multiple-php-versions/56.png" alt="screenshot" /></p>
+
+<h4 id="php-7.1-virtual-host">PHP 7.1 virtual host</h4>
+
+<pre><code>cp 000-default.conf php71.conf
+a2ensite php71.conf
+</code></pre>
+
+<p>Edit <code>/etc/apache2/sites-available/php71.conf</code>:</p>
+
+<pre><code>&lt;VirtualHost *:80&gt;
+    ServerName php56.test
+    DocumentRoot /var/www/php56
+    &lt;Directory /var/www/php56&gt;
+        Options -Indexes +FollowSymLinks +MultiViews
+        AllowOverride All
+        Require all granted
+    &lt;/Directory&gt;
+    &lt;FilesMatch \.php$&gt;
+        # Apache 2.4.10+ can proxy to unix socket
+        SetHandler "proxy:unix:/var/run/php/php7.1-fpm.sock|fcgi://localhost/"
+    &lt;/FilesMatch&gt;
+    ErrorLog ${APACHE_LOG_DIR}/php71-error.log
+    CustomLog ${APACHE_LOG_DIR}/php71-access.log combined
+&lt;/VirtualHost&gt;    
+</code></pre>
+
+<p>Reload :</p>
+
+<pre><code>systemctl reload apache2    
+</code></pre>
+
+<p>Check with your browser:</p>
+
+<p><img src="/images/multiple-php-versions/71.png" alt="screenshot" /></p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2019/07/12/php-survival-sheet">PHP survival sheet</a></h2>
         </header>
         <div>
@@ -187,52 +337,6 @@ html_errors
     - Installation request for knplabs/knp-gaufrette-bundle dev-benIT-gaufrette-1.0 -&gt; satisfiable by knplabs/knp-gaufrette-bundle[dev-benIT-gaufrette-1.0].
     - knplabs/knp-gaufrette-bundle dev-benIT-gaufrette-1.0 requires knplabs/gaufrette ^1.0 -&gt; satisfiable by knplabs/gaufrette[1.x-dev] but these conflict with your requirements or minimum-stability.
 </code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/06/24/Apache2-customize-index-options">Apache2 customize index page</a></h2>
-        </header>
-        <div>
-            <h2 id="customize-the-default-apache2-page-index-page">Customize the default apache2 page index page</h2>
-
-<p>Apache2 index option is highly customizable. <a href="http://httpd.apache.org/docs/2.2/mod/mod_autoindex.html">See this official resource.</a></p>
-
-<p>With the following code:</p>
-
-<pre><code>&lt;VirtualHost *:80&gt;
-        DocumentRoot /data/moodle_versions
-    &lt;Directory /&gt;
-        Options FollowSymLinks
-        AllowOverride None
-    &lt;/Directory&gt;
-    &lt;Directory /data/moodle_versions/&gt;
-        Options Indexes FollowSymLinks MultiViews
-        AllowOverride All
-        Require all granted
-        allow from all
-        AddDescription "Installation de moodle 3.5.4 LTS standard" moodle_354
-        AddDescription "Installation de moodle 3.6.4 à des fins de test" moodle_364
-        IndexStyleSheet "style.css"
-        HeaderName header.html
-        ReadmeName footer.html
-        IndexIgnore *.html
-        IndexIgnore *.css
-    &lt;/Directory&gt;
-        ServerAdmin webmaster@localhost
-        ErrorLog ${APACHE_LOG_DIR}/error.log
-        CustomLog ${APACHE_LOG_DIR}/access.log combined
-&lt;/VirtualHost&gt;
-</code></pre>
-
-<p>You can turn the default page:</p>
-
-<p><img src="/images/apache2/default.png" alt="screenshot" /></p>
-
-<p>to this one:</p>
-
-<p><img src="/images/apache2/custom.png" alt="screenshot" /></p>
 
         </div>
             </article>

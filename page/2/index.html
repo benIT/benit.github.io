@@ -72,6 +72,63 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2021/02/22/apache-log-analyze">Apache log analysis</a></h2>
+        </header>
+        <div>
+            <h2 id="installation">Installation</h2>
+
+<pre><code>apt-get install -y  gnuplot goaccess jq
+</code></pre>
+
+<h2 id="bash-script">BASH script</h2>
+
+<pre><code>RESULT_FILE=results.csv
+
+&gt;$RESULT_FILE
+for LOG_FILE in access-*.log
+do
+    echo $LOG_FILE
+    OUTPUT_FILE=${LOG_FILE//access-/}
+    OUTPUT_FILE=${OUTPUT_FILE//_00_00_00.log/}
+    goaccess $LOG_FILE --log-format=COMMON -o $OUTPUT_FILE.json --ignore-panel=REQUESTS --ignore-panel=REQUESTS_STATIC --ignore-panel=NOT_FOUND --ignore-panel=HOSTS --ignore-panel=OS --ignore-panel=BROWSERS --ignore-panel=VISIT_TIMES --ignore-panel=VIRTUAL_HOSTS --ignore-panel=REFERRERS --ignore-panel=REFERRING_SITES --ignore-panel=KEYPHRASES --ignore-panel=STATUS_CODES --ignore-panel=REMOTE_USER --ignore-panel=GEO_LOCATION
+    HITS=$(jq '.visitors.data[0].visitors.count' $OUTPUT_FILE.json)
+    DATE=$(jq '.visitors.data[0].data' $OUTPUT_FILE.json | tr -d '"')
+    echo -e $DATE,$HITS &gt;&gt; $RESULT_FILE
+done
+
+gnuplot &lt;&lt;- EOF
+    set datafile separator ","
+    set timefmt '%Y%m%d'
+    set format x '%m-%d'
+    set xlabel "time"
+    set ylabel "visitors"
+    set title "Visitors over time"
+    set term png size 800,400
+    set output "${FILE}.png"
+    set xdata time
+    set boxwidth 0.5
+    set style fill solid
+    set xtics rotate
+
+    plot "$RESULT_FILE" using 1:2 with boxes
+EOF
+</code></pre>
+
+<p><img src="/images/apache-log-analyse/gnuplot.png" alt="screenshot" /></p>
+
+<p>Here, we find there is a rush on <code>2021_01_29_00_00_00</code>, let's analyse time distribution with:</p>
+
+<pre><code>goaccess  access-2021_01_29_00_00_00.log --log-format=COMMON -o report_29_01.html --ignore-panel=REQUESTS --ignore-panel=REQUESTS_STATIC --ignore-panel=NOT_FOUND --ignore-panel=HOSTS --ignore-panel=OS --ignore-panel=BROWSERS --ignore-panel=VIRTUAL_HOSTS --ignore-panel=REFERRERS --ignore-panel=REFERRING_SITES --ignore-panel=KEYPHRASES --ignore-panel=STATUS_CODES --ignore-panel=REMOTE_USER --ignore-panel=GEO_LOCATION
+</code></pre>
+
+<p><img src="/images/apache-log-analyse/time-repartition.png" alt="screenshot" /></p>
+
+<p>Max at 15:00, let's dig further</p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2021/02/17/wireshark">wireshark basics</a></h2>
         </header>
         <div>
@@ -263,21 +320,6 @@ print( 2 &lt;=&gt; 1);print("&lt;br/&gt;");
 </code></pre>
 
 <p><a href="https://www.tutorialspoint.com/php7/php7_coalescing_operator.htm">Source</a></p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/10/12/ca-certfile">Linux install CA cert file</a></h2>
-        </header>
-        <div>
-            <p>Self signed certificates throw error and can make CLI scripts fail. Here is the procedure to use to import cert file at a system level.</p>
-
-<p>Tested with debian 10.</p>
-
-<pre><code>cp my-cert-file.crt /usr/local/share/ca-certificates
-update-ca-certificates
-</code></pre>
 
         </div>
             </article>

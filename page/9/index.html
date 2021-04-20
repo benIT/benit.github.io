@@ -72,6 +72,24 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2020/04/13/linux-basics-material-2">linux basics: material 2 - Linux hard drives naming</a></h2>
+        </header>
+        <div>
+            <h2 id="linux-hard-drives-naming">Linux hard drives naming</h2>
+
+<ul>
+<li>floppy: <code>/dev/fdX</code></li>
+<li>fake hd: <code>/dev/loopX</code></li>
+<li>CD,DVD: <code>/dev/srX</code></li>
+<li>IDE: <code>/dev/hdX</code></li>
+<li>SATA: same as SCSI</li>
+<li>SCSI: <code>/dev/sdX</code></li>
+</ul>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/04/13/linux-basics-material-1">linux basics: material 1 - command &amp; kernel</a></h2>
         </header>
         <div>
@@ -140,36 +158,6 @@ lnav /var/log/auth.log /var/log/ufw.log /var/log/apache2/*access.log
 </code></pre>
 
 <p>Configure in <code>conf/esm.config.json</code></p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/01/rpi-dev-6-ssmtp">rpi dev 6 - setup ssmpt with netcourrier</a></h2>
-        </header>
-        <div>
-            <h2 id="install">install</h2>
-
-<pre><code>apt-get install ssmtp
-apt-get install mailutils
-</code></pre>
-
-<h2 id="configure">configure</h2>
-
-<p>edit <code>/etc/ssmtp/ssmtp.conf</code>:</p>
-
-<pre><code>root=
-mailhub=mail.net-c.com:465
-hostname=myhost.com
-AuthUser=usermail@netc.fr
-AuthPass=ENTER-SMTP-PASSWORD-HERE
-FromLineOverride=YES
-UseTLS=YES
-</code></pre>
-
-<h2 id="test">Test</h2>
-
-<p>echo "Hello world email body" | mail -s "Test Subject" test@mail.fr</p>
 
         </div>
             </article>

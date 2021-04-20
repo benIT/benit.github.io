@@ -72,6 +72,46 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2017/11/09/moodle-activate-debug-using-sql">Moodle 3.X: activate debug whithout GUI</a></h2>
+        </header>
+        <div>
+            <p>If you need to activate debug but you cannot access moodle admin page, this article is for you:</p>
+
+<h2 id="step-1%3A-note-original-settings">Step 1: note original settings</h2>
+
+<pre><code>SELECT name, value
+FROM mdl_config
+where name ='debug' or name ='debugdisplay'
+;
+</code></pre>
+
+<p>for instance :</p>
+
+<pre><code>debug   0
+debugdisplay    0
+</code></pre>
+
+<h2 id="step-2-%3A-setup-debug-config-in-db">Step 2 : setup debug config in db</h2>
+
+<pre><code>UPDATE mdl_config SET VALUE = 32767 WHERE name = 'debug';
+UPDATE mdl_config SET VALUE = 1 WHERE name = 'debugdisplay';
+</code></pre>
+
+<h2 id="step-3%3A-clear-cache-from-cli">Step 3: clear cache from CLI</h2>
+
+<pre><code>php  moodle/admin/cli/purge_caches.php
+</code></pre>
+
+<h2 id="step-4%3A-restore-original-settings">Step 4: restore original settings</h2>
+
+<pre><code>UPDATE mdl_config SET VALUE = 0 WHERE name = 'debug';
+UPDATE mdl_config SET VALUE = 0 WHERE name = 'debugdisplay';
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2017/11/06/ssh-key-authentication">SSH key authentication</a></h2>
         </header>
         <div>
@@ -180,127 +220,6 @@ server {
 
 <pre><code>sudo ln -s /etc/nginx/sites-available/default  /etc/nginx/sites-enabled/default    
 sudo service nginx restart
-</code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2017/10/02/apache2-survival-sheet">Apache2 survival sheet</a></h2>
-        </header>
-        <div>
-            <h2 id="virtual-hosts">Virtual hosts</h2>
-
-<p>Virtual hosts allow to run several sites on the same server.</p>
-
-<h3 id="several-sites-on-the-same-machine">Several sites on the same machine</h3>
-
-<p>Make use of the <code>ServerName</code> directive to match the right site.</p>
-
-<p>In <code>/etc/apache2/sites-enabled/foo.conf</code>:</p>
-
-<pre><code>    &lt;VirtualHost *:80&gt; 
-            ServerName foo.local
-            ServerAdmin webmaster@localhost
-            DocumentRoot /home/pi/projects/foo/
-            ErrorLog /foo.log
-            CustomLog /access-foo.log combined
-    &lt;/VirtualHost&gt;
-</code></pre>
-
-<p>In <code>/etc/apache2/sites-enabled/bar.conf</code>:</p>
-
-<pre><code>    &lt;VirtualHost *:80&gt; 
-            ServerName bar.local
-            ServerAdmin webmaster@localhost
-            DocumentRoot /home/pi/projects/bar/
-            ErrorLog /bar.log
-            CustomLog /access-bar.log combined
-    &lt;/VirtualHost&gt; 
-</code></pre>
-
-<p>When an http request corresponding to the <code>ServerName</code> value is received, the right answer is served according to the vhost.conf.</p>
-
-<h3 id="enable-a-vhost">Enable a vhost</h3>
-
-<pre><code>a2ensite video-app
-</code></pre>
-
-<h3 id="disable--a-vhost">Disable  a vhost</h3>
-
-<pre><code>a2dissite video-app
-</code></pre>
-
-<h2 id="modules">Modules</h2>
-
-<h3 id="list-enables%2Floaded-modules">List enables/loaded modules</h3>
-
-<pre><code>apache2ctl -M
-</code></pre>
-
-<h3 id="enable-a-module">Enable a module</h3>
-
-<pre><code>sudo a2enmod rewrite
-</code></pre>
-
-<h2 id="server-status">Server status</h2>
-
-<pre><code>apache2ctl status
-</code></pre>
-
-<h2 id="security">Security</h2>
-
-<h3 id="hide-server-version">Hide server version</h3>
-
-<p>In <code>/etc/apache2/conf-available/security.conf</code>:</p>
-
-<pre><code>ServerTokens Prod
-ServerSignature Off
-</code></pre>
-
-<h3 id="prevent-site-encapsulation-in-an-external-iframe">Prevent site encapsulation in an external iframe</h3>
-
-<p>In <code>/etc/apache2/conf-available/security.conf</code>:</p>
-
-<pre><code>Leader set X-Frame-Options: "sameorigin" 
-</code></pre>
-
-<h3 id="secure-a-vhost-with-a-basic-authentication">Secure a vhost with a basic authentication</h3>
-
-<p>install utils:</p>
-
-<pre><code>apt-get install apache2 apache2-utils
-</code></pre>
-
-<p>Generate password for user ben:</p>
-
-<pre><code>htpasswd -c /etc/apache2/.htpasswd ben
-
-cat /etc/apache2/.htpasswd
-</code></pre>
-
-<p>output:</p>
-
-<pre><code> ben:$apr1$ULdWsbYp$eawlgBJZvKhr7L8V1NWGD/
-</code></pre>
-
-<p>Secure your vhost:</p>
-
-<pre><code>    LISTEN 10000 
-    &lt;VirtualHost *:10000&gt; 
-            ServerAdmin webmaster@localhost
-            DocumentRoot /home/pi/projects/videoapp/web/
-             &lt;Directory /home/pi/projects/videoapp&gt;
-                    Options Indexes FollowSymLinks
-                    AllowOverride All
-                    AuthType Basic
-                    AuthName "Restricted Content"
-                    AuthUserFile /etc/apache2/.htpasswd
-                    Require valid-user
-            &lt;/Directory&gt;
-            ErrorLog /error-videoapp.log
-            CustomLog /access-videoapp.log combined
-    &lt;/VirtualHost&gt;
 </code></pre>
 
         </div>

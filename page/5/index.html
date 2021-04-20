@@ -72,6 +72,41 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2020/04/17/linux-file-permissions-4">linux basics: file permissions 4 - umask</a></h2>
+        </header>
+        <div>
+            <h2 id="print-umask">print umask</h2>
+
+<pre><code>umask -S
+u=rwx,g=rwx,o=rx
+
+umask -p
+umask 0002
+</code></pre>
+
+<p>default rights when a file is created are:</p>
+
+<ul>
+<li>file: 0666</li>
+<li>folder : O777</li>
+</ul>
+
+<p><strong>The calculated rights for new files are the default rights - the umask: 0666-0002=0664</strong></p>
+
+<pre><code>touch umasktest
+ls -l umasktest 
+-rw-rw-r-- 1 ordinateur ordinateur 0 avril 21 14:30 umasktest
+</code></pre>
+
+<h2 id="modify-umask">modify umask</h2>
+
+<pre><code>umask 0022
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/04/17/linux-file-permissions-3">linux basics: file permissions 3 - ACL</a></h2>
         </header>
         <div>
@@ -432,67 +467,6 @@ rm: remove write-protected regular empty file 'test-folder/a'?
 total 0
 -rw-r--r-- 1 pi pi 0 Apr 16 14:59 b
 </code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/17/linux-file-permissions-1">linux basics: file permissions 1 - POSIX rights</a></h2>
-        </header>
-        <div>
-            <h2 id="file-ownership">file ownership</h2>
-
-<p>File ownership is managed by a user owner and a group owner.
-See <code>ls -l</code> or <code>ls -n</code></p>
-
-<p>Examples:</p>
-
-<pre><code>chown user:group file #change owner and group
-chown user file # change only owner
-chown :group file #change only group, same as chgrp command
-</code></pre>
-
-<h2 id="linux-posix-rights">Linux POSIX rights</h2>
-
-<p>POSIX is a standard.</p>
-
-<h2 id="list-rights">List rights</h2>
-
-<pre><code>ls -l
-</code></pre>
-
-<p>Type codes:</p>
-
-<ul>
-<li>-: file</li>
-<li>d: folder</li>
-<li>l: symlink</li>
-<li>p: pipe. used to make 2 programs communicate</li>
-<li>s: socket. used to make 2 programs communicate + network management + bidirectional</li>
-<li>b: block device, ie write block by block</li>
-<li>c: character device, ie write char by char</li>
-</ul>
-
-<p>9 bits: 3 User + 3 Group + 3 Other</p>
-
-<h2 id="chmod">chmod</h2>
-
-<ul>
-<li>u: for user</li>
-<li>g: for group</li>
-<li>o: for others</li>
-<li><p>a: for all</p></li>
-<li><p>+: add right</p></li>
-<li>-: remove right</li>
-<li><p>=: set right</p></li>
-<li><p>r: read. 2^2 => 4</p></li>
-<li>w: write.2^1 => 2</li>
-<li><p>x: execute.2^0 => 1</p>
-
-<p>chmod u+r,g-r file.txt
-chmod a=rwx file.txt
-chmod 740 file.txt</p></li>
-</ul>
 
         </div>
             </article>
