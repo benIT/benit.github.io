@@ -72,6 +72,133 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2020/04/17/linux-file-permissions-2">linux basics: file permissions 2 - advanced</a></h2>
+        </header>
+        <div>
+            <h2 id="suid%3A-set-user-identification-permission">SUID: Set-user Identification permission</h2>
+
+<p>usage:</p>
+
+<pre><code>chmod u+s prg.sh
+chmod 4[rwx][rwx][rwx] prg.sh
+</code></pre>
+
+<p>Specfic to executable file.</p>
+
+<p>When a command or script with SUID bit set is run, its effective UID becomes that of the owner of the file, rather than of the user who is running it.</p>
+
+<p>The setuid permission displayed as an “s” in the owner’s execute field.</p>
+
+<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
+When a command or script with SUID bit set is run, its effective UID becomes that of the owner of the file, rather than of the user who is running it.</p>
+
+<pre><code>chmod u+s prg.sh
+chmod 4[rwx][rwx][rwx] prg.sh
+</code></pre>
+
+<p>create a file:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# touch prg.sh
+root@raspbeeerry:/home/pi# ls -l prg.sh 
+-rw-r--r-- 1 root root 0 Apr 16 15:06 prg.sh
+</code></pre>
+
+<p>add execution right for all:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# chmod a+x prg.sh 
+root@raspbeeerry:/home/pi# ls -l prg.sh 
+-rwxr-xr-x 1 root root 0 Apr 16 15:06 prg.sh
+</code></pre>
+
+<p>set SUID, note the lower 's' when X right:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# chmod u+s prg.sh 
+root@raspbeeerry:/home/pi# ls -l prg.sh 
+-rwsr-xr-x 1 root root 0 Apr 16 15:06 prg.sh
+</code></pre>
+
+<p>remove execution right for all, note the upper 'S' when no X right:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# chmod a-x prg.sh 
+root@raspbeeerry:/home/pi# ls -l prg.sh 
+-rwSr--r-- 1 root root 0 Apr 16 15:06 prg.sh
+</code></pre>
+
+<h2 id="sgid%3A-set-group-identification-permission">SGID: Set-group identification permission</h2>
+
+<p>usage:</p>
+
+<pre><code>chmod g+s prg.sh
+chmod 2[rwx][rwx][rwx] prg.sh
+</code></pre>
+
+<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
+When SGID permission is set on a directory, files created in the directory belong to the group of which the directory is a member.
+– For example if a user having write permission in the directory creates a file there, that file is a member of the same group as the directory and not the user’s group.
+– This is very useful in creating shared directories.
+– The setgid permission displays as an “s” in the group’s execute field.</p>
+
+<h2 id="rights-on-folder">Rights on folder</h2>
+
+<p>*r: allow to list
+*w: allow to create/delete files
+*x: allow to traverse</p>
+
+<h2 id="sticky-bit-permission">Sticky bit permission</h2>
+
+<p>usage:</p>
+
+<pre><code>chmod +t folder
+chmod 1[rwx][rwx][rwx] prg.sh
+</code></pre>
+
+<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
+The sticky bit is primarily used on shared directories.
+* without the sticky bit : user with Write permission on a folder can create/delete other users files
+* with the sticky bit : user with Write permission on a folder are allowed to create new files but not to delete files</p>
+
+<p>Example:</p>
+
+<p>as root, create a folder with sticky bit:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# mkdir test-folder
+root@raspbeeerry:/home/pi# chmod a+w test-folder/
+root@raspbeeerry:/home/pi# ls -ld test-folder/
+drwxrwxrwx 2 root root 4096 Apr 16 14:53 test-folder/
+root@raspbeeerry:/home/pi# touch test-folder/a
+root@raspbeeerry:/home/pi# ls -l permissions.txt ^C
+root@raspbeeerry:/home/pi# ^C
+root@raspbeeerry:/home/pi# chmod +t test-folder/
+</code></pre>
+
+<p>as another user, let's try to create/delete file inside the folder with the sticky bit:</p>
+
+<pre><code>pi@raspbeeerry ~ $ touch test-folder/b
+pi@raspbeeerry ~ $ ls -l test-folder/
+total 0
+-rw-r--r-- 1 root root 0 Apr 16 14:58 a
+-rw-r--r-- 1 pi   pi   0 Apr 16 14:59 b
+pi@raspbeeerry ~ $ rm test-folder/a
+rm: remove write-protected regular empty file 'test-folder/a'? 
+</code></pre>
+
+<p>as root, let's remove the sticky bit:</p>
+
+<pre><code>root@raspbeeerry:/home/pi# chmod -t test-folder/
+</code></pre>
+
+<p>as another user, retry to delete file created by another user:</p>
+
+<pre><code>pi@raspbeeerry ~ $ rm -f  test-folder/a
+@raspbeeerry ~ $ ls -l test-folder/
+total 0
+-rw-r--r-- 1 pi pi 0 Apr 16 14:59 b
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/04/17/linux-file-permissions-1">linux basics: file permissions 1 - POSIX rights</a></h2>
         </header>
         <div>
@@ -144,99 +271,6 @@ chmod 740 file.txt</p></li>
 <li>mount means attaching a device in a particular folder of the linux tree with <code>mount</code></li>
 <li>FS mount can be automated with <code>/etc/fstab</code> file</li>
 </ul>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/13/linux-basics-material-9">linux basics: material 9 - mount FS</a></h2>
-        </header>
-        <div>
-            <h3 id="mount">mount</h3>
-
-<p>mounting a FS means associate it to the linux tree, in a particular folder.</p>
-
-<p>From man:</p>
-
-<p>All files accessible in a Unix system are arranged in one big tree, the
-file hierarchy, rooted at /.  These files can be spread out  over  sev‐
-eral  devices.  The mount command serves to attach the filesystem found
-on some device to the big file tree.</p>
-
-<pre><code> mkdir -p /mnt/test
- mount /dev/sdb1 /mnt/test
- cd /mnt/test/
- touch f1 f2 f3
- umount /mnt/test 
- mount /dev/sdb1 /mnt/test
- ls /mnt/test/
-
-
-mount -a: mount all FS /etc/fstab 
-</code></pre>
-
-<ul>
-<li>-r: ro</li>
-<li>-t ext4: specify FS ext type</li>
-<li>-L alabel: mount the FS matching the given label</li>
-<li>-U aUUID: mount the FS matching the given UUID</li>
-</ul>
-
-<h3 id="list-mounted-fs">list mounted FS</h3>
-
-<pre><code>mount -l 
-</code></pre>
-
-<h3 id="mount-options">mount options</h3>
-
-<pre><code>mount -o auto
-</code></pre>
-
-<ul>
-<li>remount    </li>
-<li>ro</li>
-<li>rw</li>
-<li>loop: for loopback block device    </li>
-<li>auto/noauto: auto mount the FS at startup or mount -a</li>
-<li>user: specify user allowed to mount/unmount the FS</li>
-</ul>
-
-<p>mount FS in RO mode:</p>
-
-<pre><code> mount -o ro /dev/sdb1 /mnt/test/
- ls /mnt/test/
- f1  f2 f3  lost+found
- date &gt;&gt; /mnt/test/f1
- -su: /mnt/test/f1: Read-only file system
-</code></pre>
-
-<p>remount it in RW mode (without unmount!):</p>
-
-<pre><code> mount -o rw,remount /dev/sdb1 /mnt/test/
- date &gt;&gt; /mnt/test/f1
-</code></pre>
-
-<h2 id="umount">umount</h2>
-
-<pre><code>umount /dev/sdb1
-</code></pre>
-
-<p>or</p>
-
-<pre><code>umount /mnt/test
-</code></pre>
-
-<ul>
-<li>-a: all</li>
-<li>-f: forcee</li>
-<li>-r: if fails, remount in ro</li>
-</ul>
-
-<hr />
-
-<h3 id="fstab">fstab</h3>
-
-<p>/etc/fstab is used to automount FS</p>
 
         </div>
             </article>

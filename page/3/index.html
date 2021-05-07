@@ -72,6 +72,104 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2021/02/16/php7">PHP 7</a></h2>
+        </header>
+        <div>
+            <h1 id="php-7%3A-the-important-stuff">PHP 7: The Important Stuff</h1>
+
+<p>Basic PHP 7 cheat sheet from <a href="https://symfonycasts.com/screencast/php7">symfonycasts</a>.</p>
+
+<h2 id="throwable">Throwable</h2>
+
+<p>Both <code>\Exception</code> and <code>\Error</code> implements <code>\Throwable</code>:</p>
+
+<pre><code>&lt;?php
+try {
+    undefinedFunction();
+} catch (\Throwable $error) {
+    echo 'Now if you write bad code, you can catch it! ' . $error-&gt;getMessage();
+}
+echo "\n\nContinue processing file...";
+</code></pre>
+
+<h2 id="scalar-type-hints">Scalar Type Hints</h2>
+
+<p>string, int, float, bool, array, callable, iterable</p>
+
+<pre><code>public function setName(string $name)
+</code></pre>
+
+<p>Weak Mode (defaut mode) versus Strict Mode</p>
+
+<pre><code>declare(strict_types = 1);
+</code></pre>
+
+<h2 id="return-types">Return Types</h2>
+
+<p>string, int, float, bool, array, callable, iterable</p>
+
+<pre><code>public function getName(): string
+</code></pre>
+
+<h2 id="nullable-types">Nullable Types</h2>
+
+<pre><code>public function getFunFact(): ?string
+</code></pre>
+
+<h2 id="void-types">Void Types</h2>
+
+<pre><code>public function setFunFact(?string $funFact): void
+</code></pre>
+
+<h2 id="private-constants">Private Constants</h2>
+
+<pre><code>private const AVATAR_FILE_PREFIX = '/images';
+</code></pre>
+
+<h2 id="the-iterable-pseudo-type">The iterable Pseudo-Type</h2>
+
+<pre><code>public function feed(iterable $food): string
+</code></pre>
+
+<h2 id="the-multi-exception-catch">The Multi Exception Catch</h2>
+
+<pre><code>    try {
+        if (random_int(0, 1)) {
+            throw new NoCookieForYou();
+        }
+        throw new NoCookiesLeft();
+    } catch (NoCookieForYou | NoCookiesLeft $e) {
+        $whisper = sprintf('Crazy Dave whispered "%s"', $e-&gt;getMessage());
+    }
+</code></pre>
+
+<h2 id="spaceship-operator-">spaceship operator &lt;=></h2>
+
+<p>It returns -1, 0 or 1 when first expression is respectively less than, equal to, or greater than second expression.</p>
+
+<pre><code>print( 1 &lt;=&gt; 1);print("&lt;br/&gt;");
+print( 1 &lt;=&gt; 2);print("&lt;br/&gt;");
+print( 2 &lt;=&gt; 1);print("&lt;br/&gt;");
+</code></pre>
+
+<p><a href="https://www.tutorialspoint.com/php7/php7_spaceship_operator.htm">source</a></p>
+
+<h2 id="null-coalescing-operator-%3F%3F">Null Coalescing Operator ??</h2>
+
+<pre><code>$username = $_GET['username'] ?? 'not passed';
+</code></pre>
+
+<p>Equivalent code using ternary operator:</p>
+
+<pre><code>$username = isset($_GET['username']) ? $_GET['username'] : 'not passed';
+</code></pre>
+
+<p><a href="https://www.tutorialspoint.com/php7/php7_coalescing_operator.htm">Source</a></p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/10/12/ca-certfile">Linux install CA cert file</a></h2>
         </header>
         <div>
@@ -106,17 +204,6 @@ git push
 </code></pre>
 
 <p>Size 400Mo -> 30 Mo</p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/17/linux-startup">linux basics: startup</a></h2>
-        </header>
-        <div>
-            <p>init: parent of all ps. PID=0</p>
-
-<p>stages</p>
 
         </div>
             </article>

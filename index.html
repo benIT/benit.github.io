@@ -72,6 +72,371 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2021/05/07/ES6">symfonycasts course notes - JavaScript for PHP Geeks: ES6/ES2015 (New JavaScript)</a></h2>
+        </header>
+        <div>
+            <h2 id="1---ecmascript-2015-%2F-es6-%2F-harmony-%2F-cookies">1 - ECMAScript 2015 / ES6 / Harmony / Cookies</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/ecmascript-es6-harmony</p>
+
+<p>JavaScript is not a language like PHP that has one core code. In reality, JavaScript is nothing more than a standard. When a new version of JavaScript is released, it simply means that the core group has said:</p>
+
+<pre><code>Here are some functions and language changes that we think would make JavaScript more hipster. Now, quick, everyone go and implement these!
+</code></pre>
+
+<p>And guess what? The language isn't even called JavaScript! It's called ECMAScript. And there is a group of smart people that work on new versions of ECMAScript. But unlike PHP, that doesn't mean they're writing code: they're simply deciding what should be included in the next version. Then, it's up to each browser and JavaScript engine to implement that. But as we will learn later... some smart people in the JS world have found a way around needing to wait for browser support...</p>
+
+<h2 id="2---arrow-functions">2 - Arrow Functions</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/arrow-functions#play</p>
+
+<p>You will see the first big feature or ES2015 used everywhere... and at first, it looks weird. Very simply, there is a new, shorter syntax for creating anonymous functions.</p>
+
+<p>In ES2015, we can remove the word function, and add an "equal arrow" (=>) after the arguments:</p>
+
+<pre><code>$.ajax({
+            url: Routing.generate('rep_log_list'),
+        }).then(function(data) {
+            $.each(data.items, function(key, repLog) {
+                self._addRow(repLog);
+            });
+        })
+</code></pre>
+
+<p>equivalent:</p>
+
+<pre><code> $.ajax({
+            url: Routing.generate('rep_log_list'),
+        }).then((data) =&gt; {
+            $.each(data.items, function(key, repLog) {
+                self._addRow(repLog);
+            });
+        })
+</code></pre>
+
+<h3 id="%C2%A0the-arrow-function%27s-secret-superpower-this"> The Arrow Function's (Secret) Superpower (this)</h3>
+
+<p>It turns out, a classic anonymous function and the new arrow function do have one difference: when you use an arrow function, the this variable is preserved. That's awesome news, and it's why I now use the arrow function everywhere in my code.</p>
+
+<p>We can finally remove this silly var = self thing. And instead, below, use this</p>
+
+<h3 id="arrow-functions-everywhere%21">Arrow Functions Everywhere!</h3>
+
+<p>Here, we're not using this, but I like to stay consistent and use the arrow function everywhere.</p>
+
+<h3 id="arrow-function-without-a-body">Arrow Function without a Body</h3>
+
+<p>In this case, the arrow function is nothing more than a single return statement. In this situation, to be extra fancy, you can remove the function body and return statement entirely:</p>
+
+<pre><code>       swal({
+            preConfirm: () =&gt; {
+                return this._deleteRepLog($link);
+            }
+</code></pre>
+
+<p>equivalent to:</p>
+
+<pre><code>swal({
+        preConfirm: () =&gt; this._deleteRepLog($link)
+});
+</code></pre>
+
+<p>When you don't have the curly braces, it means that this value will be returned. It looks weird at first, but it means the same thing that we had before. You will see this kind of stuff in code examples.</p>
+
+<h2 id="4---var-versus-let%3A-scope%21">4 - var Versus let: Scope!</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/var-let-scope#play</p>
+
+<p>And this is the difference between var and let. With var - just like with any variable in PHP - a variable's scope is the function it's inside of, plus any embedded functions.</p>
+
+<p>But let is different: it's said to be "block-scoped". That means that anytime you have a new open curly brace ({) - like an if statement or for loop - you've entered a new scope for let. In this case, let is equal to 42, only inside of the if statement. Outside, it's a completely different variable, which is set to 10.</p>
+
+<h2 id="5---var-versus-let%3A-hoisting%21">5 - var Versus let: Hoisting!</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/var-let-hoisting#play</p>
+
+<p>When you use var to initialize a variable, when JavaScript executes, it basically finds all of your var variables, goes to the top of that variable's scope - usually the top of whatever function it's inside of, but in this case, it's the top of the file - and effectively does this: var aGreatNumber. That initializes the variable, but doesn't set it to any value. This is called variable hoisting: and it's the reason that we get undefined instead of an error when we try to use a variable that's declared with var... before it's declared.</p>
+
+<p>But when we change this to let, we already saw that this does throw a ReferenceError. And that's kinda great! I mean, isn't that what we would expect to happen when we reference a variable that hasn't been created yet!</p>
+
+<h2 id="6---const-versus-let">6 - const Versus let</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/const#play</p>
+
+<p>As far as scope goes, const and let work the same. So really, const and let are identical... except that you can't modify a const variable.</p>
+
+<p>Here's the truth: when you use const, it's not that the value of that variable can't change. The object can change. Instead, using const means that you cannot reassign the aGreatObject variable to something else in memory. It must be assigned only once, to this object. But after that, the object is free to change.</p>
+
+<h2 id="7---object-literals-%26-optional-args">7 - Object Literals &amp; Optional Args</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/object-literals-optional-args</p>
+
+<h3 id="object-keys...-without-the-key">Object Keys... without the Key</h3>
+
+<p>Well, in ES2015, if your key and your value are the same, you can just leave off the key:</p>
+
+<pre><code>            $.ajax({
+                url: url,
+                method: 'POST',
+                data: JSON.stringify(data)
+            })
+</code></pre>
+
+<p>is equivalent to :</p>
+
+<pre><code>            $.ajax({
+                url,
+                method: 'POST',
+                data: JSON.stringify(data)
+            })
+</code></pre>
+
+<h3 id="short-method-syntax">Short Method Syntax</h3>
+
+<pre><code>loadRepLogs: function() {
+},
+</code></pre>
+
+<p>is equivalent to :</p>
+
+<pre><code> loadRepLogs() {
+    },
+</code></pre>
+
+<h3 id="optional-args">Optional Args</h3>
+
+<pre><code>getTotalWeightString(maxWeight = 500)
+</code></pre>
+
+<h2 id="8---legit-javascript-classes">8 - Legit JavaScript Classes</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/class-syntax#play</p>
+
+<pre><code>class Helper {
+    constructor($wrapper) {
+        this.$wrapper = $wrapper;
+    }
+    calculateTotalWeight() {
+        let totalWeight = 0;
+        this.$wrapper.find('tbody tr').each((index, element) =&gt; {
+            totalWeight += $(element).data('weight');
+        });
+        return totalWeight;
+    }
+}
+</code></pre>
+
+<h2 id="%C2%A09---static-class-methods"> 9 - Static Class Methods</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/static-class-methods#play</p>
+
+<p>declare a static method:</p>
+
+<pre><code>    static _calculateWeights($elements) {
+    }
+</code></pre>
+
+<p>call it referencing the class name:</p>
+
+<pre><code>Helper._calculateWeights(this.$wrapper.find('tbody tr'));
+</code></pre>
+
+<h2 id="10---class-inheritance-and-super-calls">10 - Class Inheritance and super Calls</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/extends-super-calls#play</p>
+
+<pre><code>class AGreatClass {
+    constructor(greatNumber) {
+        this.greatNumber = greatNumber;
+    }
+    returnGreatThings() {
+        return this.greatNumber;
+    }
+}
+class AnotherGreatClass extends AGreatClass{
+    constructor(greatNumber, greatWord) {
+        super(greatNumber); //call parent constructor
+        this.greatWord = greatWord;
+    }
+    returnGreatThings() {
+        let greatNumber = super.returnGreatThings();
+        return [greatNumber, this.greatWord];
+    }
+}
+const aGreatObject = new AnotherGreatClass(42, 'adventure');
+console.log(
+    aGreatObject.returnGreatThings()
+);
+</code></pre>
+
+<h2 id="11---destructuring">11 - Destructuring</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/destructuring</p>
+
+<pre><code>        let {id, itemLabel, reps} = repLog;
+</code></pre>
+
+<p>Yep, this weird line is actually going to create three new variables - id, itemLabel, and reps - set to the values of the id, itemLabel and reps keys in repLog.</p>
+
+<h2 id="12---the...-spread-operator">12 - The... Spread Operator</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/spread-operator#play</p>
+
+<pre><code>let printThreeThings = function(thing1, thing2, thing3) {
+    console.log(thing1, thing2, thing3);
+};
+let yummyThings = ['pizza', 'gelato', 'sushi'];
+printThreeThings(...yummyThings)
+</code></pre>
+
+<h3 id="%C2%A0spread-operator-as-an-array-merge"> Spread Operator as an Array Merge</h3>
+
+<pre><code>let yummyThings = ['pizza', 'gelato', 'sushi', 'cheeseburger'];
+let greatThings = ['swimming', 'sunsets', ...yummyThings, 'New Orleans'];
+</code></pre>
+
+<h3 id="spread-operator-for-creating-a-new-array">Spread Operator for Creating a new Array</h3>
+
+<pre><code>let yummyThings = ['pizza', 'gelato', 'sushi', 'cheeseburger'];
+let greatThings = ['swimming', 'sunsets', ...yummyThings, 'New Orleans'];
+let copyOfGreatThings = greatThings;
+copyOfGreatThings.push('summer');
+console.log(greatThings);
+console.log(copyOfGreatThings);
+</code></pre>
+
+<p>Here's the question: we know summer now lives in copyOfGreatThings(). But does it also now live inside of greatThings? Try it! It does! Summer lives in both arrays! And this makes sense: arrays are objects in JavaScript, and just like in PHP, objects are passed by reference. In reality, greatThings and copyOfGreatThings are identical: they both point to the same array in memory.</p>
+
+<pre><code>let yummyThings = ['pizza', 'gelato', 'sushi', 'cheeseburger'];
+let greatThings = ['swimming', 'sunsets', ...yummyThings, 'New Orleans'];
+let copyOfGreatThings = [...greatThings];
+</code></pre>
+
+<p>And that is it! This will create a new array, and then put each item from greatThings into it, one-by-one.</p>
+
+<p>Try it! Yes! We can see summer in the copy, but we did not modify the original array.</p>
+
+<h2 id="13---template-strings">13 - Template Strings</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/template-strings#play</p>
+
+<p>This is the way we used to do things in JavaScript. But no more! Thanks to ES2015, we now have something called Template Strings. And it's awesome. Instead of quotes, use a tick. And as soon as you do that, you're allowed to put variables inside of your string! Remove this single quote plus garbage. Replace it with ${, the variable name, then }</p>
+
+<pre><code>const favoriteFood = 'gelato';
+const iLoveFood = `The year is ${(new Date()).getFullYear()} and my favorite food is ${favoriteFood}`;
+console.log(iLoveFood);
+</code></pre>
+
+<h3 id="%C2%A0turning-our-template-into-a-function"> Turning our Template into a Function</h3>
+
+<pre><code>    const rowTemplate = (repLog) =&gt; `
+&lt;tr data-weight="${repLog.totalWeightLifted}"&gt;
+    &lt;td&gt;${repLog.itemLabel}&lt;/td&gt;
+    &lt;td&gt;${repLog.reps}&lt;/td&gt;
+    &lt;td&gt;${repLog.totalWeightLifted}&lt;/td&gt;
+    &lt;td&gt;
+    &lt;a href="#"
+       class="js-delete-rep-log"
+       data-url="${repLog.links._self}"
+    &gt;
+        &lt;span class="fa fa-trash"&gt;&lt;/span&gt;
+    &lt;/a&gt;
+    &lt;/td&gt;
+&lt;/tr&gt;
+`;
+
+
+const html = rowTemplate(repLog);
+</code></pre>
+
+<h2 id="14---the-for-of-loop">14 - The for of Loop</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/for-of-loop#play</p>
+
+<pre><code>for (let repLog of data.items) {
+    this._addRow(repLog);
+}
+</code></pre>
+
+<h2 id="15---map-and-weakmap">15 - Map and WeakMap</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/map-weak-map</p>
+
+<pre><code>let foods = new Map();
+foods.set('italian', 'gelato');
+foods.set('mexican', 'tortas');
+
+
+
+
+foods.set('canadian', 'poutine');
+let southernUsStates = ['Tennessee', 'Kentucky', 'Texas'];
+foods.set(southernUsStates, 'hot chicken');
+console.log(
+    foods.get('italian'),
+    foods.get(southernUsStates),
+    foods.size
+);
+</code></pre>
+
+<h2 id="16---private-variables-%26-weakmap">16 - Private Variables &amp; WeakMap</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/private-vars-weak-map#play</p>
+
+<p>For us it means we should use Map in normal situations... and WeakMap only if we find ourselves with this problem.</p>
+
+<h2 id="17---array%2C-set-and-es2016">17 - Array, Set and ES2016</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/array-setf</p>
+
+<pre><code>let foods = []; //same as  new Array();
+foods.push('gelato');
+foods.push('tortas');
+foods.push('gelato');
+console.log(foods);
+</code></pre>
+
+<h3 id="introducing-set">Introducing Set</h3>
+
+<pre><code>let foods = new Set();
+foods.add('gelato');
+foods.add('tortas');
+foods.add('gelato');
+console.log(foods);
+</code></pre>
+
+<p>That's the key difference between Array and Set: Set should be used when you need a unique collection of items. It automatically makes sure that duplicates aren't added.</p>
+
+<h2 id="18----yarn-%26-npm%3A-installing-babel">18 -  yarn &amp; npm: Installing Babel</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/npm-yarn#play</p>
+
+<p>In a nut shell, Babel reads new JavaScript code, i.e. ES2015 code, and recompiles it to old JavaScript so that all browsers can understand it. Yea, it literally reads source code and converts it to different source code. It's wild!</p>
+
+<p>yarn add babel-cli --dev</p>
+
+<h2 id="19---babel%3A-transpiling-to-old-javascript">19 - Babel: Transpiling to Old JavaScript</h2>
+
+<p>https://symfonycasts.com/screencast/javascript-es6/babel#play</p>
+
+<pre><code>yarn add babel-preset-env --dev
+</code></pre>
+
+<p>.babelrc:</p>
+
+<pre><code>{
+  "presets": ["env"]
+}
+</code></pre>
+
+<h3 id="%C2%A0babel-and-the-polyfill"> babel-and-the-polyfill</h3>
+
+<p>abel's job is to convert all the new language constructs and syntaxes to the old version. But if there are new objects or functions, it leaves those. Instead, you should use something called a polyfill. Specifically, babel-polyfill. This is another JavaScript library that adds missing functionality, like WeakMap, if it doesn't exist in whatever browser is running our code.</p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2021/03/24/sfcast-javascript">symfonycasts course notes - JavaScript for PHP Geeks</a></h2>
         </header>
         <div>
@@ -769,34 +1134,6 @@ service gitea status
 <h2 id="check">Check</h2>
 
 <pre><code>curl localhost:3000
-</code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2021/03/24/rpi-static-ip">Fix static @IP on RPI</a></h2>
-        </header>
-        <div>
-            <h2 id="get-dns-servers-%40ips">GET DNS servers @IPs</h2>
-
-<pre><code>cat /etc/resolv.conf 
-</code></pre>
-
-<p>=></p>
-
-<pre><code>nameserver 89.2.0.1
-nameserver 89.2.0.2
-</code></pre>
-
-<h2 id="set-up-fix-%40ip">Set up fix @IP</h2>
-
-<p>In <code>/etc/dhcpcd.conf</code>, add the following lines:</p>
-
-<pre><code>interface eth0
-static ip_address=192.168.0.13
-static routers=192.168.0.1
-static domain_name_servers=89.2.0.1 89.2.0.2
 </code></pre>
 
         </div>
