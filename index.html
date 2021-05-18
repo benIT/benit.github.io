@@ -72,6 +72,57 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2021/05/18/nfs-setup">NFS setup</a></h2>
+        </header>
+        <div>
+            <p><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-20-04">Source</a>.</p>
+
+<p>In this article, there are 2 linux machines: <code>desktop</code> &amp; <code>laptop</code>.</p>
+
+<p>The desktop machine can be accessed via @IP or using <code>desktop.local</code> alias.</p>
+
+<h2 id="host">Host</h2>
+
+<pre><code>sudo apt install nfs-kernel-server
+</code></pre>
+
+<p>Configure clients access to host share in <code>/etc/exports</code> :</p>
+
+<pre><code>/home  192.168.1.0/24(rw,sync,no_root_squash,no_subtree_check)
+</code></pre>
+
+<p>restart service:</p>
+
+<pre><code> service nfs-kernel-server restart
+</code></pre>
+
+<h2 id="client">Client</h2>
+
+<h3 id="create-a-directory">Create a directory</h3>
+
+<pre><code>sudo mkdir -p /mnt/nfs_share_desktop
+sudo chown $USER: /mnt/nfs_share_desktop/
+</code></pre>
+
+<h3 id="mount">Mount</h3>
+
+<pre><code>sudo mount desktop.local:/home/ben/ /mnt/nfs_share_desktop/
+</code></pre>
+
+<p>or via <code>/etc/fstab</code>:</p>
+
+<pre><code>desktop.local:/home               /mnt/nfs_share_desktop      nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0
+</code></pre>
+
+<p>finally:</p>
+
+<pre><code>sudo mount -a    
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2021/05/07/ES6">symfonycasts course notes - JavaScript for PHP Geeks: ES6/ES2015 (New JavaScript)</a></h2>
         </header>
         <div>
@@ -1100,41 +1151,6 @@ No worries! We can shorten this with a shortcut that's similar to PHP's array_me
 <h2 id="33---sweet-alert%3A-create-a-promise%21">33 - Sweet Alert: Create a Promise!</h2>
 
 <p>https://symfonycasts.com/screencast/javascript/sweet-alert-create-promise#play</p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2021/03/24/gitea-503">GITEA 503 after changing RPI @IP</a></h2>
-        </header>
-        <div>
-            <p>After moving RPI from a lan to another lan, service gitea failed with a 503 error.</p>
-
-<p>This error comes from the new @IP of the device on the lan, this is now <code>192.168.0.13</code></p>
-
-<h2 id="edit-%2Fmnt%2Fgitea%2Fcustom%2Fconf%2Fapp.ini">Edit /mnt/gitea/custom/conf/app.ini</h2>
-
-<pre><code>[database]
-DB_TYPE  = postgres
-HOST     = 192.168.0.13:5432
-</code></pre>
-
-<h2 id="edit-%2Fetc%2Fpostgresql%2F11%2Fmain%2Fpostgresql.conf">Edit /etc/postgresql/11/main/postgresql.conf</h2>
-
-<pre><code>listen_addresses = '192.168.0.13'
-</code></pre>
-
-<h2 id="restart">Restart</h2>
-
-<pre><code>service gitea restart
-
-service gitea status
-</code></pre>
-
-<h2 id="check">Check</h2>
-
-<pre><code>curl localhost:3000
-</code></pre>
 
         </div>
             </article>

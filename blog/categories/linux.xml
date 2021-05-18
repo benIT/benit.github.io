@@ -3,9 +3,59 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/linux.xml" rel="self"/>
     <link href="/"/>
-    <updated>2021-05-07T12:01:31+00:00</updated>
+    <updated>2021-05-18T13:18:16+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[NFS setup]]></title>
+            <link href="/blog/2021/05/18/nfs-setup"/>
+            <updated>2021-05-18T00:00:00+00:00</updated>
+            <id>/blog/2021/05/18/nfs-setup</id>
+            <content type="html"><![CDATA[<p><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-20-04">Source</a>.</p>
+
+<p>In this article, there are 2 linux machines: <code>desktop</code> &amp; <code>laptop</code>.</p>
+
+<p>The desktop machine can be accessed via @IP or using <code>desktop.local</code> alias.</p>
+
+<h2 id="host">Host</h2>
+
+<pre><code>sudo apt install nfs-kernel-server
+</code></pre>
+
+<p>Configure clients access to host share in <code>/etc/exports</code> :</p>
+
+<pre><code>/home  192.168.1.0/24(rw,sync,no_root_squash,no_subtree_check)
+</code></pre>
+
+<p>restart service:</p>
+
+<pre><code> service nfs-kernel-server restart
+</code></pre>
+
+<h2 id="client">Client</h2>
+
+<h3 id="create-a-directory">Create a directory</h3>
+
+<pre><code>sudo mkdir -p /mnt/nfs_share_desktop
+sudo chown $USER: /mnt/nfs_share_desktop/
+</code></pre>
+
+<h3 id="mount">Mount</h3>
+
+<pre><code>sudo mount desktop.local:/home/ben/ /mnt/nfs_share_desktop/
+</code></pre>
+
+<p>or via <code>/etc/fstab</code>:</p>
+
+<pre><code>desktop.local:/home               /mnt/nfs_share_desktop      nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0
+</code></pre>
+
+<p>finally:</p>
+
+<pre><code>sudo mount -a    
+</code></pre>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[GITEA 503 after changing RPI @IP]]></title>
             <link href="/blog/2021/03/24/gitea-503"/>
@@ -470,93 +520,6 @@ sl: /usr/games/sl /usr/share/man/man6/sl.6.gz
 echo is a shell builtin
 echo is /usr/bin/echo
 echo is /bin/echo
-</code></pre>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[linux basics: find &amp; locate]]></title>
-            <link href="/blog/2020/04/17/linux-find"/>
-            <updated>2020-04-17T00:00:00+00:00</updated>
-            <id>/blog/2020/04/17/linux-find</id>
-            <content type="html"><![CDATA[<h2 id="find">find</h2>
-
-<h3 id="usual-commands">Usual commands</h3>
-
-<pre><code>find / -name "*.c"
-find / -maxdepth 4 -name "*.c"
-find / -size +1M
-find / -group ben
-find / -user ben
-</code></pre>
-
-<h3 id="file-type">File type</h3>
-
-<pre><code>find /etc/ -type d
-find /etc/ -type f
-</code></pre>
-
-<h3 id="execute-action-on-file">Execute action on file</h3>
-
-<h3 id="without-confirmation">without confirmation</h3>
-
-<pre><code>find ~ -type d -exec ls -l {} \;    
-</code></pre>
-
-<ul>
-<li><code>{}</code> replace the argument of the command, here it means a file in <code>ls -l file</code></li>
-<li><code>\;</code>: escape the <code>;</code> => terminate the <code>ls -l {}</code> command</li>
-</ul>
-
-<h3 id="with-confirmation">with confirmation</h3>
-
-<pre><code>find ~ -type d -ok -exec ls -l {} \; 
-</code></pre>
-
-<h3 id="operator">operator</h3>
-
-<h4 id="and-%60-a%60">and <code>-a</code></h4>
-
-<pre><code>find /etc/ \( -type d -a -group root \)
-</code></pre>
-
-<h4 id="or-%60-o%60">or <code>-o</code></h4>
-
-<pre><code>find ~ \( -name "*txt" -o -name "*.md" \)
-</code></pre>
-
-<h4 id="negation-%60%21%60">negation <code>!</code></h4>
-
-<pre><code>find ~ ! -name "*.md"
-</code></pre>
-
-<h2 id="locate">locate</h2>
-
-<ul>
-<li>faster than find</li>
-<li>only works on file name</li>
-<li><p>use a db</p>
-
-<p>locate README.md
-updatedb</p></li>
-</ul>
-
-<h3 id="modern-locate">modern locate</h3>
-
-<pre><code>mlocate README.md
-</code></pre>
-
-<h3 id="secure-locate">secure locate</h3>
-
-<pre><code>slocate README.md
-</code></pre>
-
-<p>the locate command is a symlink to one of these programs:</p>
-
-<pre><code>ls -l /usr/bin/locate
-lrwxrwxrwx 1 root root 24 avril 21 13:09 /usr/bin/locate -&gt; /etc/alternatives/locate
-
-ls -l /etc/alternatives/locate
-lrwxrwxrwx 1 root root 16 avril 21 13:09 /etc/alternatives/locate -&gt; /usr/bin/mlocate
 </code></pre>
 ]]></content>
         </entry>

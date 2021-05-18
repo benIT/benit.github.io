@@ -72,6 +72,54 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2020/04/13/linux-basics-material-4">linux basics: material 4 - Create a fake hard drive with `dd` and `losetup`</a></h2>
+        </header>
+        <div>
+            <ul>
+<li>create a file of the partition size with <code>dd</code> command</li>
+<li>associate it to a loop device with <code>losetup</code> command</li>
+<li>partition it with <code>fdisk</code></li>
+</ul>
+
+<h3 id="dd-command">dd command</h3>
+
+<p>utility to copy files/partition
+create a file named <code>my-hd-file</code></p>
+
+<p>Create a 100Mo file filed with 0 from /dev/zero:</p>
+
+<pre><code>touch my-hd-file
+dd if=/dev/zero of=my-hd-file bs=1024000 count=1
+1+0 records in
+1+0 records out
+1024000 bytes (1.0 MB, 1000 KiB) copied, 0.0318375 s, 32.2 MB/s
+root@raspbeeerry:~# dd if=/dev/zero of=my-hd-file bs=1024000 count=100
+100+0 records in
+100+0 records out
+102400000 bytes (102 MB, 98 MiB) copied, 0.749057 s, 137 MB/s
+</code></pre>
+
+<h3 id="loop-device">Loop device</h3>
+
+<p>In Unix-like operating systems, a loop device, vnd (vnode disk), or lofi (loop file interface) is a pseudo-device that makes a file accessible as a block device.</p>
+
+<ul>
+<li><code>losetup -f</code> to identify next available loop device number  => <code>/dev/loop0</code></li>
+<li><p><code>losetup -a</code>: list all loop devices</p>
+
+<p>root@raspbeeerry:~# losetup -a
+root@raspbeeerry:~# losetup -f
+/dev/loop0
+root@raspbeeerry:~# losetup /dev/loop0 my-hd-file
+root@raspbeeerry:~# losetup -a
+/dev/loop0: [2049]:2752537 (/root/my-hd-file)
+root@raspbeeerry:~#</p></li>
+</ul>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/04/13/linux-basics-material-3">linux basics: material 3 - FHS: Filesystem Hierarchy Standard</a></h2>
         </header>
         <div>
@@ -138,43 +186,6 @@
 <li>IDE: <code>/dev/hdX</code></li>
 <li>SATA: same as SCSI</li>
 <li>SCSI: <code>/dev/sdX</code></li>
-</ul>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/13/linux-basics-material-1">linux basics: material 1 - command &amp; kernel</a></h2>
-        </header>
-        <div>
-            <h2 id="linux-material-command">Linux material command</h2>
-
-<ul>
-<li><code>free</code>: for memory information</li>
-<li><code>uname</code>: material information</li>
-</ul>
-
-<p>see dedicated virtual FS such as : /dev, /proc...</p>
-
-<h2 id="special-pseudo-drives">Special pseudo drives</h2>
-
-<ul>
-<li><code>/dev/null</code>: black hole</li>
-<li><code>/dev/zero</code>: returns zeros</li>
-<li><code>/dev/full</code>: emulate a full  hard drive</li>
-</ul>
-
-<h2 id="about-linux-kernel">About linux kernel</h2>
-
-<p>The kernel gives a material abstraction layer to software layer.</p>
-
-<h2 id="about-linux-kernel-modules">About linux kernel modules</h2>
-
-<p>The linux kernel is monolithic but some modules can be loaded/unloaded such as driver</p>
-
-<ul>
-<li><code>lsmod</code> : list kernel modules</li>
-<li><code>modprobe</code>: load/unload/manage kernel modules</li>
 </ul>
 
         </div>

@@ -72,6 +72,39 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2020/04/17/linux-command-help">linux basics: get command help</a></h2>
+        </header>
+        <div>
+            <h2 id="%60whereis%60-command"><code>whereis</code> command</h2>
+
+<p>search in several location <code>/usr/bin</code>... and returns exec file and related resources such as man, config.</p>
+
+<pre><code>whereis sl
+sl: /usr/games/sl /usr/share/man/man6/sl.6.gz
+</code></pre>
+
+<h2 id="%60which%60-command"><code>which</code> command</h2>
+
+<p>only search in $PATH and only return path to exec:</p>
+
+<pre><code>which sl
+/usr/games/sl
+</code></pre>
+
+<h2 id="%60type%60-command"><code>type</code> command</h2>
+
+<p>return how a command is interpreted:</p>
+
+<pre><code>type -a echo
+echo is a shell builtin
+echo is /usr/bin/echo
+echo is /bin/echo
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/04/17/linux-find">linux basics: find &amp; locate</a></h2>
         </header>
         <div>
@@ -190,244 +223,6 @@ ls -l umasktest
 
 <pre><code>umask 0022
 </code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/17/linux-file-permissions-3">linux basics: file permissions 3 - ACL</a></h2>
-        </header>
-        <div>
-            <p>ACL usage: when POSIX rights are too limited. Check ACL support is enabled:</p>
-
-<pre><code>grep ACL /boot/config* | grep -i ext4
-</code></pre>
-
-<p>install package:</p>
-
-<pre><code>apt install acl
-</code></pre>
-
-<p>Enable if needed in <code>/etc/fstab</code>, with option <code>acl</code></p>
-
-<p>create a test file: <code>touch test</code>
-create a test user: <code>adduser testuser</code>
-create a group user: <code>groupadd testgroup</code></p>
-
-<h2 id="getfacl">getfacl</h2>
-
-<pre><code>getfacl test
-
-# file: test
-# owner: root
-# group: root
-user::rw-
-group::r--
-other::r--
-</code></pre>
-
-<h2 id="setfacl">setfacl</h2>
-
-<p>Let's say we want to give an extra <code>rw</code> permissions to our <code>testuser</code> without using POSIX rights:</p>
-
-<pre><code>setfacl -m u:testuser:rw test
-</code></pre>
-
-<p>check that:</p>
-
-<pre><code>getfacl test
-# file: test
-# owner: root
-# group: root
-user::rw-
-user:testuser:rw-
-group::r--
-mask::rw-
-other::r--
-</code></pre>
-
-<p>Let's say we want to give an extra <code>rwx</code> permissions to our <code>testgroup</code> without using POSIX rights:</p>
-
-<pre><code>setfacl -m g:testgroup:rwx test
-</code></pre>
-
-<p>check that:</p>
-
-<pre><code>getfacl test
-# file: test
-# owner: root
-# group: root
-user::rw-
-user:testuser:rw-
-group::r--
-group:testgroup:rwx
-mask::rwx
-other::r--
-</code></pre>
-
-<p>It is possible to edit POSIX rights without specifying user or group:</p>
-
-<pre><code>setfacl -m g::r test
-getfacl test
-# file: test
-# owner: root
-# group: root
-user::rw-
-user:testuser:rw-
-group::r--
-group:testgroup:rwx
-mask::rwx
-other::r--
-</code></pre>
-
-<p>same for user:</p>
-
-<pre><code>setfacl -m u::r test
-getfacl test
-# file: test
-# owner: root
-# group: root
-user::r--
-user:testuser:rw-
-group::r--
-group:testgroup:rwx
-mask::rwx
-other::r--
-</code></pre>
-
-<h3 id="acl-on-folder">ACL on folder</h3>
-
-<ul>
-<li>-d: inheritance. file in folder will inherit folder ACL</li>
-<li><p>-R: recursive</p>
-
-<p>mkdir test-folder
-setfacl -dm u:testuser:rwx test-folder/</p></li>
-</ul>
-
-<p>check:</p>
-
-<pre><code>getfacl test-folder/
-# file: test-folder/
-# owner: root
-# group: root
-user::rwx
-group::r-x
-other::r-x
-default:user::rwx
-default:user:testuser:rwx
-default:group::r-x
-default:mask::rwx
-default:other::r-x
-</code></pre>
-
-<p>check child file inherits ACL from parent folder:</p>
-
-<pre><code>touch test-folder/a
-getfacl test-folder/a
-</code></pre>
-
-<p>=></p>
-
-<pre><code># file: test-folder/a
-# owner: root
-# group: root
-user::rw-
-user:testuser:rwx       #effective:rw-
-group::r-x          #effective:r--
-mask::rw-
-other::r--
-</code></pre>
-
-<p>Recursive mode is not linked to file.</p>
-
-<h3 id="delete-acl">Delete ACL</h3>
-
-<h4 id="delete-all-acls">Delete all ACLs</h4>
-
-<pre><code>setfacl -b test
-</code></pre>
-
-<p>There is no more ACL rights, only POSIX rights:</p>
-
-<pre><code>getfacl test
-# file: test
-# owner: root
-# group: root
-user::r--
-group::r--
-other::r--
-</code></pre>
-
-<h4 id="delete-default-acls-with-%60-k%60">Delete default ACLs with <code>-k</code></h4>
-
-<pre><code>getfacl test-folder/
-# file: test-folder/
-# owner: root
-# group: root
-user::rwx
-group::r-x
-other::r-x
-default:user::rwx
-default:user:testuser:rwx
-default:group::r-x
-default:mask::rwx
-default:other::r-x
-</code></pre>
-
-<p>delete: <code>setfacl -k test-folder/</code>
-check: <code>getfacl test-folder/</code></p>
-
-<pre><code># file: test-folder/
-# owner: root
-# group: root
-user::rwx
-group::r-x
-other::r-x
-</code></pre>
-
-<h4 id="delete-a-particular-acl-with-%60-x%60">Delete a particular ACL with <code>-x</code></h4>
-
-<pre><code>setfacl -x u:testuser test
-</code></pre>
-
-<h2 id="mask">Mask</h2>
-
-<p>A mask is a logical AND operator. The effective rights will result of the logical AND operation of the right mask and the user or group ACL. Check the <code>#effective:</code> in <code>getfacl</code> output:</p>
-
-<p>Let a <code>rwx</code> ACL to <code>testuser</code>:</p>
-
-<pre><code>setfacl -m u:testuser:rwx test
-</code></pre>
-
-<p>Let a <code>rw</code> mask ACL:</p>
-
-<pre><code>setfacl -m m::rw test
-</code></pre>
-
-<p>Check rights:</p>
-
-<pre><code> getfacl test
-# file: test
-# owner: root
-# group: root
-user::r--
-user:testuser:rwx               #effective:rw-
-group::r--
-mask::rw-
-other::r--
-</code></pre>
-
-<p>For testuser:</p>
-
-<pre><code>user:testuser:rwx               #effective:rw
-</code></pre>
-
-<p>The effective rights are the result of the logical AND operation, thus <code>rw</code></p>
-
-<h2 id="acl-hierarchy">ACL hierarchy</h2>
-
-<p>mask > user ACL > group ACL > owner group ACL > POSIX rights</p>
 
         </div>
             </article>

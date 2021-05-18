@@ -72,6 +72,89 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2020/04/01/rpi-dev-5-ufw">rpi dev 5 - UFW</a></h2>
+        </header>
+        <div>
+            <h2 id="enable%2Fdisable">enable/disable</h2>
+
+<pre><code>ufw logging on
+ufw disable
+ufw enable
+</code></pre>
+
+<h2 id="log-file">log file</h2>
+
+<pre><code>tail -f /var/log/ufw.log
+</code></pre>
+
+<h2 id="print-fw-rules">Print FW rules</h2>
+
+<pre><code>ufw status verbose
+ufw status numbered
+</code></pre>
+
+<h2 id="common-rules">Common rules</h2>
+
+<h3 id="block-all-incoming-%26-outgoing-trafic">Block all INcoming &amp; outgoing trafic</h3>
+
+<pre><code>ufw default deny incoming
+ufw default deny outgoing
+</code></pre>
+
+<h3 id="allow-common-services">Allow common services</h3>
+
+<pre><code>ufw allow out 53 comment 'DNS'
+ufw allow out 465 comment 'SMTP'
+ufw allow ntp
+</code></pre>
+
+<h3 id="allow-all-incomming-requests-on-all-ports-from-an-%40ip-range">Allow all INcomming requests on all ports from an @IP range</h3>
+
+<pre><code>ufw allow from 192.168.1.0/24
+</code></pre>
+
+<h3 id="allow-all-incomming-requests-on-all-ports-from-an-%40ip">Allow all INcomming requests on all ports from an @IP</h3>
+
+<pre><code>ufw allow from XXX.XXX.XXX.XXX
+</code></pre>
+
+<h3 id="allow-incomming-requests-on-specific-port-from-an-%40ip">Allow INcomming requests on specific port from an @IP</h3>
+
+<pre><code>ufw allow from XXX.XXX.XXX.XXX to any port 80
+ufw allow from XXX.XXX.XXX.XXX to any port 3000
+</code></pre>
+
+<h3 id="for-apt-and-software-installation">For apt and software installation</h3>
+
+<p>use that to allow apt, for instance <code>apt install -y lnav</code>:</p>
+
+<pre><code>ufw allow out 80/tcp comment 'allow OUT 80 temporary for apt' &amp;&amp; ufw allow out 443/tcp comment 'allow OUT 443 temporary for apt'
+</code></pre>
+
+<p>remove:</p>
+
+<pre><code>ufw delete allow out 80/tcp &amp;&amp; ufw delete allow out 443/tcp
+</code></pre>
+
+<p>OR:</p>
+
+<pre><code>ufw default allow outgoing
+</code></pre>
+
+<p>remove:</p>
+
+<pre><code>ufw default deny outgoing
+</code></pre>
+
+<h2 id="%C2%A0reset-all-rules"> Reset all rules</h2>
+
+<pre><code>ufw reset
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/04/01/rpi-dev-4-lets-encrypt-certificates">rpi dev 4 - get let&#039;s encrypt certificates with certbot</a></h2>
         </header>
         <div>
@@ -227,155 +310,6 @@ ProxyPassReverse / http://localhost:3000/
 <h3 id="from-cli">from CLI</h3>
 
 <p>edit <code>custom/conf/app.ini</code> and <code>systemctl restart gitea.service</code></p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/01/rpi-dev-2-extend-fs">rpi dev 2 - extend RPI storage with a USB drive</a></h2>
-        </header>
-        <div>
-            <h2 id="purpose">purpose</h2>
-
-<p>create 3 partitions of 8Go for :</p>
-
-<ul>
-<li>/var/www</li>
-<li>/mnt/gitea</li>
-<li>/var/lib/postgresql/</li>
-</ul>
-
-<h3 id="create-3-partitions-on-the-usb-drive-of-8go">Create 3 partitions on the USB drive of 8Go</h3>
-
-<pre><code>root@raspberrypi:~# fdisk /dev/sda
-</code></pre>
-
-<p>=></p>
-
-<pre><code>Command (m for help): o
-Created a new DOS disklabel with disk identifier 0x78494e0c.
-
-Command (m for help): n
-Partition type
-   p   primary (0 primary, 0 extended, 4 free)
-   e   extended (container for logical partitions)
-Select (default p): p
-Partition number (1-4, default 1): 1
-First sector (2048-60063743, default 2048): 
-Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-60063743, default 60063743): +8G
-
-Created a new partition 1 of type 'Linux' and of size 8 GiB.
-
-Command (m for help): n
-Partition type
-   p   primary (1 primary, 0 extended, 3 free)
-   e   extended (container for logical partitions)
-Select (default p): p
-Partition number (2-4, default 2): 2
-First sector (16779264-60063743, default 16779264): 
-Last sector, +/-sectors or +/-size{K,M,G,T,P} (16779264-60063743, default 60063743): +8G
-
-Created a new partition 2 of type 'Linux' and of size 8 GiB.
-
-Command (m for help): n
-Partition type
-   p   primary (2 primary, 0 extended, 2 free)
-   e   extended (container for logical partitions)
-Select (default p): p
-Partition number (3,4, default 3): 
-First sector (33556480-60063743, default 33556480): 
-Last sector, +/-sectors or +/-size{K,M,G,T,P} (33556480-60063743, default 60063743): +8G
-
-Created a new partition 3 of type 'Linux' and of size 8 GiB.
-
-Command (m for help): w
-The partition table has been altered.
-Calling ioctl() to re-read partition table.
-Syncing disks.
-</code></pre>
-
-<h3 id="check">Check</h3>
-
-<pre><code>root@raspberrypi:~# fdisk -l /dev/sda
-</code></pre>
-
-<p>=></p>
-
-<pre><code>Disk /dev/sda: 28.7 GiB, 30752636928 bytes, 60063744 sectors
-Disk model: Ultra           
-Units: sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disklabel type: dos
-Disk identifier: 0x78494e0c
-
-Device     Boot    Start      End  Sectors Size Id Type
-/dev/sda1           2048 16779263 16777216   8G 83 Linux
-/dev/sda2       16779264 33556479 16777216   8G 83 Linux
-/dev/sda3       33556480 50333695 16777216   8G 83 Linux
-</code></pre>
-
-<h3 id="create-ext4-filesystem-for-each-partitions-with-explicit-labels">create ext4 filesystem for each partitions with explicit labels</h3>
-
-<pre><code>mkfs.ext4 -L pi-git /dev/sda1
-mkfs.ext4 -L pi-web /dev/sda2
-mkfs.ext4 -L pi-pgsql /dev/sda3
-</code></pre>
-
-<h2 id="check">Check</h2>
-
-<pre><code>root@raspberrypi:~# ls -l /dev/disk/by-label/
-</code></pre>
-
-<p>=></p>
-
-<pre><code>total 0
-lrwxrwxrwx 1 root root 15 Apr 28 18:17 boot -&gt; ../../mmcblk0p1
-lrwxrwxrwx 1 root root 10 Apr 29 11:02 pi-git -&gt; ../../sda1
-lrwxrwxrwx 1 root root 10 Apr 29 11:05 pi-pgsql -&gt; ../../sda3
-lrwxrwxrwx 1 root root 10 Apr 29 11:05 pi-web -&gt; ../../sda2
-lrwxrwxrwx 1 root root 15 Apr 28 18:17 rootfs -&gt; ../../mmcblk0p2
-</code></pre>
-
-<h2 id="mount">Mount</h2>
-
-<pre><code>mkdir -p /var/www
-mkdir -p /mnt/gitea
-mkdir -p /var/lib/postgresql/
-</code></pre>
-
-<p>add to `/etc/fstab. <a href="https://debian-facile.org/doc:systeme:fstab">see fstab resource</a>:</p>
-
-<pre><code>LABEL=pi-git  /mnt/gitea                ext4    defaults  0       2
-LABEL=pi-web  /var/www                  ext4    defaults  0       2
-LABEL=pi-pgsql  /var/lib/postgresql         ext4    defaults  0       2
-</code></pre>
-
-<p>mount:</p>
-
-<pre><code>mount -a
-</code></pre>
-
-<p>check:</p>
-
-<pre><code>root@raspberrypi:~#  df -h
-</code></pre>
-
-<p>=></p>
-
-<pre><code>Filesystem      Size  Used Avail Use% Mounted on
-/dev/root        15G  1.3G   13G  10% /
-devtmpfs        459M     0  459M   0% /dev
-tmpfs           464M     0  464M   0% /dev/shm
-tmpfs           464M  6.3M  457M   2% /run
-tmpfs           5.0M  4.0K  5.0M   1% /run/lock
-tmpfs           464M     0  464M   0% /sys/fs/cgroup
-/dev/mmcblk0p1  253M   53M  200M  21% /boot
-tmpfs            93M     0   93M   0% /run/user/1000
-/dev/sda1       7.9G   36M  7.4G   1% /mnt/gitea
-/dev/sda2       7.9G   36M  7.4G   1% /var/www
-/dev/sda3       7.9G   36M  7.4G   1% /var/lib/postgresql
-</code></pre>
 
         </div>
             </article>

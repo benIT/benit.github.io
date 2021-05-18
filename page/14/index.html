@@ -72,6 +72,69 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2019/07/12/php-survival-sheet">PHP survival sheet</a></h2>
+        </header>
+        <div>
+            <h2 id="identify-different-%60php.ini%60-files">Identify different <code>php.ini</code> files</h2>
+
+<p>This <code>find</code> command:</p>
+
+<pre><code>find /etc -name php.ini 
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code>/etc/php/7.1/apache2/php.ini
+/etc/php/7.1/cli/php.ini
+</code></pre>
+
+<h2 id="identify-loaded-php.ini-files-from-command-line">Identify loaded php.ini files from command line</h2>
+
+<p>This command:</p>
+
+<pre><code>php --ini
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code>Configuration File (php.ini) Path: /etc/php/7.1/cli
+Loaded Configuration File:         /etc/php/7.1/cli/php.ini
+Scan for additional .ini files in: /etc/php/7.1/cli/conf.d
+Additional .ini files parsed:      /etc/php/7.1/cli/conf.d/10-mysqlnd.ini,
+/etc/php/7.1/cli/conf.d/10-opcache.ini,
+/etc/php/7.1/cli/conf.d/10-pdo.ini,
+/etc/php/7.1/cli/conf.d/15-xml.ini,
+...
+</code></pre>
+
+<h2 id="get-configuration-values-from-the-command-line">Get configuration values from the command line</h2>
+
+<p>This command returns:</p>
+
+<pre><code>php -i | grep upload_max_filesize
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code>upload_max_filesize =&gt; 2M =&gt; 2M
+</code></pre>
+
+<p>Common configuration to change in <code>php.ini</code> files:</p>
+
+<pre><code>memory_limit
+max_execution_time
+max_input_time
+post_max_size
+upload_max_filesize
+
+display_errors
+html_errors
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2019/07/10/use-your-own-fork-with-composer">Use your own fork with composer</a></h2>
         </header>
         <div>
@@ -170,29 +233,6 @@
 <p>to this one:</p>
 
 <p><img src="/images/apache2/custom.png" alt="screenshot" /></p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/05/22/john-the-ripper-rip-md5-hash">RIP a md5 hash with john the ripper</a></h2>
-        </header>
-        <div>
-            <h2 id="rip-a-md5-hash">RIP a md5 hash</h2>
-
-<pre><code>echo "ca50dfb151104b1ee005d68fa9a970ce" &gt; md5-to-crack
-john --format=raw-md5 md5-to-crack --show
-</code></pre>
-
-<p>returns:</p>
-
-<pre><code>john --format=raw-md5 md5-to-crack --show
-?:dolorem
-
-1 password hash cracked, 0 left
-</code></pre>
-
-<p>Password for hash <code>ca50dfb151104b1ee005d68fa9a970ce</code> is <code>dolorem</code></p>
 
         </div>
             </article>

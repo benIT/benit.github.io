@@ -72,6 +72,43 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2020/04/13/linux-basics-material-1">linux basics: material 1 - command &amp; kernel</a></h2>
+        </header>
+        <div>
+            <h2 id="linux-material-command">Linux material command</h2>
+
+<ul>
+<li><code>free</code>: for memory information</li>
+<li><code>uname</code>: material information</li>
+</ul>
+
+<p>see dedicated virtual FS such as : /dev, /proc...</p>
+
+<h2 id="special-pseudo-drives">Special pseudo drives</h2>
+
+<ul>
+<li><code>/dev/null</code>: black hole</li>
+<li><code>/dev/zero</code>: returns zeros</li>
+<li><code>/dev/full</code>: emulate a full  hard drive</li>
+</ul>
+
+<h2 id="about-linux-kernel">About linux kernel</h2>
+
+<p>The kernel gives a material abstraction layer to software layer.</p>
+
+<h2 id="about-linux-kernel-modules">About linux kernel modules</h2>
+
+<p>The linux kernel is monolithic but some modules can be loaded/unloaded such as driver</p>
+
+<ul>
+<li><code>lsmod</code> : list kernel modules</li>
+<li><code>modprobe</code>: load/unload/manage kernel modules</li>
+</ul>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/04/01/rpi-dev-7-system-logs">rpi dev 7 - System logs</a></h2>
         </header>
         <div>
@@ -133,89 +170,6 @@ UseTLS=YES
 <h2 id="test">Test</h2>
 
 <p>echo "Hello world email body" | mail -s "Test Subject" test@mail.fr</p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/01/rpi-dev-5-ufw">rpi dev 5 - UFW</a></h2>
-        </header>
-        <div>
-            <h2 id="enable%2Fdisable">enable/disable</h2>
-
-<pre><code>ufw logging on
-ufw disable
-ufw enable
-</code></pre>
-
-<h2 id="log-file">log file</h2>
-
-<pre><code>tail -f /var/log/ufw.log
-</code></pre>
-
-<h2 id="print-fw-rules">Print FW rules</h2>
-
-<pre><code>ufw status verbose
-ufw status numbered
-</code></pre>
-
-<h2 id="common-rules">Common rules</h2>
-
-<h3 id="block-all-incoming-%26-outgoing-trafic">Block all INcoming &amp; outgoing trafic</h3>
-
-<pre><code>ufw default deny incoming
-ufw default deny outgoing
-</code></pre>
-
-<h3 id="allow-common-services">Allow common services</h3>
-
-<pre><code>ufw allow out 53 comment 'DNS'
-ufw allow out 465 comment 'SMTP'
-ufw allow ntp
-</code></pre>
-
-<h3 id="allow-all-incomming-requests-on-all-ports-from-an-%40ip-range">Allow all INcomming requests on all ports from an @IP range</h3>
-
-<pre><code>ufw allow from 192.168.1.0/24
-</code></pre>
-
-<h3 id="allow-all-incomming-requests-on-all-ports-from-an-%40ip">Allow all INcomming requests on all ports from an @IP</h3>
-
-<pre><code>ufw allow from XXX.XXX.XXX.XXX
-</code></pre>
-
-<h3 id="allow-incomming-requests-on-specific-port-from-an-%40ip">Allow INcomming requests on specific port from an @IP</h3>
-
-<pre><code>ufw allow from XXX.XXX.XXX.XXX to any port 80
-ufw allow from XXX.XXX.XXX.XXX to any port 3000
-</code></pre>
-
-<h3 id="for-apt-and-software-installation">For apt and software installation</h3>
-
-<p>use that to allow apt, for instance <code>apt install -y lnav</code>:</p>
-
-<pre><code>ufw allow out 80/tcp comment 'allow OUT 80 temporary for apt' &amp;&amp; ufw allow out 443/tcp comment 'allow OUT 443 temporary for apt'
-</code></pre>
-
-<p>remove:</p>
-
-<pre><code>ufw delete allow out 80/tcp &amp;&amp; ufw delete allow out 443/tcp
-</code></pre>
-
-<p>OR:</p>
-
-<pre><code>ufw default allow outgoing
-</code></pre>
-
-<p>remove:</p>
-
-<pre><code>ufw default deny outgoing
-</code></pre>
-
-<h2 id="%C2%A0reset-all-rules"> Reset all rules</h2>
-
-<pre><code>ufw reset
-</code></pre>
 
         </div>
             </article>

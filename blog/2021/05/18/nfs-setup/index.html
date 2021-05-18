@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Posts Archive &mdash; benIT&#039;s notebook &mdash; </title>
+        <title>NFS setup &mdash; benIT&#039;s notebook &mdash; </title>
         <meta charset="utf-8">
         <meta name="theme-color" content="#ffffff">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <meta name="robots" content="noindex, follow">
-                <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+            <meta name="robots" content="index, follow">
+        <link href="/components/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
         <link href="/css/style.css" rel="stylesheet" type="text/css" />
         <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
         <!--[if lt IE 9]>
@@ -70,48 +70,70 @@
         <div class="mainContent container">
             <div class="row-fluid">
                 <div class="span8">
-                    <h2>Posts Archive</h2>
-        <h3>April 2020</h3>
-  <div>
-    <a href="/blog/2020/04/01/rpi-dev-5-ufw">rpi dev 5 - UFW</a>
-  </div>
-  <div>
-    <a href="/blog/2020/04/01/rpi-dev-4-lets-encrypt-certificates">rpi dev 4 - get let&#039;s encrypt certificates with certbot</a>
-  </div>
-  <div>
-    <a href="/blog/2020/04/01/rpi-dev-3-gitea">rpi dev 3 - Install GITEA</a>
-  </div>
-  <div>
-    <a href="/blog/2020/04/01/rpi-dev-2-extend-fs">rpi dev 2 - extend RPI storage with a USB drive</a>
-  </div>
-  <div>
-    <a href="/blog/2020/04/01/rpi-dev-1-summary">rpi dev 1 - Setup a development server with a RPI 3</a>
-  </div>
-        <h3>October 2019</h3>
-  <div>
-    <a href="/blog/2019/10/15/bash-scripting-course-note">Bash scripting course notes</a>
-  </div>
-  <div>
-    <a href="/blog/2019/10/01/from-a-p12-certificate-to-apache-ssl">Configure an apache2 SSL virtual host from a P12 certificate</a>
-  </div>
-    <h3>September 2019</h3>
-  <div>
-    <a href="/blog/2019/09/30/centos-course-notes">CentOS course notes</a>
-  </div>
-  <div>
-    <a href="/blog/2019/09/19/run-multiple-php-versions-same-server-with-fpm">Run multiple php versions on the same server with PHP-FPM and apache2</a>
-  </div>
-    <h3>July 2019</h3>
-  <div>
-    <a href="/blog/2019/07/12/php-survival-sheet">PHP survival sheet</a>
-  </div>
-<br>
-<div>
-    <nav class="article clearfix">
-        <a class="btn btn-default" href="/blog/page/3.html" title="Previous Page">Previous Page</a>
-            <a class="btn btn-default" href="/blog/page/5.html" title="Next Page">Next Page</a>
-        </nav>
-</div>                </div>
+                        <article>
+        <header>
+            <h2>NFS setup <small>post</small></h2>
+        </header>
+        <div>
+            <p><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-20-04">Source</a>.</p>
+
+<p>In this article, there are 2 linux machines: <code>desktop</code> &amp; <code>laptop</code>.</p>
+
+<p>The desktop machine can be accessed via @IP or using <code>desktop.local</code> alias.</p>
+
+<h2 id="host">Host</h2>
+
+<pre><code>sudo apt install nfs-kernel-server
+</code></pre>
+
+<p>Configure clients access to host share in <code>/etc/exports</code> :</p>
+
+<pre><code>/home  192.168.1.0/24(rw,sync,no_root_squash,no_subtree_check)
+</code></pre>
+
+<p>restart service:</p>
+
+<pre><code> service nfs-kernel-server restart
+</code></pre>
+
+<h2 id="client">Client</h2>
+
+<h3 id="create-a-directory">Create a directory</h3>
+
+<pre><code>sudo mkdir -p /mnt/nfs_share_desktop
+sudo chown $USER: /mnt/nfs_share_desktop/
+</code></pre>
+
+<h3 id="mount">Mount</h3>
+
+<pre><code>sudo mount desktop.local:/home/ben/ /mnt/nfs_share_desktop/
+</code></pre>
+
+<p>or via <code>/etc/fstab</code>:</p>
+
+<pre><code>desktop.local:/home               /mnt/nfs_share_desktop      nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0
+</code></pre>
+
+<p>finally:</p>
+
+<pre><code>sudo mount -a    
+</code></pre>
+
+        </div>
+                    <p class="categories">
+            Categories:
+                        <a href="/blog/categories/linux">linux</a>                        </p>
+                
+                    <nav class="article">
+                <ul>
+                                                                <li>Previous: <a class="previous" href="/blog/2021/05/07/ES6" title="symfonycasts course notes - JavaScript for PHP Geeks: ES6/ES2015 (New JavaScript)"><span class="title">symfonycasts course notes - JavaScript for PHP Geeks: ES6/ES2015 (New JavaScript)</span></a></li>
+                                    </ul>
+            </nav>
+            </article>
+
+
+
+                </div>
                 <!--<div class="span4 sidebar">-->
                     <!--<div class="well">-->
                         <!--<h4>benIT&#039;s notebook</h4>-->

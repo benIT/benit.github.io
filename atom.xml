@@ -3,9 +3,59 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2021-05-07T12:01:31+00:00</updated>
+    <updated>2021-05-18T13:18:15+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[NFS setup]]></title>
+            <link href="/blog/2021/05/18/nfs-setup"/>
+            <updated>2021-05-18T00:00:00+00:00</updated>
+            <id>/blog/2021/05/18/nfs-setup</id>
+            <content type="html"><![CDATA[<p><a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-an-nfs-mount-on-ubuntu-20-04">Source</a>.</p>
+
+<p>In this article, there are 2 linux machines: <code>desktop</code> &amp; <code>laptop</code>.</p>
+
+<p>The desktop machine can be accessed via @IP or using <code>desktop.local</code> alias.</p>
+
+<h2 id="host">Host</h2>
+
+<pre><code>sudo apt install nfs-kernel-server
+</code></pre>
+
+<p>Configure clients access to host share in <code>/etc/exports</code> :</p>
+
+<pre><code>/home  192.168.1.0/24(rw,sync,no_root_squash,no_subtree_check)
+</code></pre>
+
+<p>restart service:</p>
+
+<pre><code> service nfs-kernel-server restart
+</code></pre>
+
+<h2 id="client">Client</h2>
+
+<h3 id="create-a-directory">Create a directory</h3>
+
+<pre><code>sudo mkdir -p /mnt/nfs_share_desktop
+sudo chown $USER: /mnt/nfs_share_desktop/
+</code></pre>
+
+<h3 id="mount">Mount</h3>
+
+<pre><code>sudo mount desktop.local:/home/ben/ /mnt/nfs_share_desktop/
+</code></pre>
+
+<p>or via <code>/etc/fstab</code>:</p>
+
+<pre><code>desktop.local:/home               /mnt/nfs_share_desktop      nfs auto,nofail,noatime,nolock,intr,tcp,actimeo=1800 0 0
+</code></pre>
+
+<p>finally:</p>
+
+<pre><code>sudo mount -a    
+</code></pre>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[symfonycasts course notes - JavaScript for PHP Geeks: ES6/ES2015 (New JavaScript)]]></title>
             <link href="/blog/2021/05/07/ES6"/>
@@ -1383,16 +1433,6 @@ git push
 </code></pre>
 
 <p>Size 400Mo -> 30 Mo</p>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[linux basics: startup]]></title>
-            <link href="/blog/2020/04/17/linux-startup"/>
-            <updated>2020-04-17T00:00:00+00:00</updated>
-            <id>/blog/2020/04/17/linux-startup</id>
-            <content type="html"><![CDATA[<p>init: parent of all ps. PID=0</p>
-
-<p>stages</p>
 ]]></content>
         </entry>
     </feed>
