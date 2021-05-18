@@ -3,7 +3,7 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/linux.xml" rel="self"/>
     <link href="/"/>
-    <updated>2021-05-18T13:18:16+00:00</updated>
+    <updated>2021-05-18T13:28:40+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
             <entry>
@@ -19,6 +19,8 @@
 
 <h2 id="host">Host</h2>
 
+<h3 id="%C2%A0install"> Install</h3>
+
 <pre><code>sudo apt install nfs-kernel-server
 </code></pre>
 
@@ -33,6 +35,11 @@
 </code></pre>
 
 <h2 id="client">Client</h2>
+
+<h3 id="install">Install</h3>
+
+<pre><code>sudo apt install nfs-common
+</code></pre>
 
 <h3 id="create-a-directory">Create a directory</h3>
 
