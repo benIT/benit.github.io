@@ -72,6 +72,129 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2020/04/17/linux-find">linux basics: find &amp; locate</a></h2>
+        </header>
+        <div>
+            <h2 id="find">find</h2>
+
+<h3 id="usual-commands">Usual commands</h3>
+
+<pre><code>find / -name "*.c"
+find / -maxdepth 4 -name "*.c"
+find / -size +1M
+find / -group ben
+find / -user ben
+</code></pre>
+
+<h3 id="file-type">File type</h3>
+
+<pre><code>find /etc/ -type d
+find /etc/ -type f
+</code></pre>
+
+<h3 id="execute-action-on-file">Execute action on file</h3>
+
+<h3 id="without-confirmation">without confirmation</h3>
+
+<pre><code>find ~ -type d -exec ls -l {} \;    
+</code></pre>
+
+<ul>
+<li><code>{}</code> replace the argument of the command, here it means a file in <code>ls -l file</code></li>
+<li><code>\;</code>: escape the <code>;</code> => terminate the <code>ls -l {}</code> command</li>
+</ul>
+
+<h3 id="with-confirmation">with confirmation</h3>
+
+<pre><code>find ~ -type d -ok -exec ls -l {} \; 
+</code></pre>
+
+<h3 id="operator">operator</h3>
+
+<h4 id="and-%60-a%60">and <code>-a</code></h4>
+
+<pre><code>find /etc/ \( -type d -a -group root \)
+</code></pre>
+
+<h4 id="or-%60-o%60">or <code>-o</code></h4>
+
+<pre><code>find ~ \( -name "*txt" -o -name "*.md" \)
+</code></pre>
+
+<h4 id="negation-%60%21%60">negation <code>!</code></h4>
+
+<pre><code>find ~ ! -name "*.md"
+</code></pre>
+
+<h2 id="locate">locate</h2>
+
+<ul>
+<li>faster than find</li>
+<li>only works on file name</li>
+<li><p>use a db</p>
+
+<p>locate README.md
+updatedb</p></li>
+</ul>
+
+<h3 id="modern-locate">modern locate</h3>
+
+<pre><code>mlocate README.md
+</code></pre>
+
+<h3 id="secure-locate">secure locate</h3>
+
+<pre><code>slocate README.md
+</code></pre>
+
+<p>the locate command is a symlink to one of these programs:</p>
+
+<pre><code>ls -l /usr/bin/locate
+lrwxrwxrwx 1 root root 24 avril 21 13:09 /usr/bin/locate -&gt; /etc/alternatives/locate
+
+ls -l /etc/alternatives/locate
+lrwxrwxrwx 1 root root 16 avril 21 13:09 /etc/alternatives/locate -&gt; /usr/bin/mlocate
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2020/04/17/linux-file-permissions-4">linux basics: file permissions 4 - umask</a></h2>
+        </header>
+        <div>
+            <h2 id="print-umask">print umask</h2>
+
+<pre><code>umask -S
+u=rwx,g=rwx,o=rx
+
+umask -p
+umask 0002
+</code></pre>
+
+<p>default rights when a file is created are:</p>
+
+<ul>
+<li>file: 0666</li>
+<li>folder : O777</li>
+</ul>
+
+<p><strong>The calculated rights for new files are the default rights - the umask: 0666-0002=0664</strong></p>
+
+<pre><code>touch umasktest
+ls -l umasktest 
+-rw-rw-r-- 1 ordinateur ordinateur 0 avril 21 14:30 umasktest
+</code></pre>
+
+<h2 id="modify-umask">modify umask</h2>
+
+<pre><code>umask 0022
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2020/04/17/linux-file-permissions-3">linux basics: file permissions 3 - ACL</a></h2>
         </header>
         <div>
@@ -305,194 +428,6 @@ other::r--
 <h2 id="acl-hierarchy">ACL hierarchy</h2>
 
 <p>mask > user ACL > group ACL > owner group ACL > POSIX rights</p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/17/linux-file-permissions-2">linux basics: file permissions 2 - advanced</a></h2>
-        </header>
-        <div>
-            <h2 id="suid%3A-set-user-identification-permission">SUID: Set-user Identification permission</h2>
-
-<p>usage:</p>
-
-<pre><code>chmod u+s prg.sh
-chmod 4[rwx][rwx][rwx] prg.sh
-</code></pre>
-
-<p>Specfic to executable file.</p>
-
-<p>When a command or script with SUID bit set is run, its effective UID becomes that of the owner of the file, rather than of the user who is running it.</p>
-
-<p>The setuid permission displayed as an “s” in the owner’s execute field.</p>
-
-<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
-When a command or script with SUID bit set is run, its effective UID becomes that of the owner of the file, rather than of the user who is running it.</p>
-
-<pre><code>chmod u+s prg.sh
-chmod 4[rwx][rwx][rwx] prg.sh
-</code></pre>
-
-<p>create a file:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# touch prg.sh
-root@raspbeeerry:/home/pi# ls -l prg.sh 
--rw-r--r-- 1 root root 0 Apr 16 15:06 prg.sh
-</code></pre>
-
-<p>add execution right for all:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# chmod a+x prg.sh 
-root@raspbeeerry:/home/pi# ls -l prg.sh 
--rwxr-xr-x 1 root root 0 Apr 16 15:06 prg.sh
-</code></pre>
-
-<p>set SUID, note the lower 's' when X right:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# chmod u+s prg.sh 
-root@raspbeeerry:/home/pi# ls -l prg.sh 
--rwsr-xr-x 1 root root 0 Apr 16 15:06 prg.sh
-</code></pre>
-
-<p>remove execution right for all, note the upper 'S' when no X right:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# chmod a-x prg.sh 
-root@raspbeeerry:/home/pi# ls -l prg.sh 
--rwSr--r-- 1 root root 0 Apr 16 15:06 prg.sh
-</code></pre>
-
-<h2 id="sgid%3A-set-group-identification-permission">SGID: Set-group identification permission</h2>
-
-<p>usage:</p>
-
-<pre><code>chmod g+s prg.sh
-chmod 2[rwx][rwx][rwx] prg.sh
-</code></pre>
-
-<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
-When SGID permission is set on a directory, files created in the directory belong to the group of which the directory is a member.
-– For example if a user having write permission in the directory creates a file there, that file is a member of the same group as the directory and not the user’s group.
-– This is very useful in creating shared directories.
-– The setgid permission displays as an “s” in the group’s execute field.</p>
-
-<h2 id="rights-on-folder">Rights on folder</h2>
-
-<p>*r: allow to list
-*w: allow to create/delete files
-*x: allow to traverse</p>
-
-<h2 id="sticky-bit-permission">Sticky bit permission</h2>
-
-<p>usage:</p>
-
-<pre><code>chmod +t folder
-chmod 1[rwx][rwx][rwx] prg.sh
-</code></pre>
-
-<p><a href="https://www.thegeekdiary.com/what-is-suid-sgid-and-sticky-bit/">see this ressource</a>: 
-The sticky bit is primarily used on shared directories.
-* without the sticky bit : user with Write permission on a folder can create/delete other users files
-* with the sticky bit : user with Write permission on a folder are allowed to create new files but not to delete files</p>
-
-<p>Example:</p>
-
-<p>as root, create a folder with sticky bit:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# mkdir test-folder
-root@raspbeeerry:/home/pi# chmod a+w test-folder/
-root@raspbeeerry:/home/pi# ls -ld test-folder/
-drwxrwxrwx 2 root root 4096 Apr 16 14:53 test-folder/
-root@raspbeeerry:/home/pi# touch test-folder/a
-root@raspbeeerry:/home/pi# ls -l permissions.txt ^C
-root@raspbeeerry:/home/pi# ^C
-root@raspbeeerry:/home/pi# chmod +t test-folder/
-</code></pre>
-
-<p>as another user, let's try to create/delete file inside the folder with the sticky bit:</p>
-
-<pre><code>pi@raspbeeerry ~ $ touch test-folder/b
-pi@raspbeeerry ~ $ ls -l test-folder/
-total 0
--rw-r--r-- 1 root root 0 Apr 16 14:58 a
--rw-r--r-- 1 pi   pi   0 Apr 16 14:59 b
-pi@raspbeeerry ~ $ rm test-folder/a
-rm: remove write-protected regular empty file 'test-folder/a'? 
-</code></pre>
-
-<p>as root, let's remove the sticky bit:</p>
-
-<pre><code>root@raspbeeerry:/home/pi# chmod -t test-folder/
-</code></pre>
-
-<p>as another user, retry to delete file created by another user:</p>
-
-<pre><code>pi@raspbeeerry ~ $ rm -f  test-folder/a
-@raspbeeerry ~ $ ls -l test-folder/
-total 0
--rw-r--r-- 1 pi pi 0 Apr 16 14:59 b
-</code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2020/04/17/linux-file-permissions-1">linux basics: file permissions 1 - POSIX rights</a></h2>
-        </header>
-        <div>
-            <h2 id="file-ownership">file ownership</h2>
-
-<p>File ownership is managed by a user owner and a group owner.
-See <code>ls -l</code> or <code>ls -n</code></p>
-
-<p>Examples:</p>
-
-<pre><code>chown user:group file #change owner and group
-chown user file # change only owner
-chown :group file #change only group, same as chgrp command
-</code></pre>
-
-<h2 id="linux-posix-rights">Linux POSIX rights</h2>
-
-<p>POSIX is a standard.</p>
-
-<h2 id="list-rights">List rights</h2>
-
-<pre><code>ls -l
-</code></pre>
-
-<p>Type codes:</p>
-
-<ul>
-<li>-: file</li>
-<li>d: folder</li>
-<li>l: symlink</li>
-<li>p: pipe. used to make 2 programs communicate</li>
-<li>s: socket. used to make 2 programs communicate + network management + bidirectional</li>
-<li>b: block device, ie write block by block</li>
-<li>c: character device, ie write char by char</li>
-</ul>
-
-<p>9 bits: 3 User + 3 Group + 3 Other</p>
-
-<h2 id="chmod">chmod</h2>
-
-<ul>
-<li>u: for user</li>
-<li>g: for group</li>
-<li>o: for others</li>
-<li><p>a: for all</p></li>
-<li><p>+: add right</p></li>
-<li>-: remove right</li>
-<li><p>=: set right</p></li>
-<li><p>r: read. 2^2 => 4</p></li>
-<li>w: write.2^1 => 2</li>
-<li><p>x: execute.2^0 => 1</p>
-
-<p>chmod u+r,g-r file.txt
-chmod a=rwx file.txt
-chmod 740 file.txt</p></li>
-</ul>
 
         </div>
             </article>

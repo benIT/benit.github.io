@@ -3,9 +3,107 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/atom.xml" rel="self"/>
     <link href="/"/>
-    <updated>2021-05-18T13:28:40+00:00</updated>
+    <updated>2021-10-11T13:54:31+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[ssh proxy jump]]></title>
+            <link href="/blog/2021/10/11/ssh-proxy-jump"/>
+            <updated>2021-10-11T00:00:00+00:00</updated>
+            <id>/blog/2021/10/11/ssh-proxy-jump</id>
+            <content type="html"><![CDATA[<h2 id="context">Context</h2>
+
+<p>2 machines:</p>
+
+<ul>
+<li>one public, available on internet: <code>bastion-server</code></li>
+<li>one private, not available on internet: <code>private-server</code></li>
+</ul>
+
+<p>The public machine is allow to connect the private with ssh protocol.</p>
+
+<h2 id="setup-ssh-config">Setup ssh config</h2>
+
+<p>The trick is to make use <code>ProxyJump</code> directive in <code>.ssh/config</code>:</p>
+
+<pre><code>Host bastion-server
+    User pi
+    Hostname bastion-server.com
+    Port 22
+
+Host private-server
+    User ben 
+    Hostname private-server.com
+    ProxyJump bastion-server
+</code></pre>
+
+<p>NB: public ssh keys must be added to these 2 servers with <code>ssh-copy-id</code> command for instance.</p>
+
+<h2 id="usage">Usage</h2>
+
+<p>We can now execute remote commands on the private server jumping from the bastion server.</p>
+
+<pre><code>ssh private-server hostname
+</code></pre>
+
+<p>You can use that to add your computer @IP to the private server. This can be useful when working with a mobile phone as access point:</p>
+
+<pre><code>IP=$(curl -s ifconfig.me) &amp;&amp; DATE=$(date +%Y-%m-%d_%T) &amp;&amp; echo "adding $IP to ufw at $DATE" &amp;&amp; ssh private-server sudo ufw allow from $IP comment ben-sosh-$DATE &amp;&amp; ssh private-server sudo ufw status numbered
+</code></pre>
+
+<h2 id="source">Source</h2>
+
+<p>https://www.syloe.com/rebonds-ssh/</p>
+]]></content>
+        </entry>
+            <entry>
+            <title type="html"><![CDATA[symfonycasts course notes - The Delightful World of Vue]]></title>
+            <link href="/blog/2021/07/22/sfcast-vuejs"/>
+            <updated>2021-07-22T00:00:00+00:00</updated>
+            <id>/blog/2021/07/22/sfcast-vuejs</id>
+            <content type="html"><![CDATA[<h1 id="about">About</h1>
+
+<p>This is raw notes from the great symfony cast course "The Delightful World of Vue". 
+Content have been fully copied/pasted from the official <a href="https://symfonycasts.com/screencast/vue">public resource</a>.</p>
+
+<h1 id="notes">Notes</h1>
+
+<p>...</p>
+
+<h2 id="21----where-should-a-piece-of-data-live%3F">21  - Where should a Piece of Data Live?</h2>
+
+<p>https://symfonycasts.com/screencast/vue/data-location#play- 
+Earlier, I said that you should never, ever change the value of a prop. Props are meant to be read but not modified</p>
+
+<p>What is the purpose of the special mounted() function in Vue?</p>
+
+<p>https://symfonycasts.com/screencast/vue/ajax/activity/376</p>
+
+<p>That's right. It's a special event callback that you can define in your components to do stuff just after a component is mounted in the DOM.</p>
+
+<p>https://symfonycasts.com/screencast/vue/loading/activity/380</p>
+
+<h2 id="28---loading-component">28 - Loading Component</h2>
+
+<p>https://symfonycasts.com/screencast/vue/loading</p>
+
+<p>created will execute as soon as the component is instantiated. Even though the DOM structure still isn't mounted, you can still perform any other operations that deal with reactive data!</p>
+
+<p>mounted, on the other hand, will be executed once the component has been mounted in the DOM. This is useful for any edge case when you need to manipulate the DOM directly!</p>
+
+<h2 id="39---hoisting-data-up">39 - Hoisting Data Up</h2>
+
+<p>https://symfonycasts.com/screencast/vue/hoist-data#play</p>
+
+<p>This is a fairly common situation: you start by putting your data in one component, then later you need to move it higher so that more parts of your app can use it. We did this once earlier: we moved the collapsed boolean data from Sidebar up to Products so that we could use it in more places.</p>
+
+<h2 id="47---watchers%3A-the-good%2C-the-bad-%26-the-useful%21">47 - Watchers: The Good, The Bad &amp; The Useful!</h2>
+
+<p>https://symfonycasts.com/screencast/vue/watcher#play</p>
+
+<p>watcher! Very simply: a watcher is a function that's called by Vue whenever a specific prop or data changes.</p>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[NFS setup]]></title>
             <link href="/blog/2021/05/18/nfs-setup"/>
@@ -1403,43 +1501,6 @@ print( 2 &lt;=&gt; 1);print("&lt;br/&gt;");
 </code></pre>
 
 <p><a href="https://www.tutorialspoint.com/php7/php7_coalescing_operator.htm">Source</a></p>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[Linux install CA cert file]]></title>
-            <link href="/blog/2020/10/12/ca-certfile"/>
-            <updated>2020-10-12T00:00:00+00:00</updated>
-            <id>/blog/2020/10/12/ca-certfile</id>
-            <content type="html"><![CDATA[<p>Self signed certificates throw error and can make CLI scripts fail. Here is the procedure to use to import cert file at a system level.</p>
-
-<p>Tested with debian 10.</p>
-
-<pre><code>cp my-cert-file.crt /usr/local/share/ca-certificates
-update-ca-certificates
-</code></pre>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[Clean your git repo with BFG Repo-Cleaner]]></title>
-            <link href="/blog/2020/09/16/git-bfg"/>
-            <updated>2020-09-16T00:00:00+00:00</updated>
-            <id>/blog/2020/09/16/git-bfg</id>
-            <content type="html"><![CDATA[<p>Use case : delete the <code>medias</code> from my git repo that contains huge files.</p>
-
-<p>Download bgf.jar from https://rtyley.github.io/bfg-repo-cleaner/</p>
-
-<pre><code>git clone --mirror https://git.mycompany.com/myrepo.git
-
-java -jar ../bfg-1.13.0.jar --delete-folders medias myrepo.git
-
-cd myrepo.git
-
-git reflog expire --expire=now --all &amp;&amp; git gc --prune=now --aggressive
-
-git push
-</code></pre>
-
-<p>Size 400Mo -> 30 Mo</p>
 ]]></content>
         </entry>
     </feed>

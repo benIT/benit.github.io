@@ -72,6 +72,187 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2018/01/11/php7-nginx-memcached-session">Setting up a memcached server with PHP7.X and a NGINX webserver</a></h2>
+        </header>
+        <div>
+            <h2 id="memcached-server-side">Memcached server side</h2>
+
+<p>This server has private @IP : 192.168.33.14</p>
+
+<h3 id="install-memcached%3A">Install memcached:</h3>
+
+<pre><code>sudo apt-get install memcached
+</code></pre>
+
+<p>In <code>/etc/memcached.conf</code>, set up memory to 256 Mo:</p>
+
+<pre><code>-m 256
+</code></pre>
+
+<p>In <code>/etc/memcached.conf</code>, set up listening private @IP of the server:</p>
+
+<pre><code># Specify which IP address to listen on. The default is to listen on all IP addresses
+# This parameter is one of the only security measures that memcached has, so make sure
+# it's listening on a firewalled interface.
+#-l 127.0.0.2
+-l 192.168.33.14
+</code></pre>
+
+<h2 id="web-server-side">Web server side</h2>
+
+<p>This server has private @IP : 192.168.33.11</p>
+
+<h3 id="install-php-extension">Install PHP extension</h3>
+
+<p>On the server that hosts nginx + php7.0:</p>
+
+<pre><code>sudo apt-get install -y php-memcached
+</code></pre>
+
+<h3 id="configure-php">Configure PHP</h3>
+
+<p>In <code>/etc/php/7.0/fpm/php.ini</code>:</p>
+
+<pre><code>[Session]
+; Handler used to store/retrieve data.
+; http://php.net/session.save-handler
+#session.save_handler = files
+session.save_handler = memcached
+session.save_path = 'tcp://192.162.33.14:11211'
+</code></pre>
+
+<h3 id="restart-services">Restart services</h3>
+
+<pre><code>sudo service php7.0-fpm restart &amp;&amp; sudo service nginx restart
+</code></pre>
+
+<h3 id="check-config">Check config</h3>
+
+<p>Create a phpinfo.php that calls <code>phpinfo()</code> and check memcached configuration.</p>
+
+<h3 id="checking">Checking</h3>
+
+<h3 id="checking-sessions-are-well-handled-by-memcached">Checking sessions are well handled by memcached</h3>
+
+<p>Let's write a simple script to check sessions:</p>
+
+<pre><code>session_start();
+if(!isset($_SESSION['visit']))
+{   
+    echo "This is the first time you're visiting this server\n";
+    $_SESSION['visit'] = 0;
+}   
+else
+        echo "Your number of visits: ".$_SESSION['visit'] . "\n";
+
+$_SESSION['visit']++;
+
+echo "Server IP: ".$_SERVER['SERVER_ADDR'] . "\n";
+echo "Client IP: ".$_SERVER['REMOTE_ADDR'] . "\n";
+print_r($_COOKIE);
+</code></pre>
+
+<h3 id="checking-memcached-key%2Fvalue-server">Checking memcached key/value server</h3>
+
+<p>Let's write a simple script to key/value access:</p>
+
+<pre><code>$mem = new Memcached();
+$mem-&gt;addServer("192.168.33.14", 11211);
+$result = $mem-&gt;get("blah");
+if ($result) {
+    echo $result;
+} else {
+    echo "No matching key found yet. Let's start adding that now!";
+    $mem-&gt;set("blah", "I am data!  I am held in memcached!") or die("Couldn't save anything to memcached...");
+}   
+</code></pre>
+
+<h3 id="dumping-all-key%2Fvalue-records">Dumping all key/value records</h3>
+
+<script src="https://gist.github.com/benIT/2e63d3541f4f46d9a47777d467549d2e.js"></script>
+
+<h2 id="sources">Sources</h2>
+
+<ul>
+<li>https://www.digitalocean.com/community/tutorials/how-to-share-php-sessions-on-multiple-memcached-servers-on-ubuntu-14-04</li>
+<li>http://www.servermom.org/install-use-memcached-nginx-php-7-ubuntu-16-04/3670/</li>
+</ul>
+
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2018/01/11/configure-moodle-session-handling-with-memcached">Configure moodle 3.x session handling with memcached</a></h2>
+        </header>
+        <div>
+            <p>This procedure has been tested on Moodle <a href="https://github.com/moodle/moodle/commit/7223cd2518ad3b37901b736d6b62e7badd4ecaa1">version 3.0.6+</a> with a dedicated memcached server which @IP:port is 192.168.33.14:11211.</p>
+
+<h2 id="set-up-a--memcached-server">Set up a  memcached server</h2>
+
+<p>see <a href="/blog/2018-01-11-php7-nginx-memcached-session">this post</a>.</p>
+
+<h2 id="configure-moodle">Configure moodle</h2>
+
+<p>Configure <a href="https://docs.moodle.org/30/en/Session_handling#Memcached">session handling</a> in <code>config.php</code>:</p>
+
+<pre><code>/********************************************/
+//MEMCACHED SETUP
+$CFG-&gt;session_handler_class = '\core\session\memcached';
+$CFG-&gt;session_memcached_save_path = '192.168.33.14:11211';
+$CFG-&gt;session_memcached_prefix = 'memc.sess.key.';
+$CFG-&gt;session_memcached_acquire_lock_timeout = 120;
+$CFG-&gt;session_memcached_lock_expire = 7200;       // Ignored if memcached extension &lt;= 2.1.0
+/********************************************/
+</code></pre>
+
+<h2 id="checkings">Checkings</h2>
+
+<h2 id="moodle-cookie">Moodle cookie</h2>
+
+<p>If you print out your cookie from your debug tool in your bowser, you well see a cookie named <code>MoodleSession</code></p>
+
+<p>In my case it has value <code>4gp94gr17g78jnh97a6mfml0b4</code></p>
+
+<h2 id="moodle-database">Moodle database</h2>
+
+<p>Now let's check if there is still record in DB for your cookie session:</p>
+
+<pre><code>SELECT * FROM mdl_sessions WHERE sid='4gp94gr17g78jnh97a6mfml0b4';
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code>2507694 0   4gp94gr17g78jnh97a6mfml0b4  48521       1515679016  1515681908  192.168.33.1    192.168.33.1
+</code></pre>
+
+<p>What ??? I was expecting to have no more entries in the mdl_sessions table.
+After searching a little bit more, I found the explanation <a href="https://moodle.org/mod/forum/discuss.php?d=326352">here</a>:</p>
+
+<pre><code>Normally when you have sessions stored in Memcache/d there will still be a record of the session written to mdl_sessions. The session data is not written to the database, it's only written to the memcache/d server itself. The performance gain is seen because the session data is not written every page view for every user, and thus the table rows are not continually being locked and unlocked.
+</code></pre>
+
+<h2 id="memcached-server">memcached server</h2>
+
+<p>Let's check if there is a key/value record for ou session:</p>
+
+<script src="https://gist.github.com/benIT/2e63d3541f4f46d9a47777d467549d2e.js"></script>
+
+<p>run it:</p>
+
+<pre><code>php memcached.php | grep 4gp94gr17g78jnh97a6mfml0b4
+</code></pre>
+
+<p>prints:</p>
+
+<pre><code>key: memc.sess.key.4gp94gr17g78jnh97a6mfml0b4
+</code></pre>
+
+<p>which means that our session is written in memcached! That's ok!</p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2017/12/08/docker-basics">Docker 101:  basics</a></h2>
         </header>
         <div>
@@ -153,106 +334,6 @@ Data volumes expose files on your host machine to the container.</p>
 </code></pre>
 
 <p>Shared folder  between <code>/my-files</code> on host machine and the <code>html</code> folder in the container</p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2017/11/13/debian-fixing-error-after-partition-edition">Debian:  fixing error: &#039;A start job is running for dev-disk-...&#039;</a></h2>
-        </header>
-        <div>
-            <h2 id="error-encountered">Error encountered</h2>
-
-<p>After editing partitions to enlarge my vagrant box. The following error is encountered and the machine took 1min30 to boot:</p>
-
-<pre><code>A start job is running for dev-disk-by\x2duuid
-</code></pre>
-
-<h2 id="solution">Solution</h2>
-
-<h3 id="list-machine-partition-by-uuid">List machine partition by-uuid</h3>
-
-<pre><code>vagrant@moodle-prod:~$ ls -l /dev/disk/by-uuid/
-total 0
-lrwxrwxrwx 1 root root 10 Nov 13 08:49 a01bd0bf-1ffc-400d-b383-d74354750926 -&gt; ../../sda2
-lrwxrwxrwx 1 root root 10 Nov 13 08:49 db36bd9a-c8f7-4b02-bb1a-81e4913a21d7 -&gt; ../../sda1
-</code></pre>
-
-<h3 id="check-%60%2Fetc%2Ffstab%60-file">Check <code>/etc/fstab</code> file</h3>
-
-<pre><code>vagrant@moodle-prod:~$ sudo cat /etc/fstab
-# /etc/fstab: static file system information.
-#
-# Use 'blkid' to print the universally unique identifier for a
-# device; this may be used with UUID= as a more robust way to name devices
-# that works even if disks are added and removed. See fstab(5).
-#
-# &lt;file system&gt; &lt;mount point&gt;   &lt;type&gt;  &lt;options&gt;       &lt;dump&gt;  &lt;pass&gt;
-# / was on /dev/vda1 during installation
-UUID=db36bd9a-c8f7-4b02-bb1a-81e4913a21d7 /               ext4    errors=remount-ro 0       1
-# swap was on /dev/vda5 during installation
-UUID=8d7d9300-7fd3-4a5a-bfd1-9bc61a20fabd none            swap    sw              0       0
-/dev/sr0        /media/cdrom0   udf,iso9660 user,noauto     0       0
-</code></pre>
-
-<h3 id="swap-uuid-has-changed">SWAP UUID has changed</h3>
-
-<p>Problem: SWAP UID has changed</p>
-
-<pre><code># swap was on /dev/vda5 during installation
-UUID=8d7d9300-7fd3-4a5a-bfd1-9bc61a20fabd none            swap    sw     
-</code></pre>
-
-<p>Edit this line with the new UUID (change '8d7d9300-7fd3-4a5a-bfd1-9bc61a20fabd' to 'a01bd0bf-1ffc-400d-b383-d74354750926') in <code>/etc/fstab</code>:</p>
-
-<pre><code>UUID=a01bd0bf-1ffc-400d-b383-d74354750926 none            swap    sw              0       0
-</code></pre>
-
-<h2 id="check">Check</h2>
-
-<p>Everything is now fine! Error solved!</p>
-
-<p><a href="https://www.debian-fr.org/t/demarrage-a-start-job-is-running-for-dev-disk-by-x2duuid/64527">source</a></p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2017/11/09/moodle-activate-debug-using-sql">Moodle 3.X: activate debug whithout GUI</a></h2>
-        </header>
-        <div>
-            <p>If you need to activate debug but you cannot access moodle admin page, this article is for you:</p>
-
-<h2 id="step-1%3A-note-original-settings">Step 1: note original settings</h2>
-
-<pre><code>SELECT name, value
-FROM mdl_config
-where name ='debug' or name ='debugdisplay'
-;
-</code></pre>
-
-<p>for instance :</p>
-
-<pre><code>debug   0
-debugdisplay    0
-</code></pre>
-
-<h2 id="step-2-%3A-setup-debug-config-in-db">Step 2 : setup debug config in db</h2>
-
-<pre><code>UPDATE mdl_config SET VALUE = 32767 WHERE name = 'debug';
-UPDATE mdl_config SET VALUE = 1 WHERE name = 'debugdisplay';
-</code></pre>
-
-<h2 id="step-3%3A-clear-cache-from-cli">Step 3: clear cache from CLI</h2>
-
-<pre><code>php  moodle/admin/cli/purge_caches.php
-</code></pre>
-
-<h2 id="step-4%3A-restore-original-settings">Step 4: restore original settings</h2>
-
-<pre><code>UPDATE mdl_config SET VALUE = 0 WHERE name = 'debug';
-UPDATE mdl_config SET VALUE = 0 WHERE name = 'debugdisplay';
-</code></pre>
 
         </div>
             </article>

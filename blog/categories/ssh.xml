@@ -3,9 +3,59 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/ssh.xml" rel="self"/>
     <link href="/"/>
-    <updated>2021-05-18T13:28:40+00:00</updated>
+    <updated>2021-10-11T13:54:31+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[ssh proxy jump]]></title>
+            <link href="/blog/2021/10/11/ssh-proxy-jump"/>
+            <updated>2021-10-11T00:00:00+00:00</updated>
+            <id>/blog/2021/10/11/ssh-proxy-jump</id>
+            <content type="html"><![CDATA[<h2 id="context">Context</h2>
+
+<p>2 machines:</p>
+
+<ul>
+<li>one public, available on internet: <code>bastion-server</code></li>
+<li>one private, not available on internet: <code>private-server</code></li>
+</ul>
+
+<p>The public machine is allow to connect the private with ssh protocol.</p>
+
+<h2 id="setup-ssh-config">Setup ssh config</h2>
+
+<p>The trick is to make use <code>ProxyJump</code> directive in <code>.ssh/config</code>:</p>
+
+<pre><code>Host bastion-server
+    User pi
+    Hostname bastion-server.com
+    Port 22
+
+Host private-server
+    User ben 
+    Hostname private-server.com
+    ProxyJump bastion-server
+</code></pre>
+
+<p>NB: public ssh keys must be added to these 2 servers with <code>ssh-copy-id</code> command for instance.</p>
+
+<h2 id="usage">Usage</h2>
+
+<p>We can now execute remote commands on the private server jumping from the bastion server.</p>
+
+<pre><code>ssh private-server hostname
+</code></pre>
+
+<p>You can use that to add your computer @IP to the private server. This can be useful when working with a mobile phone as access point:</p>
+
+<pre><code>IP=$(curl -s ifconfig.me) &amp;&amp; DATE=$(date +%Y-%m-%d_%T) &amp;&amp; echo "adding $IP to ufw at $DATE" &amp;&amp; ssh private-server sudo ufw allow from $IP comment ben-sosh-$DATE &amp;&amp; ssh private-server sudo ufw status numbered
+</code></pre>
+
+<h2 id="source">Source</h2>
+
+<p>https://www.syloe.com/rebonds-ssh/</p>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[SSH key authentication]]></title>
             <link href="/blog/2017/11/06/ssh-key-authentication"/>

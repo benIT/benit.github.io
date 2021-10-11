@@ -72,6 +72,228 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2019/02/20/openstack-resize-volume">Openstack: resize volume and partition size on a running instance</a></h2>
+        </header>
+        <div>
+            <h2 id="context">Context</h2>
+
+<p>This post deals with how to increase a volume attached to a server instance on openstack. <a href="https://docs.openstack.org/cinder/rocky/cli/cli-manage-volumes.html#">See openstack volume ressource</a>.</p>
+
+<h2 id="test-database">Test database</h2>
+
+<p>To test everything goes well, a test database is setup:</p>
+
+<pre><code>sudo -u postgres
+sudo -u postgres psql -c "create database webapp";
+sudo -u postgres psql -d webapp -c "CREATE TABLE account(user_id serial PRIMARY KEY,username VARCHAR (50) UNIQUE NOT NULL,created_on TIMESTAMP NOT NULL);" ;
+sudo -u postgres psql -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('foo','2019-01-01') ;" ;
+sudo -u postgres psql -d webapp -c "INSERT INTO account (username,created_on ) VALUES ('bar','2019-01-02') ;" ;
+</code></pre>
+
+<p>Check command:</p>
+
+<pre><code>sudo -u postgres psql -d webapp -c "SELECT * FROM account" ;
+</code></pre>
+
+<p>returns:</p>
+
+<pre><code> user_id | username |     created_on      
+---------+----------+---------------------
+       1 | foo      | 2019-01-01 00:00:00
+       2 | bar      | 2019-01-02 00:00:00
+(2 rows)
+</code></pre>
+
+<h2 id="switch-off-automatic-volume-mount-in-%60%2Fetc%2Ffstab-%60">Switch off automatic volume mount in <code>/etc/fstab</code></h2>
+
+<pre><code>ssh demo
+</code></pre>
+
+<p>Comment lines in <code>/etc/fstab</code> that concern the volume you want to increase:</p>
+
+<pre><code>sudo vim /etc/fstab 
+
+#/dev/vdb1 /data ext4 defaults 0 0
+#/data/pgsql /var/lib/postgresql none bind 0 0
+
+sudo reboot
+</code></pre>
+
+<h2 id="check">Check</h2>
+
+<pre><code>ssh demo
+</code></pre>
+
+<p>Check that they are no more mount point that depend on the volume we are going to manipulate.</p>
+
+<pre><code>df -h
+Filesystem      Size  Used Avail Use% Mounted on
+udev            992M     0  992M   0% /dev
+tmpfs           201M  4,5M  197M   3% /run
+/dev/vda1       4,9G  1,9G  2,9G  40% /
+tmpfs          1003M  8,0K 1003M   1% /dev/shm
+tmpfs           5,0M     0  5,0M   0% /run/lock
+tmpfs          1003M     0 1003M   0% /sys/fs/cgroup
+</code></pre>
+
+<h2 id="stop-your-applications-if-needed">Stop your applications if needed</h2>
+
+<pre><code>sudo service apache2 stop
+sudo service postgresql stop
+</code></pre>
+
+<h2 id="increase-our-volume-size">Increase our volume size</h2>
+
+<p>identify your target server and target volume with <code>openstack volume list</code> and <code>openstack server list</code></p>
+
+<pre><code>TARGET_SERVER=ed864066-ed73-46e0-b551-5bfca9873af6
+TARGET_VOLUME=1be3646a-3bb5-40fc-b9eb-6ab803b60d2c
+VOLUME_SIZE=25
+</code></pre>
+
+<h2 id="detach-volume-from-server">Detach volume from server</h2>
+
+<pre><code>openstack server remove volume $TARGET_SERVER $TARGET_VOLUME
+</code></pre>
+
+<p><em>At this point, the device should NOT be visible when you execute: <code>ls -l /dev/vd*</code></em>.</p>
+
+<h2 id="increase-volume-size">Increase volume size</h2>
+
+<pre><code>openstack volume set $TARGET_VOLUME --size $VOLUME_SIZE
+</code></pre>
+
+<h2 id="attach-volume-to-server">Attach volume to server</h2>
+
+<pre><code>openstack server add volume $TARGET_SERVER $TARGET_VOLUME --device /dev/vdb
+</code></pre>
+
+<p><em>At this point, the device should BE visible when you execute: <code>ls -l /dev/vd*</code></em>.</p>
+
+<h2 id="manage-partition-on-your-openstack-server">Manage partition on your openstack server</h2>
+
+<p>Let's configure the partition to use all the volume space.</p>
+
+<pre><code>ssh demo
+sudo parted /dev/vdb resizepart 1 100%
+sudo e2fsck -f /dev/vdb1
+sudo resize2fs /dev/vdb1
+</code></pre>
+
+<h2 id="restore-%60%2Fetc%2Ffstab%60">Restore <code>/etc/fstab</code></h2>
+
+<p>uncomment the lines:</p>
+
+<pre><code>/dev/vdb1 /data ext4 defaults 0 0
+/data/pgsql /var/lib/postgresql none bind 0 0
+</code></pre>
+
+<p>reboot: <code>sudo reboot</code></p>
+
+<h2 id="check-your-fs">Check your fs</h2>
+
+<h3 id="check-volume-size-and-partition-size">Check volume size and partition size</h3>
+
+<pre><code>sudo fdisk -l
+
+Disk /dev/vdb: 25 GiB, 26843545600 bytes, 52428800 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0x0e1b27a4
+
+Device     Boot Start      End  Sectors Size Id Type
+/dev/vdb1        2048 52428799 52426752  25G 83 Linux
+</code></pre>
+
+<h3 id="check-database">Check database</h3>
+
+<p>Use our test command to check our database:</p>
+
+<pre><code>ssh demo
+sudo -u postgres psql -d webapp -c "SELECT * FROM account" ;
+</code></pre>
+
+<p>check data are ok:</p>
+
+<pre><code> user_id | username |     created_on      
+---------+----------+---------------------
+       1 | foo      | 2019-01-01 00:00:00
+       2 | bar      | 2019-01-02 00:00:00
+(2 rows)
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2019/02/15/ssh-x11-docker">SSH X11 &amp; docker</a></h2>
+        </header>
+        <div>
+            <h2 id="purpose">Purpose</h2>
+
+<p>Run GUI application inside a docker container using X11Forwarding.</p>
+
+<p><a href="https://gist.github.com/udkyo/c20935c7577c71d634f0090ef6fa8393">source from github.</a></p>
+
+<h2 id="create-a-container">Create a container</h2>
+
+<h3 id="dockerfile">DockerFile</h3>
+
+<pre><code>FROM ubuntu
+RUN apt update \
+    &amp;&amp; apt install -y firefox \
+                      openssh-server \
+                      xauth \
+                      emacs \
+    &amp;&amp; mkdir /var/run/sshd \
+    &amp;&amp; mkdir /root/.ssh \
+    &amp;&amp; chmod 700 /root/.ssh \
+    &amp;&amp; ssh-keygen -A \
+    &amp;&amp; sed -i "s/^.*PasswordAuthentication.*$/PasswordAuthentication no/" /etc/ssh/sshd_config \
+    &amp;&amp; sed -i "s/^.*X11Forwarding.*$/X11Forwarding yes/" /etc/ssh/sshd_config \
+    &amp;&amp; sed -i "s/^.*X11UseLocalhost.*$/X11UseLocalhost no/" /etc/ssh/sshd_config \
+    &amp;&amp; grep "^X11UseLocalhost" /etc/ssh/sshd_config || echo "X11UseLocalhost no" &gt;&gt; /etc/ssh/sshd_config
+
+RUN echo "CONTENT_OF_ID_RSA_PUB_KEY_HERE" &gt;&gt; /root/.ssh/authorized_keys
+</code></pre>
+
+<h3 id="build-it">Build it</h3>
+
+<pre><code>docker build -t benit/ubuntu-x11 . --build-arg http_proxy=$http_proxy
+</code></pre>
+
+<h2 id="run-container">Run Container</h2>
+
+<pre><code>docker run --name ubuntu-x11 --rm -d -p 2150:22 benit/ubuntu-x11
+</code></pre>
+
+<h2 id="ssh-client-configuration">SSH client configuration</h2>
+
+<p>Edit <code>~/.ssh/config</code> on the client, here my workstation is named <code>lxdev</code>:</p>
+
+<pre><code>Host ubuntuX11
+     Hostname lxdev
+     Port 2150
+     user root
+     ForwardX11 yes
+     ForwardX11Trusted yes
+</code></pre>
+
+<h2 id="use-it%21">Use it!</h2>
+
+<pre><code>ssh -X ubuntu-x11 emacs     
+</code></pre>
+
+<h2 id="enjoy%21">Enjoy!</h2>
+
+<p><img src="/images/docker/docker-ssh-x11-emacs.png" alt="screenshot" /></p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2019/02/15/linux-multiusb-live">Linux multiusb live</a></h2>
         </header>
         <div>
@@ -88,218 +310,6 @@
 <li>check if all python dependencies are satisfied, if not try install missing with <code>sudo apt install python3-pyqt5 p7zip-full python3-pyudev</code></li>
 <li>enjoy : you can now burn several iso using the GUI. Great tool!</li>
 </ul>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/02/11/linux-mastering-logs">Linux logs</a></h2>
-        </header>
-        <div>
-            <h2 id="purpose">Purpose</h2>
-
-<p>The aim of is post is to manipulate linux system logs.</p>
-
-<p>Logging is an important part of IT system and must be understand.</p>
-
-<h2 id="test-program">Test program</h2>
-
-<p>The following program named <code>program.sh</code> is used to test log services:</p>
-
-<pre><code>echo I am $(whoami) and up from  $(uptime)
-</code></pre>
-
-<h2 id="logs">Logs</h2>
-
-<p>Logs are managed with a service named <code>rsyslog</code></p>
-
-<pre><code>sudo service rsyslog status
-</code></pre>
-
-<h2 id="activate-cron-log">Activate cron log</h2>
-
-<p>In <code>sudo vim /etc/rsyslog.conf</code>, uncomment this line:</p>
-
-<pre><code>cron.*                          /var/log/cron.log
-</code></pre>
-
-<p>Restart <code>systemctl</code>:</p>
-
-<pre><code>sudo systemctl restart rsyslog
-</code></pre>
-
-<p>This doesn't log your program output, but logs your cron information.</p>
-
-<p>Considering the following crontab that runs every minute:</p>
-
-<pre><code>* * * * * /home/debian/prog.sh
-</code></pre>
-
-<p>Let's check <code>cron.log</code> details:</p>
-
-<pre><code>sudo tail -f /var/log/cron.log
-
-Feb 11 10:09:01 sandbox CRON[25182]: (root) CMD (  [ -x /usr/lib/php/sessionclean ] &amp;&amp; if [ ! -d /run/systemd/system ]; then /usr/lib/php/sessionclean; fi)
-Feb 11 10:09:01 sandbox CRON[25183]: (debian) CMD (/home/debian/prog.sh)
-Feb 11 10:10:01 sandbox CRON[25243]: (debian) CMD (/home/debian/prog.sh)
-Feb 11 10:11:01 sandbox CRON[25373]: (debian) CMD (/home/debian/prog.sh)
-Feb 11 10:12:01 sandbox CRON[25396]: (debian) CMD (/home/debian/prog.sh)
-Feb 11 10:13:01 sandbox CRON[25405]: (debian) CMD (/home/debian/prog.sh)
-Feb 11 10:14:01 sandbox CRON[25415]: (debian) CMD (/home/debian/prog.sh)
-Feb 11 10:15:01 sandbox CRON[25439]: (root) CMD (command -v debian-sa1 &gt; /dev/null &amp;&amp; debian-sa1 1 1)
-Feb 11 10:15:01 sandbox CRON[25441]: (debian) CMD (/home/debian/prog.sh)
-Feb 11 10:16:02 sandbox CRON[25459]: (debian) CMD (/home/debian/prog.sh)
-</code></pre>
-
-<h2 id="log-rotation">Log rotation</h2>
-
-<p>Log rotation is managed with a service named <code>logrotate</code></p>
-
-<pre><code>cat /var/lib/logrotate/status | grep apache
-
-"/var/log/apache2/access.log" 2019-2-8-6:25:2
-"/var/log/apache2/other_vhosts_access.log" 2018-5-29-6:0:0
-"/var/log/apache2/error.log" 2019-2-11-6:25:1
-</code></pre>
-
-<p>Let's check apache2 webserver log rotation configuration :</p>
-
-<pre><code>cat /etc/logrotate.d/apache2 
-/var/log/apache2/*.log {
-    daily
-    missingok
-    rotate 14
-    compress
-    delaycompress
-    notifempty
-    create 640 root adm
-    sharedscripts
-    postrotate
-            if /etc/init.d/apache2 status &gt; /dev/null ; then \
-                /etc/init.d/apache2 reload &gt; /dev/null; \
-            fi;
-    endscript
-    prerotate
-        if [ -d /etc/logrotate.d/httpd-prerotate ]; then \
-            run-parts /etc/logrotate.d/httpd-prerotate; \
-        fi; \
-    endscript
-}
-</code></pre>
-
-<h2 id="example-with-%60program.sh%60">Example with <code>program.sh</code></h2>
-
-<h3 id="program-log-location">Program log location</h3>
-
-<p>We will tell our program to write here: <code>/var/log/prog.sh/log</code>. Let's create this file with the right permissions:</p>
-
-<pre><code>sudo mkdir /var/log/prog.sh/
-sudo touch /var/log/prog.sh/log
-sudo chmod ugo+rw /var/log/prog.sh/log
-</code></pre>
-
-<h3 id="program-crontab">Program crontab</h3>
-
-<pre><code>* * * * * /home/debian/prog.sh &gt;&gt; /var/log/prog.sh/log
-</code></pre>
-
-<h3 id="program-log-rotation">Program log rotation</h3>
-
-<p>Edit <code>/etc/logrotate.d/program.sh</code> :</p>
-
-<pre><code>/var/log/program.sh/*.log {
-        daily
-        missingok
-        rotate 5
-        compress
-        delaycompress
-        notifempty
-        create 644 root root
-}
-</code></pre>
-
-<p><a href="https://doc.ubuntu-fr.org/logrotate#exemple">Great doc here</a>.</p>
-
-<h3 id="check-log-rotation">Check log rotation</h3>
-
-<pre><code>ls /var/log/prog.sh/
-</code></pre>
-
-<h2 id="another-example-with-a-cronjob-from-a-webapp-named-%60moodle%60">Another example with a cronjob from a webapp named <code>moodle</code></h2>
-
-<h3 id="moodle-log-location">Moodle log location</h3>
-
-<pre><code>sudo mkdir /var/log/moodle
-sudo touch /var/log/moodle/cron.log
-sudo chmod -R ug+rw /var/log/moodle/
-</code></pre>
-
-<h3 id="moodle-crontab">Moodle crontab</h3>
-
-<p>This job must be run from <code>www-data</code> user, so we need the crontab too to be run from <code>www-data</code> user:</p>
-
-<pre><code>sudo crontab -u www-data -e
-</code></pre>
-
-<p>edit as follow:</p>
-
-<pre><code>#run moodle cron every hour
-0 * * * * php /data/moodle/admin/cli/cron.php &gt;&gt; /var/log/moodle/cron.log 2&gt;&amp;1
-</code></pre>
-
-<p><strong>Important stderr has been redirected to stdout with <code>2&amp;1</code></strong> and all that is printed in a file.</p>
-
-<h3 id="moodle-log-rotation">Moodle log rotation</h3>
-
-<p>Edit <code>/etc/logrotate.d/moodle</code> :</p>
-
-<pre><code>/var/log/moodle/*.log {
-        daily
-        missingok
-        rotate 5
-        compress
-        delaycompress
-        notifempty
-        create 640 www-data www-data
-}    
-</code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/01/25/docker-make-a-christmas-garland-with-nginx-apache">How to make a christmas garland with a nginx reverse proxy and 3 apache backends under docker?</a></h2>
-        </header>
-        <div>
-            <h1 id="purpose">Purpose</h1>
-
-<p>This posts deals with doing yourself a christmas garland!</p>
-
-<p>We will be using :</p>
-
-<ul>
-<li>nginx as a reverse proxy</li>
-<li>apache as a backend</li>
-<li>docker as a plateforme  </li>
-</ul>
-
-<h1 id="repository">Repository</h1>
-
-<p><a href="https://github.com/benIT/docker-nginx-reverse-proxy">You will find a demonstration repository here.</a></p>
-
-<h1 id="demo">Demo</h1>
-
-<p><center><video width="640" height="480" controls src="https://benit.github.io/docker-nginx-reverse-proxy/demo.mp4"></video></center></p>
-
-<p>If it does not work, download it from github repo:</p>
-
-<pre><code>wget https://raw.githubusercontent.com/benIT/docker-nginx-reverse-proxy/master/demo.mp4
-vlc demo.mp4
-</code></pre>
-
-<h1 id="conclusion">Conclusion</h1>
-
-<p>Never forget that computing should always be fun!</p>
 
         </div>
             </article>

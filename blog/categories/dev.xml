@@ -3,9 +3,57 @@
     <title><![CDATA[benIT&#039;s notebook]]></title>
     <link href="/blog/categories/dev.xml" rel="self"/>
     <link href="/"/>
-    <updated>2021-05-18T13:28:40+00:00</updated>
+    <updated>2021-10-11T13:54:31+00:00</updated>
     <id>/</id>
         <generator uri="http://sculpin.io/">Sculpin</generator>
+            <entry>
+            <title type="html"><![CDATA[symfonycasts course notes - The Delightful World of Vue]]></title>
+            <link href="/blog/2021/07/22/sfcast-vuejs"/>
+            <updated>2021-07-22T00:00:00+00:00</updated>
+            <id>/blog/2021/07/22/sfcast-vuejs</id>
+            <content type="html"><![CDATA[<h1 id="about">About</h1>
+
+<p>This is raw notes from the great symfony cast course "The Delightful World of Vue". 
+Content have been fully copied/pasted from the official <a href="https://symfonycasts.com/screencast/vue">public resource</a>.</p>
+
+<h1 id="notes">Notes</h1>
+
+<p>...</p>
+
+<h2 id="21----where-should-a-piece-of-data-live%3F">21  - Where should a Piece of Data Live?</h2>
+
+<p>https://symfonycasts.com/screencast/vue/data-location#play- 
+Earlier, I said that you should never, ever change the value of a prop. Props are meant to be read but not modified</p>
+
+<p>What is the purpose of the special mounted() function in Vue?</p>
+
+<p>https://symfonycasts.com/screencast/vue/ajax/activity/376</p>
+
+<p>That's right. It's a special event callback that you can define in your components to do stuff just after a component is mounted in the DOM.</p>
+
+<p>https://symfonycasts.com/screencast/vue/loading/activity/380</p>
+
+<h2 id="28---loading-component">28 - Loading Component</h2>
+
+<p>https://symfonycasts.com/screencast/vue/loading</p>
+
+<p>created will execute as soon as the component is instantiated. Even though the DOM structure still isn't mounted, you can still perform any other operations that deal with reactive data!</p>
+
+<p>mounted, on the other hand, will be executed once the component has been mounted in the DOM. This is useful for any edge case when you need to manipulate the DOM directly!</p>
+
+<h2 id="39---hoisting-data-up">39 - Hoisting Data Up</h2>
+
+<p>https://symfonycasts.com/screencast/vue/hoist-data#play</p>
+
+<p>This is a fairly common situation: you start by putting your data in one component, then later you need to move it higher so that more parts of your app can use it. We did this once earlier: we moved the collapsed boolean data from Sidebar up to Products so that we could use it in more places.</p>
+
+<h2 id="47---watchers%3A-the-good%2C-the-bad-%26-the-useful%21">47 - Watchers: The Good, The Bad &amp; The Useful!</h2>
+
+<p>https://symfonycasts.com/screencast/vue/watcher#play</p>
+
+<p>watcher! Very simply: a watcher is a function that's called by Vue whenever a specific prop or data changes.</p>
+]]></content>
+        </entry>
             <entry>
             <title type="html"><![CDATA[symfonycasts course notes - JavaScript for PHP Geeks: ES6/ES2015 (New JavaScript)]]></title>
             <link href="/blog/2021/05/07/ES6"/>
@@ -1553,62 +1601,6 @@ upload_max_filesize
 
 display_errors
 html_errors
-</code></pre>
-]]></content>
-        </entry>
-            <entry>
-            <title type="html"><![CDATA[Use your own fork with composer]]></title>
-            <link href="/blog/2019/07/10/use-your-own-fork-with-composer"/>
-            <updated>2019-07-10T00:00:00+00:00</updated>
-            <id>/blog/2019/07/10/use-your-own-fork-with-composer</id>
-            <content type="html"><![CDATA[<p>Resources:</p>
-
-<ul>
-<li>https://getcomposer.org/doc/04-schema.md#minimum-stability</li>
-<li>https://stackoverflow.com/a/13500676/1632809</li>
-</ul>
-
-<h2 id="context">Context</h2>
-
-<ul>
-<li><p>Original project: <a href="https://github.com/KnpLabs/KnpGaufretteBundle">https://github.com/KnpLabs/KnpGaufretteBundle</a></p></li>
-<li><p>My fork: <a href="https://github.com/benIT/KnpGaufretteBundle.git">https://github.com/benIT/KnpGaufretteBundle.git</a></p></li>
-<li><p>My branch name: <code>benIT-gaufrette-1.0</code>. This one contains my commits.</p></li>
-</ul>
-
-<h2 id="composer">Composer</h2>
-
-<p>My <code>composer.json</code> file that tracks my fork with ly branch.</p>
-
-<p>Note: branch must be prefixed bt <code>dev-</code>. In this case: <code>dev-benIT-gaufrette-1.0</code>:</p>
-
-<pre><code>{
-  "name": "root/test-composer",
-  "repositories": [
-    {
-      "type": "vcs",
-      "url": "https://github.com/benIT/KnpGaufretteBundle.git"
-    }
-  ],
-  "require": {
-    "knplabs/knp-gaufrette-bundle": "dev-benIT-gaufrette-1.0"
-  },
-  "minimum-stability": "dev",
-  "prefer-stable": true
-}
-</code></pre>
-
-<p>The following directive :</p>
-
-<pre><code>"minimum-stability": "dev",
-"prefer-stable": true
-</code></pre>
-
-<p>prevents this kind of error related to minimum stability:</p>
-
-<pre><code>  Problem 1
-    - Installation request for knplabs/knp-gaufrette-bundle dev-benIT-gaufrette-1.0 -&gt; satisfiable by knplabs/knp-gaufrette-bundle[dev-benIT-gaufrette-1.0].
-    - knplabs/knp-gaufrette-bundle dev-benIT-gaufrette-1.0 requires knplabs/gaufrette ^1.0 -&gt; satisfiable by knplabs/gaufrette[1.x-dev] but these conflict with your requirements or minimum-stability.
 </code></pre>
 ]]></content>
         </entry>

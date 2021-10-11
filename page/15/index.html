@@ -72,6 +72,109 @@
                 <div class="span8">
                         <article>
         <header>
+            <h2><a href="/blog/2019/07/10/use-your-own-fork-with-composer">Use your own fork with composer</a></h2>
+        </header>
+        <div>
+            <p>Resources:</p>
+
+<ul>
+<li>https://getcomposer.org/doc/04-schema.md#minimum-stability</li>
+<li>https://stackoverflow.com/a/13500676/1632809</li>
+</ul>
+
+<h2 id="context">Context</h2>
+
+<ul>
+<li><p>Original project: <a href="https://github.com/KnpLabs/KnpGaufretteBundle">https://github.com/KnpLabs/KnpGaufretteBundle</a></p></li>
+<li><p>My fork: <a href="https://github.com/benIT/KnpGaufretteBundle.git">https://github.com/benIT/KnpGaufretteBundle.git</a></p></li>
+<li><p>My branch name: <code>benIT-gaufrette-1.0</code>. This one contains my commits.</p></li>
+</ul>
+
+<h2 id="composer">Composer</h2>
+
+<p>My <code>composer.json</code> file that tracks my fork with ly branch.</p>
+
+<p>Note: branch must be prefixed bt <code>dev-</code>. In this case: <code>dev-benIT-gaufrette-1.0</code>:</p>
+
+<pre><code>{
+  "name": "root/test-composer",
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/benIT/KnpGaufretteBundle.git"
+    }
+  ],
+  "require": {
+    "knplabs/knp-gaufrette-bundle": "dev-benIT-gaufrette-1.0"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
+</code></pre>
+
+<p>The following directive :</p>
+
+<pre><code>"minimum-stability": "dev",
+"prefer-stable": true
+</code></pre>
+
+<p>prevents this kind of error related to minimum stability:</p>
+
+<pre><code>  Problem 1
+    - Installation request for knplabs/knp-gaufrette-bundle dev-benIT-gaufrette-1.0 -&gt; satisfiable by knplabs/knp-gaufrette-bundle[dev-benIT-gaufrette-1.0].
+    - knplabs/knp-gaufrette-bundle dev-benIT-gaufrette-1.0 requires knplabs/gaufrette ^1.0 -&gt; satisfiable by knplabs/gaufrette[1.x-dev] but these conflict with your requirements or minimum-stability.
+</code></pre>
+
+        </div>
+            </article>
+    <article>
+        <header>
+            <h2><a href="/blog/2019/06/24/Apache2-customize-index-options">Apache2 customize index page</a></h2>
+        </header>
+        <div>
+            <h2 id="customize-the-default-apache2-page-index-page">Customize the default apache2 page index page</h2>
+
+<p>Apache2 index option is highly customizable. <a href="http://httpd.apache.org/docs/2.2/mod/mod_autoindex.html">See this official resource.</a></p>
+
+<p>With the following code:</p>
+
+<pre><code>&lt;VirtualHost *:80&gt;
+        DocumentRoot /data/moodle_versions
+    &lt;Directory /&gt;
+        Options FollowSymLinks
+        AllowOverride None
+    &lt;/Directory&gt;
+    &lt;Directory /data/moodle_versions/&gt;
+        Options Indexes FollowSymLinks MultiViews
+        AllowOverride All
+        Require all granted
+        allow from all
+        AddDescription "Installation de moodle 3.5.4 LTS standard" moodle_354
+        AddDescription "Installation de moodle 3.6.4 à des fins de test" moodle_364
+        IndexStyleSheet "style.css"
+        HeaderName header.html
+        ReadmeName footer.html
+        IndexIgnore *.html
+        IndexIgnore *.css
+    &lt;/Directory&gt;
+        ServerAdmin webmaster@localhost
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+&lt;/VirtualHost&gt;
+</code></pre>
+
+<p>You can turn the default page:</p>
+
+<p><img src="/images/apache2/default.png" alt="screenshot" /></p>
+
+<p>to this one:</p>
+
+<p><img src="/images/apache2/custom.png" alt="screenshot" /></p>
+
+        </div>
+            </article>
+    <article>
+        <header>
             <h2><a href="/blog/2019/05/22/john-the-ripper-rip-md5-hash">RIP a md5 hash with john the ripper</a></h2>
         </header>
         <div>
@@ -90,175 +193,6 @@ john --format=raw-md5 md5-to-crack --show
 </code></pre>
 
 <p>Password for hash <code>ca50dfb151104b1ee005d68fa9a970ce</code> is <code>dolorem</code></p>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/05/07/python-keylogger">Python keylogger</a></h2>
-        </header>
-        <div>
-            <h2 id="python-keylogger-package">Python keylogger package</h2>
-
-<p>The job is already done and packaged with <a href="https://pypi.org/project/keylogger/">that Python package</a>.</p>
-
-<h2 id="installation">Installation</h2>
-
-<h3 id="python-3">Python 3</h3>
-
-<p>This package works with Python 3, make sure you are using it:</p>
-
-<pre><code>python --version
-</code></pre>
-
-<p>If python2 is set by default:</p>
-
-<pre><code>sudo apt-get install python3-pip
-</code></pre>
-
-<h3 id="package">Package</h3>
-
-<pre><code>pip install keylogger
-</code></pre>
-
-<p>If python2 is set by default:</p>
-
-<pre><code>sudo -E pip3 install keylogger
-</code></pre>
-
-<h2 id="set-up-log-file">Set up log file</h2>
-
-<pre><code>sudo touch /var/log/keylogger.log
-</code></pre>
-
-<h2 id="group-%26-ownership-for-log-file">Group &amp; ownership for log file</h2>
-
-<pre><code>sudo groupadd spy
-sudo usermod -a -G spy vagrant    
-sudo chown root:spy /var/log/keylogger.log
-sudo chmod 660 /var/log/keylogger.log
-</code></pre>
-
-<h2 id="usage">Usage</h2>
-
-<pre><code>/home/vagrant/.local/bin/keylogger --log-file /var/log/keylogger.log --clean-file &amp;
-</code></pre>
-
-<h2 id="watch-log">Watch log</h2>
-
-<pre><code>tail -f /var/log/keylogger.log 
-</code></pre>
-
-<p>Below the log generated by typing in firefox: <code>gmail.com</code> ang logging with <code>thisismymail@gmail.com</code>/<code>mypassword</code>:</p>
-
-<pre><code>g
-m
-a
-i
-l
-Shift_L
-period
-c
-o
-m
-Return
-t
-h
-i
-s
-i
-s
-m
-y
-m
-a
-i
-l
-Shift_L
-Shift_L
-Shift_L
-[65027]
-agrave
-g
-m
-a
-i
-l
-Shift_L
-period
-c
-o
-m
-m
-y
-p
-a
-s
-s
-w
-o
-r
-d
-</code></pre>
-
-        </div>
-            </article>
-    <article>
-        <header>
-            <h2><a href="/blog/2019/05/06/john-the-ripper-rip-linux-user-password">RIP linux user password with John the Ripper</a></h2>
-        </header>
-        <div>
-            <h2 id="add-a-new-user">Add a new user</h2>
-
-<pre><code>sudo useradd -r foo
-sudo passwd foo
-Enter new UNIX password: 
-Retype new UNIX password: 
-passwd: password updated successfully
-</code></pre>
-
-<h2 id="password-hash-file">Password hash file</h2>
-
-<p>Linux user password hash are stored here: <code>/etc/shadow</code></p>
-
-<h2 id="rip-it%21">Rip it!</h2>
-
-<pre><code>sudo john /etc/shadow
-Created directory: /root/.john
-Using default input encoding: UTF-8
-Loaded 3 password hashes with 3 different salts (sha512crypt, crypt(3) $6$ [SHA512 256/256 AVX2 4x])
-Cost 1 (iteration count) is 5000 for all loaded hashes
-Will run 5 OpenMP threads
-Proceeding with single, rules:Wordlist
-Press 'q' or Ctrl-C to abort, almost any other key for status
-vagrant          (vagrant)
-Warning: Only 3 candidates buffered for the current salt, minimum 20
-needed for performance.
-toor             (root)
-Warning: Only 14 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 6 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 16 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 17 candidates buffered for the current salt, minimum 20
-needed for performance.
-Warning: Only 3 candidates buffered for the current salt, minimum 20
-needed for performance.
-Almost done: Processing the remaining buffered candidate passwords, if any
-Warning: Only 15 candidates buffered for the current salt, minimum 20
-needed for performance.
-Proceeding with wordlist:/usr/share/john/password.lst, rules:Wordlist
-foobar           (foo)
-3g 0:00:00:01 DONE 2/3 (2019-05-06 10:39) 1.570g/s 1806p/s 1808c/s 1808C/s 1234qwer..ford
-Use the "--show" option to display all of the cracked passwords reliably
-Session completed
-</code></pre>
-
-<h3 id="and-user-password-is...">And user password is...</h3>
-
-<pre><code>foobar           (foo)
-</code></pre>
 
         </div>
             </article>
